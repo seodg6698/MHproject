@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MHproject.mapper.LoginMapper">
+
+    <resultMap id="LoginDTO" type="MHproject.DTO.LoginDTO">
+        <result property="userId" column="userid" />
+        <result property="password" column="password" />
+        <result property="email" column="email" />
+        <result property="verificationCode" column="verificationCode" />
+    </resultMap>
+
+    <!-- 회원가입용 INSERT (메서드명을 insertRegister로 변경 권장) -->
+    <insert id="getRegister" parameterType="MHproject.DTO.LoginDTO">
+        <![CDATA[
+        INSERT INTO users
+        (
+            userid,
+            password,
+            email
+        )
+        VALUES
+        (
+            #{userId},
+            #{password},
+            #{email}
+        )
+        ]]>
+    </insert>
+
+    <!-- 선택사항: 사용자 조회용 SELECT 추가 -->
+    <select id="selectUserById" parameterType="string" resultMap="LoginDTO">
+        <![CDATA[
+        SELECT 
+            userid,
+            password,
+            email,
+            verificationCode
+        FROM users 
+        WHERE userid = #{userId}
+        ]]>
+    </select>
+
+    <!-- 선택사항: 이메일로 사용자 조회 -->
+    <select id="selectUserByEmail" parameterType="string" resultMap="LoginDTO">
+        <![CDATA[
+        SELECT 
+            userid,
+            password,
+            email,
+            verificationCode
+        FROM users 
+        WHERE email = #{email}
+        ]]>
+    </select>
+    
+    <select id="idCheck" resultType="int" parameterType="String">
+		<![CDATA[
+		
+		SELECT
+				COUNT(userid) as cnt
+				
+		FROM
+				users
+		WHERE 
+		      userid = #{userid}		
+		
+		
+		]]>
+	
+	</select>
+	
+  
+</mapper>

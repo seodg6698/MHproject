@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="/css/medications.css"/>
+  <style>
+    
+  </style>
+</head>
+<body>
+
+<header>
+        <div class="top-bar">
+            <div class="auth-buttons">
+                <a href="/login/login">로그인/회원가입</a>
+            </div>
+        </div>
+        <div class="main-header">
+            <div class="logo">
+                <h1>MH <span>커뮤니티</span></h1>
+            </div>
+        </div>
+        <nav>
+            <div class="main-nav">
+                <ul>
+                    <li><a href="/user/main">홈</a></li>
+                    <!--  <li>
+                        <a href="#">마음 건강</a>
+                        <ul class="dropdown">
+                            <li><a href="#">우울증</a></li>
+                            <li><a href="#">불안장애</a></li>
+                            <li><a href="#">스트레스 관리</a></li>
+                            <li><a href="#">수면장애</a></li>
+                            <li><a href="#">자가진단</a></li>
+                        </ul>
+                    </li>-->
+                    <li>
+                        <a href="#">정신의학 정보</a>
+                        <ul class="dropdown">
+                            <li><a href="/user/disorders">질환별 정보</a></li>
+                            <li><a href="/user/medications">약물 정보</a></li>
+                            <li><a href="/user/treatments">치료 방법</a></li>
+                            <li><a href="#">최신 연구</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">커뮤니티</a>
+                        <ul class="dropdown">
+                            <li><a href="#">자유게시판</a></li>
+                            <li><a href="#">질문과 답변</a></li>
+                            <li><a href="#">경험 나누기</a></li>
+                            <li><a href="#">응원의 메시지</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">상담/도움</a>
+                        <ul class="dropdown">
+                            <li><a href="#">전문가 찾기</a></li>
+                            <li><a href="#">기관 정보</a></li>
+                            <li><a href="#">긴급 지원</a></li>
+                            <!--<li><a href="#">상담 예약</a></li>-->
+                        </ul>
+                    </li>
+                    <li><a href="#">공지사항</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    
+  <!-- 일반 주의사항 -->
+  <div class="general-warning">
+    <h4>⚠️ 정신건강 약물 복용 시 일반 주의사항</h4>
+    <p><strong>1. 전문의 처방 필수:</strong> 모든 약물은 정신건강의학과 전문의의 정확한 진단과 처방에 따라서만 복용하세요.</p>
+    <p><strong>2. 임의 중단 금지:</strong> 증상이 호전되었다고 임의로 약물을 중단하지 마세요. 갑작스런 중단은 금단 증상이나 증상 악화를 일으킬 수 있습니다.</p>
+    <p><strong>3. 정기 체크업:</strong> 정기적인 진료를 통해 약물 효과와 부작용을 모니터링하세요.</p>
+    <p><strong>4. 약물 상호작용:</strong> 다른 약물(처방약, 일반의약품, 건강기능식품 포함) 복용 시 반드시 의사에게 알리세요.</p>
+    <p><strong>5. 알코올 주의:</strong> 대부분의 정신건강 약물은 알코올과 함께 복용하면 위험할 수 있습니다.</p>
+  </div>
+
+  <!-- 조현병 약물 정보 -->
+  <div class="medications-card">
+    <h3>조현병 치료에 사용되는 약물</h3>
+    <p>다음 약물들은 조현병 증상 관리에 사용됩니다. 모든 약물은 반드시 정신건강의학과 전문의의 처방과 감독 하에 복용해야 합니다.</p>
+    <div class="medications-list">
+      <div class="medication-item">
+        <div class="medication-name">리스페리돈(Risperidone)</div>
+        <p class="medication-description">비정형 항정신병약으로, 망상, 환각 등의 양성 증상과 무감동, 무의욕 등의 음성 증상 모두에 효과적</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          체중 증가, 당뇨병 위험 증가, 기립성 저혈압 가능. 정기적인 혈당, 체중 모니터링 필요
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">올란자핀(Olanzapine)</div>
+        <p class="medication-description">불안, 혼란, 망상을 감소시키는 비정형 항정신병약으로 재발 방지에도 효과적</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          체중 증가, 고지혈증, 당뇨병 위험이 높음. 정기적인 대사 검사 필요
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">클로자핀(Clozapine)</div>
+        <p class="medication-description">다른 항정신병약에 반응하지 않는 치료저항성 조현병에 효과적이나, 정기적인 혈액검사 필요</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          무과립구증 위험으로 정기적인 혈액검사 필수. 발열, 인후통 시 즉시 병원 방문
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">아리피프라졸(Aripiprazole)</div>
+        <p class="medication-description">도파민 부분 작용제로 작용하며 대사 부작용이 상대적으로 적은 비정형 항정신병약</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          초기 불안감, 불면 가능. 충동 조절 장애(도박, 쇼핑 등) 증가 가능성 있어 주의 관찰 필요
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">쿠에티아핀(Quetiapine)</div>
+        <p class="medication-description">망상과 환각을 줄이고 기분 안정 효과도 있어 조현병과 기분장애가 공존할 때 유용</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          진정 효과가 강해 운전이나 위험한 작업 시 주의. 기립성 저혈압, 변비 가능
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">팔리페리돈(Paliperidone)</div>
+        <p class="medication-description">리스페리돈의 활성 대사체로, 장기 지속형 주사제(LAI)로 투여 가능하여 약물 순응도 향상에 도움</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          주사 부위 반응, 추체외로 증상(근육 경직, 떨림) 가능. 정기적인 신장 기능 검사 필요
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 외상후 스트레스 장애 약물 정보 -->
+  <div class="medications-card">
+    <h3>외상후 스트레스 장애(PTSD) 치료에 사용되는 약물</h3>
+    <p>다음 약물들은 PTSD 증상 관리에 사용됩니다. 약물치료와 함께 심리치료를 병행하는 것이 권장됩니다.</p>
+    <div class="medications-list">
+      <div class="medication-item">
+        <div class="medication-name">세르트랄린(Sertraline)</div>
+        <p class="medication-description">PTSD 치료에 FDA 승인된 SSRI 계열 항우울제로, 침습적 사고와 과각성 증상 감소에 효과적</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          초기 불안감 증가 가능. 자살 사고 증가 위험(특히 25세 이하). 성기능 저하 가능
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">파록세틴(Paroxetine)</div>
+        <p class="medication-description">PTSD 치료에 FDA 승인된 또 다른 SSRI로, 회피 행동과 정서적 마비 증상 개선에 도움</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          갑작스런 중단 시 금단 증상이 심할 수 있음. 체중 증가, 진정 효과 가능
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">플루옥세틴(Fluoxetine)</div>
+        <p class="medication-description">침습적 기억, 악몽, 플래시백 등의 증상 감소에 효과적인 SSRI 계열 약물</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          초기 활성화 증상(불안, 불면) 가능. 반감기가 길어 약물 중단 시 천천히 감량 필요
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">벤라팍신(Venlafaxine)</div>
+        <p class="medication-description">SNRI 계열 항우울제로 우울, 불안 증상이 함께 있는 PTSD 환자에게 도움</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          혈압 상승 가능하여 정기적인 혈압 모니터링 필요. 갑작스런 중단 시 심한 금단 증상
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">프라조신(Prazosin)</div>
+        <p class="medication-description">PTSD 관련 악몽과 수면 장애 감소에 효과적인 알파-차단제</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          기립성 저혈압으로 인한 어지러움, 실신 위험. 처음 복용 시 소량부터 시작하여 서서히 증량
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">미르타자핀(Mirtazapine)</div>
+        <p class="medication-description">항우울 효과와 함께 수면을 개선하는 효과가 있어 수면 장애가 심한 PTSD 환자에게 유용</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          체중 증가, 진정 효과가 강함. 드물게 무과립구증 발생 가능하여 발열 시 주의
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 양극성 장애 약물 정보 -->
+  <div class="medications-card">
+    <h3>양극성 장애 치료에 사용되는 약물</h3>
+    <p>다음 약물들은 양극성 장애의 조증, 우울증 삽화 및 재발 방지에 사용됩니다. 약물 조합과 용량은 개인별로 조정될 수 있습니다.</p>
+    <div class="medications-list">
+      <div class="medication-item">
+        <div class="medication-name">리튬(Lithium)</div>
+        <p class="medication-description">양극성 장애의 고전적인 기분 안정제로, 조증 삽화 치료와 자살 위험 감소에 효과적</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          정기적인 혈중 농도 검사 필요. 신장, 갑상선 기능 모니터링 필수. 탈수 주의, 충분한 수분 섭취
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">발프로에이트(Valproate)</div>
+        <p class="medication-description">항경련제로도 사용되는 기분 안정제로, 급성 조증 삽화와 혼합 삽화에 효과적</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          간 기능 검사 정기 시행 필요. 체중 증가, 탈모, 혈소판 감소 가능. 임신 중 태아 기형 위험
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">라모트리진(Lamotrigine)</div>
+        <p class="medication-description">주로 양극성 우울증과 재발 방지에 효과적인 기분 안정제</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          심각한 피부 발진(스티븐스-존슨 증후군) 위험. 천천히 용량 증량 필요. 발진 시 즉시 중단
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">카바마제핀(Carbamazepine)</div>
+        <p class="medication-description">항경련제 계열의 기분 안정제로, 특히 급속 순환형 양극성 장애에 효과적일 수 있음</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          혈액 질환(무과립구증) 위험. 정기적인 혈액검사 필요. 피부 발진 주의, 약물 상호작용 많음
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">쿠에티아핀(Quetiapine)</div>
+        <p class="medication-description">양극성 장애의 조증, 우울증, 혼합 삽화 모두에 효과가 있는 비정형 항정신병약</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          진정 효과 강함. 체중 증가, 당뇨병 위험. 백내장 위험 증가로 정기적인 안과 검진 권장
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">루라시돈(Lurasidone)</div>
+        <p class="medication-description">양극성 우울증 치료에 FDA 승인된 비정형 항정신병약으로, 대사 부작용이 상대적으로 적음</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          음식과 함께 복용 필요(350칼로리 이상). 추체외로 증상, 불안감 증가 가능
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 불안장애 약물 정보 -->
+  <div class="medications-card">
+    <h3>불안장애 치료에 사용되는 약물</h3>
+    <p>다음 약물들은 범불안장애, 공황장애, 사회불안장애 등 다양한 불안장애 증상 관리에 사용됩니다. 심리치료와 병행하면 더 효과적일 수 있습니다.</p>
+    <div class="medications-list">
+      <div class="medication-item">
+        <div class="medication-name">에스시탈로프람(Escitalopram)</div>
+        <p class="medication-description">SSRI 계열 항우울제로 불안장애 전반에 효과적이며 부작용이 비교적 적음</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          초기 불안감 증가 가능. QT 간격 연장 위험으로 심장 질환자 주의. 성기능 저하 가능
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">벤라팍신(Venlafaxine)</div>
+        <p class="medication-description">SNRI 계열 약물로 특히 범불안장애와 사회불안장애에 효과적</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          혈압 상승 가능. 갑작스런 중단 시 심한 금단 증상(전기 쇼크 감각). 서서히 감량 필요
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">알프라졸람(Alprazolam)</div>
+        <p class="medication-description">벤조디아제핀 계열로 급성 불안과 공황 발작에 빠르게 작용하나 의존성 위험이 있어 단기간 사용 권장</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          의존성, 내성 위험 높음. 알코올과 절대 병용 금지. 갑작스런 중단 시 발작 위험
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">부스피론(Buspirone)</div>
+        <p class="medication-description">비벤조디아제핀 항불안제로, 의존성이 적으며 특히 범불안장애에 효과적</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          효과 발현까지 2-4주 소요. 어지러움, 두통 가능. MAO 억제제와 병용 금지
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">프레가발린(Pregabalin)</div>
+        <p class="medication-description">항경련제로도 사용되며 불안장애, 특히 범불안장애 치료에 효과적</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          체중 증가, 부종 가능. 의존성 위험 있어 갑작스런 중단 피해야 함. 시야 흐림 가능
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">히드록시진(Hydroxyzine)</div>
+        <p class="medication-description">항히스타민제로 급성 불안 증상 완화에 도움이 되며 의존성 위험이 적음</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          진정 효과로 운전이나 기계 조작 시 주의. 구강 건조, 변비 가능. 고령자에서 인지기능 저하 위험
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 우울장애 약물 정보 -->
+  <div class="medications-card">
+    <h3>우울장애 치료에 사용되는 약물</h3>
+    <p>다음 약물들은 주요 우울장애와 관련 증상 치료에 사용됩니다. 약물 효과는 개인마다 다를 수 있으며, 보통 효과가 나타나기까지 4-6주가 걸립니다.</p>
+    <div class="medications-list">
+      <div class="medication-item">
+        <div class="medication-name">설트랄린(Sertraline)</div>
+        <p class="medication-description">널리 사용되는 SSRI 계열 항우울제로 다양한 우울 증상에 효과적이며 내약성이 좋음</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          소화기 부작용(메스꺼움, 설사) 초기에 흔함. 자살 사고 증가 위험. 성기능 저하 가능
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">에스시탈로프람(Escitalopram)</div>
+        <p class="medication-description">선택성이 높은 SSRI로 부작용이 적으며 중등도에서 중증 우울증에 효과적</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          QT 간격 연장 위험으로 심장 질환자 주의. 25세 이하에서 자살 사고 증가 위험
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">둘록세틴(Duloxetine)</div>
+        <p class="medication-description">SNRI 계열로 우울증과 함께 나타나는 신체 통증, 신경병증 완화에도 효과적</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          혈압 상승, 간 기능 이상 가능. 갑작스런 중단 시 심한 금단 증상. 소변 배출 장애 가능
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">미르타자핀(Mirtazapine)</div>
+        <p class="medication-description">비정형 항우울제로 불면, 식욕부진이 동반된 우울증에 특히 효과적</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          체중 증가, 진정 효과 강함. 드물게 무과립구증 발생. 고지혈증 위험 증가
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">부프로피온(Bupropion)</div>
+        <p class="medication-description">도파민과 노르에피네프린에 작용하는 항우울제로 에너지 저하, 무기력이 심한 우울증에 도움</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          발작 위험 증가(특히 섭식장애, 두부외상력). 불면, 불안감 증가 가능. 체중 감소 효과
+        </div>
+      </div>
+      <div class="medication-item">
+        <div class="medication-name">보르티옥세틴(Vortioxetine)</div>
+        <p class="medication-description">다중 작용 기전을 가진 신세대 항우울제로 인지기능 개선에도 도움이 될 수 있음</p>
+        <div class="medication-warning">
+          <div class="warning-title">주의사항:</div>
+          메스꺼움이 가장 흔한 부작용. 성기능 저하는 다른 SSRI보다 적음. 출혈 위험 증가 가능
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">개인정보처리방침</a>
+                <a href="#">이용약관</a>
+                <a href="#">사이트맵</a>
+            </div>
+            <div class="contact">
+                이메일: contact@mhcommunity.kr
+            </div>
+            <div class="copyright">
+                &copy; 2025 MH 커뮤니티. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

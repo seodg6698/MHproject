@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+ <header>
+        <div class="top-bar">
+    <!-- 로그인하지 않은 경우 -->
+    <div class="auth-buttons" th:if="${session.user == null}">
+        <a href="/login/login">로그인/회원가입</a>
+    </div>
+    
+    <!-- 로그인한 경우 -->
+    <div class="auth-buttons" th:if="${session.user != null}">
+        <span th:text="${session.user.userid + '님'}"></span>
+        <button onclick="logout()">로그아웃</button>
+    </div>
+</div>
+        <div class="main-header">
+            <div class="logo">
+                <h1>MH <span>커뮤니티</span></h1>
+            </div>
+        </div>
+        <nav>
+            <div class="main-nav">
+                <ul>
+                    <li><a href="/user/main">홈</a></li>
+                    <!--  <li>
+                        <a href="#">마음 건강</a>
+                        <ul class="dropdown">
+                            <li><a href="#">우울증</a></li>
+                            <li><a href="#">불안장애</a></li>
+                            <li><a href="#">스트레스 관리</a></li>
+                            <li><a href="#">수면장애</a></li>
+                            <li><a href="#">자가진단</a></li>
+                        </ul>
+                    </li>-->
+                    <li>
+                        <a href="#">정신의학 정보</a>
+                        <ul class="dropdown">
+                            <li><a href="/user/disorders">질환별 정보</a></li>
+                            <li><a href="/user/medications">약물 정보</a></li>
+                            <li><a href="/user/treatments">치료 방법</a></li>
+                            <li><a href="#">최신 연구</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">커뮤니티</a>
+                        <ul class="dropdown">
+                            <li><a href="/board/openBoardList">자유게시판</a></li>
+                            <li><a href="#">질문과 답변</a></li>
+                            <li><a href="#">경험 나누기</a></li>
+                            <li><a href="#">응원의 메시지</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">상담/도움</a>
+                        <ul class="dropdown">
+                            <li><a href="#">전문가 찾기</a></li>
+                            <li><a href="#">기관 정보</a></li>
+                            <li><a href="#">긴급 지원</a></li>
+                            <!--<li><a href="#">상담 예약</a></li>-->
+                        </ul>
+                    </li>
+                    <li><a href="#">공지사항</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+    <div th:if="${session.user != null}">
+    <p>안녕하세요, <span th:text="${session.user.userid}"></span>님!</p>
+    </div>
+            <h2>MH 커뮤니티에 오신 것을 환영합니다.</h2>
+            <p>MH 커뮤니티는 정신 건강에 관심이 있는 모든 분들을 위한 열린 공간입니다.<br>
+            정신 건강 관련 전문 정보와 함께 서로의 경험을 나누고, 지지와 위로를 주고받을 수 있는 커뮤니티를 지향합니다.</p>
+            <p>마음의 건강은 신체의 건강만큼 중요합니다.<br>
+            우리는 정신 건강에 대한 올바른 이해와 인식 개선을 통해 모두가 행복한 사회를 만들어 가는 데 기여하고자 합니다.</p>
+            <p>다양한 정신 건강 관련 정보를 확인하고,<br> 커뮤니티를 통해 서로의 이야기를 나누며,<br> 필요할 때 적절한 도움을 찾을 수 있도록 MH 커뮤니티가 함께하겠습니다.</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">개인정보처리방침</a>
+                <a href="#">이용약관</a>
+                <a href="#">사이트맵</a>
+            </div>
+            <div class="contact">
+                이메일: seogd6698@gamil.com
+            </div>
+            <div class="copyright">
+                &copy; 2025 MH 커뮤니티. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+    function logout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            fetch('/login/logout', {
+                method: 'POST'
+            }).then(() => {
+                window.location.href = '/user/main';
+            });
+        }
+    }
+    
+    </script>
+</body>
+</html>

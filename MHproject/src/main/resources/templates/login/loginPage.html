@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>로그인/회원가입</title>
+<link rel="stylesheet" href="/css/login.css"/>
+</head>
+<body>
+
+ <main class="container">
+        <section class="branding">
+            <h1>MH Community</h1>
+            <p>정신과 환자와 전문 의료인들을 위한 지식 공유 커뮤니티에 오신 것을 환영합니다. 함께 질병 정보를 나누고 논의해보세요.</p>
+            <div class="features">
+                <p>✓ 전문가 네트워킹</p>
+                <p>✓ 의학 정보 공유</p>
+                <p>✓ 환자간 자유로윤 상호작용</p>
+            </div>
+			  <a href="/user/main" class="custom-button-link">홈으로</a>
+		
+
+        </section>
+
+        <section class="form-container">
+            <div class="tabs">
+                <div class="tab active" id="login-tab">로그인</div>
+                <div class="tab" id="register-tab">회원가입</div>
+            </div>
+
+            <form class="form active" id="login-form">
+                <h2>계정에 로그인하세요</h2>
+
+                <div class="form-group">
+                    <label for="login-userid">아이디</label>
+                    <div class="input-group">
+                        <input type="text" id="login-userid" name="userid" required placeholder="아이디를 입력하세요">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">비밀번호</label>
+                    <div class="input-group">
+                        <input type="password" id="login-password" name="password" required placeholder="비밀번호를 입력하세요">
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit">로그인</button>
+                    <p>계정이 없으신가요? <a href="#" id="go-to-register">회원가입</a></p>
+                </div>
+            </form>
+
+            <form class="form" id="register-form">
+                <h2>새 계정 만들기</h2>
+
+                <div class="form-group">
+                    <label for="register-userid">아이디</label>
+                    <div class="input-with-button">
+                        <input type="text" id="register-userid" name="userid" required placeholder="사용할 아이디를 입력하세요">
+                        <button type="button" class="check-button secondary" id="idCheck">중복확인</button>
+                    </div>
+                    <div class="success-message" id="userid-success">사용 가능한 아이디입니다.</div>
+                    <div class="error-message" id="userid-error">이미 사용 중인 아이디입니다.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-password">비밀번호</label>
+                    <div class="input-group">
+                        <input type="password" id="register-password" name="password" required placeholder="비밀번호를 입력하세요">
+                    </div>
+                    <p class="help-text">8자 이상, 대소문자, 숫자, 특수문자를 포함해주세요</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-confirm-password">비밀번호 확인</label>
+                    <div class="input-group">
+                        <input type="password" id="register-confirm-password" name="confirm-password" required placeholder="비밀번호를 다시 입력하세요">
+                    </div>
+                    <div class="error-message" id="password-error">비밀번호가 일치하지 않습니다.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-email">이메일 주소</label>
+                    <div class="input-with-button">
+                        <input type="email" id="register-email" name="email" required placeholder="이메일 주소를 입력하세요">
+                        <button type="button" class="check-button secondary">인증번호 발송</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-verification">이메일 인증번호</label>
+                    <div class="input-with-button">
+                        <input type="text" id="register-verification" name="verification" required placeholder="인증번호를 입력하세요">
+                        <button type="button" class="check-button secondary">확인</button>
+                    </div>
+                    <div class="success-message" id="verification-success">인증이 완료되었습니다.</div>
+                    <div class="error-message" id="verification-error">인증번호가 일치하지 않습니다.</div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" id="register">회원가입</button>
+                    <p>이미 계정이 있으신가요? <a href="#" id="go-to-login">로그인</a></p>
+                </div>
+            </form>
+        </section>
+    </main>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    
+    <script>
+    $(document).ready(function() {
+    	console.log("Document ready 실행됨"); // 이 로그가 나오나요?
+    	
+    	
+    	//아이디 중복체크
+    	$('#idCheck').on("click", function idValidCheck(){
+    		var userId = $("#register-userid").val();
+    		
+    		console.log(userId);
+    		
+    		if(userId == null || userId == '' 
+    				|| userId == undefined){
+    			alert("사용하실 아이디를 입력해주세요.");
+    		}else{
+    		
+    		
+    		$.ajax({
+    		      type  : "POST",
+    		      url    : "/login/idCheck",
+    		      data: {
+    		      "userId" : userId        // input value(memberId)
+    		      },
+    		      success: function(result){
+    		      	console.log(result);
+    		      	alert(result);
+    		      	var idInput = $('#register-userid');
+    		      	if(result === "아이디 중복 다른아이디를 사용해주세요."){
+    		      		console.log(true);
+    		      		
+    		      		idInput.attr('style', 'border : 2px solid red;');
+    		      		//$('#exampleInputId1').setAtrribute('style', 'background-color : red;');
+    		      		return false;
+    		      	}else if(result === "사용가능한 아이디 입니다."){
+    		      		idInput.attr('style', 'border : 2px solid green;');
+    		      		$('#idMsg').html("사용 가능한 아이디 입니다.");
+    		      		$('#idMsg').attr('style', 'color : green;');
+    		      		return true;
+    		      	}
+    		      	//location.href = "/board/openBoardList.do";
+    		      },
+    		      error: function(xhr, status, error) {
+    		      	alert(error + "전송실패.");
+    		      }  
+    		   });
+    		
+    		}
+    	});
+    	
+    	
+    $("#register").on("click", function(e){
+    	 console.log("버튼 클릭됨!"); // 이 로그가 나오나요?
+    	
+    	e.preventDefault(); // 기본 제출 동작 방지
+    
+    var userId = $("#register-userid").val();
+    var password = $("#register-password").val();
+    var email =	$("#register-email").val();
+    var verificationCode = $("#register-verification").val();
+    
+    $.ajax({
+        type : "POST",
+        url : "/login/register",
+        dataType: 'text',
+        data: {
+        	"userId" : userId,   
+            "password" : password,
+            "email" : email,
+       // "verificationCode" : verificationCode
+        },
+        success: function(result){
+        	console.log(result);
+        	alert("회원가입이 완료되었습니다.");
+        	location.href = "/login/login";
+        },
+        error: function(xhr, status, error) {
+        	 console.log("Error details:", xhr.responseText);
+        	alert(error + "회원가입에 실패했습니다.");
+        }  
+    });	
+    
+    
+    
+    });
+    
+    
+    
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            userid: document.getElementById('login-userid').value,
+            password: document.getElementById('login-password').value
+        };
+        
+        fetch('/login/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.href = data.redirectUrl;
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('로그인 중 오류가 발생했습니다.');
+        });
+    });
+
+    
+    
+    
+        // 로그인/회원가입 폼 전환
+        const loginTab = document.getElementById('login-tab');
+        const registerTab = document.getElementById('register-tab');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const goToRegister = document.getElementById('go-to-register');
+        const goToLogin = document.getElementById('go-to-login');
+
+        function showLoginForm() {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.classList.add('active');
+            registerForm.classList.remove('active');
+        }
+
+        function showRegisterForm() {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.classList.add('active');
+            loginForm.classList.remove('active');
+        }
+
+        loginTab.addEventListener('click', showLoginForm);
+        registerTab.addEventListener('click', showRegisterForm);
+        goToRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            showRegisterForm();
+        });
+        goToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            showLoginForm();
+        });
+    });
+        
+    </script>
+</body>
+</html>

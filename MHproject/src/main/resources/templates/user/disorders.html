@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>질환별 정보 - MH 커뮤니티</title>
+    <link rel="stylesheet" href="/css/disorders.css">
+    <style>
+        
+    </style>
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <div class="auth-buttons">
+               <a href="/login/login">로그인/회원가입</a>
+            </div>
+        </div>
+        <div class="main-header">
+            <div class="logo">
+                <a href="/user/main"><h1>MH <span>커뮤니티</span></h1></a>
+            </div>
+        </div>
+        <nav>
+            <div class="main-nav">
+                <ul>
+                    <li><a href="/user/main">홈</a></li>
+                    <!--<li>
+                        <a href="#">마음 건강</a>
+                          <ul class="dropdown">
+                            <li><a href="#">우울증</a></li>
+                            <li><a href="#">불안장애</a></li>
+                            <li><a href="#">스트레스 관리</a></li>
+                            <li><a href="#">수면장애</a></li>
+                            <li><a href="#">자가진단</a></li>
+                        </ul>
+                    </li>-->
+                    <li class="active">
+                        <a href="#">정신의학 정보</a>
+                        <ul class="dropdown">
+                            <li class="active"><a href="/user/disorders">질환별 정보</a></li>
+                            <li><a href="/user/medications">약물 정보</a></li>
+                            <li><a href="/user/treatments">치료 방법</a></li>
+                            <li><a href="#">최신 연구</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">커뮤니티</a>
+                        <ul class="dropdown">
+                            <li><a href="#">자유게시판</a></li>
+                            <li><a href="#">질문과 답변</a></li>
+                            <li><a href="#">경험 나누기</a></li>
+                            <li><a href="#">응원의 메시지</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">상담/도움</a>
+                        <ul class="dropdown">
+                            <li><a href="#">전문가 찾기</a></li>
+                            <li><a href="#">기관 정보</a></li>
+                            <li><a href="#">긴급 지원</a></li>
+                            <li><a href="#">상담 예약</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">공지사항</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="page-title">
+        <div class="page-title-content">
+            <h2>정신건강 질환별 정보</h2>
+            <p>다양한 정신건강 질환의 증상과 초기 징후에 대한 전문적이고 신뢰할 수 있는 정보를 제공합니다.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="pathway">
+            <a href="/user/main">홈</a>
+            <span class="separator">></span>
+            <a href="#">정신의학 정보</a>
+            <span class="separator">></span>
+            <span>질환별 정보</span>
+        </div>
+
+        <div class="page-intro">
+            <h3>정신건강 질환에 대한 이해</h3>
+            <p>정신건강 질환은 생각, 감정, 행동에 영향을 미치는 상태로, 일상생활에 어려움을 줄 수 있습니다. 정확한 진단과 적절한 치료는 증상 완화와 삶의 질 향상에 큰 도움이 됩니다. 증상을 알아두면 조기에 도움을 구하는 데 유용합니다. 아래 정보는 참고용이며, 의학적 진단을 대체할 수 없으니 전문가와 상담하시기 바랍니다.</p>
+        </div>
+
+        <div class="disorders-grid">
+            <div class="disorder-card">
+                <div class="disorder-header">
+                    <h3>우울장애 (Depression)</h3>
+                </div>
+                <div class="disorder-body">
+                    <p>우울장애는 지속적인 슬픔과 흥미 상실이 특징인 정신건강 질환입니다. 일상생활에 영향을 주며 다양한 감정적, 신체적 문제를 동반할 수 있습니다.</p>
+                    
+                    <h4>주요 증상</h4>
+                    <ul class="symptoms-list">
+                        <li>지속적인 슬픔, 공허함, 절망감</li>
+                        <li>이전에 즐기던 활동에 대한 흥미와 즐거움 상실</li>
+                        <li>식욕이나 체중의 현저한 변화</li>
+                        <li>수면 장애 (불면증 또는 과다 수면)</li>
+                        <li>피로감과 에너지 부족</li>
+                        <li>집중력 감소와 결정 장애</li>
+                    </ul>
+
+                    <div class="warning-signs">
+                        <h4>경고 신호</h4>
+                        <ul>
+                            <li>일상 활동에 대한 동기 부족</li>
+                            <li>사회적 고립과 타인 기피</li>
+                            <li>자살 생각이나 시도</li>
+                            <li>설명할 수 없는 신체적 통증</li>
+                        </ul>
+                    </div>
+
+                    <a href="#" class="learn-more">자세히 알아보기</a>
+                </div>
+            </div>
+
+            <div class="disorder-card">
+                <div class="disorder-header">
+                    <h3>불안장애 (Anxiety Disorders)</h3>
+                </div>
+                <div class="disorder-body">
+                    <p>불안장애는 과도한 두려움과 걱정이 특징이며, 일상 상황에서도 심한 불안을 느끼게 만듭니다. 여러 유형이 있으며 각각 다른 증상을 보입니다.</p>
+                    
+                    <h4>주요 증상</h4>
+                    <ul class="symptoms-list">
+                        <li>지속적이고 과도한 걱정</li>
+                        <li>초조함, 불안감, 긴장감</li>
+                        <li>빠른 심장 박동, 호흡 곤란</li>
+                        <li>집중 어려움, 과민 반응</li>
+                        <li>근육 긴장, 피로</li>
+                        <li>수면 장애</li>
+                    </ul>
+
+                    <div class="warning-signs">
+                        <h4>경고 신호</h4>
+                        <ul>
+                            <li>특정 상황이나 대상에 대한 회피 행동</li>
+                            <li>갑작스러운 공황 발작</li>
+                            <li>일상생활의 기능 저하</li>
+                            <li>암울한 생각과 재앙적 사고</li>
+                        </ul>
+                    </div>
+
+                    <a href="#" class="learn-more">자세히 알아보기</a>
+                </div>
+            </div>
+
+            <div class="disorder-card">
+                <div class="disorder-header">
+                    <h3>양극성 장애 (Bipolar Disorder)</h3>
+                </div>
+                <div class="disorder-body">
+                    <p>양극성 장애는 고양된 기분(조증)과 우울한 기분 사이를 오가는 기분 장애입니다. 이러한 기분 변화는 에너지, 활동 수준, 집중력에 영향을 줍니다.</p>
+                    
+                    <h4>주요 증상</h4>
+                    <ul class="symptoms-list">
+                        <li>조증 에피소드: 과도한 에너지, 행복감</li>
+                        <li>생각과 말이 빨라짐</li>
+                        <li>충동적인 행동과 판단력 저하</li>
+                        <li>우울 에피소드: 깊은 슬픔, 무력감</li>
+                        <li>자해 또는 자살 생각</li>
+                        <li>인지 기능 변화</li>
+                    </ul>
+
+                    <div class="warning-signs">
+                        <h4>경고 신호</h4>
+                        <ul>
+                            <li>수면 요구 감소(조증)</li>
+                            <li>과도한 돈 소비나 위험한 행동</li>
+                            <li>현저한 기분 변화</li>
+                            <li>현실감 상실(망상, 환각)</li>
+                        </ul>
+                    </div>
+
+                    <a href="#" class="learn-more">자세히 알아보기</a>
+                </div>
+            </div>
+
+            <div class="disorder-card">
+                <div class="disorder-header">
+                    <h3>외상 후 스트레스 장애 (PTSD)</h3>
+                </div>
+                <div class="disorder-body">
+                    <p>외상 후 스트레스 장애는 충격적인 사건을 경험한 후 발생하는 상태로, 사건을 재경험하는 증상과 함께 정서적, 신체적 반응이 나타납니다.</p>
+                    
+                    <h4>주요 증상</h4>
+                    <ul class="symptoms-list">
+                        <li>침습적 기억과 악몽</li>
+                        <li>플래시백(외상 사건 재경험)</li>
+                        <li>외상 관련 자극 회피</li>
+                        <li>부정적인 생각과 기분</li>
+                        <li>과도한 경계심, 놀람 반응</li>
+                        <li>수면 장애와 집중력 저하</li>
+                    </ul>
+
+                    <div class="warning-signs">
+                        <h4>경고 신호</h4>
+                        <ul>
+                            <li>사건에 대한 반복적인 생각</li>
+                            <li>기억력 문제와 감정 마비</li>
+                            <li>자기 파괴적 행동</li>
+                            <li>사회적 고립과 관계 어려움</li>
+                        </ul>
+                    </div>
+
+                    <a href="#" class="learn-more">자세히 알아보기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">개인정보처리방침</a>
+                <a href="#">이용약관</a>
+                <a href="#">사이트맵</a>
+            </div>
+            <div class="contact">
+                이메일: contact@mhcommunity.kr
+            </div>
+            <div class="copyright">
+                &copy; 2025 MH 커뮤니티. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

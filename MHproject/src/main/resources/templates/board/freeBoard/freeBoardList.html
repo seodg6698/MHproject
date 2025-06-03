@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>board</title>
+	<link rel="stylesheet" th:href="@{/board_css/freeBoardList.css}"/>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+</head>
+<body>
+    <div class="container">
+		 <!-- 게시글 목록 -->   
+    	<h2>게시글 목록</h2>
+    	 <form id="frm" method="post">
+    	<table id="my-table" class="board_list">
+	        <colgroup>
+	            <col width="15%"/>
+	            <col width="*"/>
+	            <col width="15%"/>
+	            <col width="20%"/>
+	        </colgroup>
+	        <thead>
+	            <tr>
+	                <th scope="col">글번호</th>
+	                <th scope="col">제목</th>
+	                <th scope="col">조회수</th>
+	                <th scope="col">작성일</th>
+	                <th scope="col"><input type="checkbox" id="allCheck"/></th>
+	            </tr>
+	        </thead>
+	        <tbody id="tBody">
+	        	<tr class="boardItem" th:if="${#lists.size(list)} > 0" th:each="list : ${list}">
+	        		<td id="idx" th:text="${list.boardIdx}"></td>
+	        		<td class="title" id="title">
+	        		<a href="/board/openBoardDetail?boardIdx=" 
+	        		th:attrappend="href=${list.boardIdx}" 
+	        		th:text="${list.title}"></a></td>
+	        		<td th:text="${list.hitCnt}"></td>
+	        		<td th:if="
+	        		${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} ==
+	        		${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')} "
+	        		th:text="${#temporals.format(list.createdDatetime, 'HH:mm')}"
+	        		></td>
+	        		<td th:unless="
+	        		${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} ==
+	        		${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')} "
+	        		th:text="${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}"
+	        		></td>
+	        		<td><input type="checkbox" class="deleteCheck" name="deleteCheck" th:value="${list.boardIdx}"/></td>
+	        	</tr> 
+	        	<tr th:unless="${#lists.size(list)} > 0">
+	        		<td colspan="4">조회된 결과가 없습니다.</td>
+	        	</tr>
+	        </tbody>
+	    </table>
+	    <a href="/board/openBoardWrite" class="btn">글 쓰기</a>
+	    <button type="button" id="deleteBtn">삭제</button>
+	    </form>
+	    
+	    <div id="serch">
+	    <form id="searchFrm" method="get">
+		    <select id="type" name="type">
+			    <option value="title">제목</option>
+			    <option value="contents">내용</option>
+		    </select>
+	    	<input type="text" id="keyword" name="keyword" placeholder="검색어입력"/>
+	    	<button type="button" id="searchBtn">검색</button>
+	    </form>
+	    </div>
+	    <br>
+	    
+	    
+	<!-- 페이징처리 -->
+	
+	<div th:each="pageMaker : ${pageMaker}" id="paging">
+	  <ul class="pagination">
+	<!-- 이전 버튼 -->
+      <div th:if="${pageMaker.t_prev} == true ">
+    <li class="page-item">
+        <a href="/board/openBoardList?page="
+        th:attrappend="href=${pageMaker.startPage - 1}">←</a>
+    </li>
+    </div>
+    <!-- 페이지 번호 버튼 -->
+    <div th:each="pageNum : ${#numbers.sequence(pageMaker.startPage,pageMaker.endPage)}" >
+   <!-- <div th:each="pageNum : ${#numbers.sequence(1,10)}" >  -->
+   <li class="page-item">
+    
+        <a href="/board/openBoardList?page="
+        th:attrappend="href=${pageNum}"
+        th:text="${pageNum}"></a>
+    </li>
+    </div>
+      <!-- 다음 버튼 -->
+     <div th:if="${pageMaker.t_next == true && pageMaker.endPage > 0}">
+   <li class="page-item">
+    
+        <a href="/board/openBoardList?page="
+         th:attrappend="href=${pageMaker.endPage + 1}">→</a>
+    </li>
+    </div>
+</ul>
+</div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>	    
+
+<script type="text/javascript">
+
+
+
+$(document).ready(function(){
+	
+	//체크박스 전체체크 구현
+
+
+$("#allCheck").on("click", function(){
+   console.log('allCheck');
+var checked = $('#allCheck').is(':checked');
+if(checked){
+		$('.deleteCheck').prop('checked',true);	
+		}else{
+		$('.deleteCheck').prop('checked',false);	
+		}		
+				});
+		
+			
+//선택삭제 구현			
+ 
+$('#deleteBtn').on("click", function(){
+ var boardIdx = []; 
+  $("input:checkbox[name='deleteCheck']:checked").each(function() {
+  boardIdx.push($(this).val());     // 체크된 것만 값을 뽑아서 배열에 push
+  console.log(boardIdx);
+});
+
+//boardIdx배열 파라미터 ajax호출로 controller에 보내기
+$.ajax({
+      type  : "POST",
+      url    : "/board/deleteSelection",
+      data: {
+      "boardIdx" : boardIdx        // 체크된 boardIdx 배열
+      },
+      success: function(result){
+      	console.log(result);
+      	alert("삭제되었습니다.");
+      	location.href = "/board/openBoardList";
+      },
+      error: function(xhr, status, error) {
+      	alert(error + "게시글을 선택해주세요.");
+      }  
+   });
+
+	  });
+	  
+	  
+	  
+	  
+//check 된 boardIdx 콘솔 출력	  
+$('.deleteCheck').on("click", function(){
+var delCheck = $('.deleteCheck').is(':checked');
+//var selected = document.querySelectorAll(delCheck);
+  
+   if($('.deleteCheck').is(':checked')){
+
+	  console.log($(this).val());
+	  }
+			 
+	 
+	 	});	
+	 	
+$('#allCheck').on("click", function(){
+var delCheck = $('.deleteCheck').is(':checked');
+//var selected = document.querySelectorAll(delCheck);
+  
+   if($('.deleteCheck').is(':checked')){
+
+	  console.log($("input:checkbox[name='deleteCheck']:checked").val());
+	  }
+			 
+	 
+	 	});	
+	 	
+			 
+$(document).on('click', '#searchBtn', function(){
+		 var type = $('#type').val();
+		 var keyword = $('#keyword').val();
+				 
+			// ajax 선언      
+			var request = $.ajax({          
+				type: "GET",   // 요청 메소드 타입          
+				url: "/board/boardList", // 접속 url
+				data: {'type' : type,
+				'keyword' : keyword},
+				dataType: 'json' // 응답 메시지의 타입       
+				});        
+			// 결과        
+			request.done(function(data){
+			 console.log("검색완료" + data);
+			 var boardList = data;
+			 var tBody = $('#tBody');					 
+			 var html = '';
+
+				if(typeof boardList != 'undefined' && boardList != null){
+				 for(let list of boardList){
+					html += '<tr>';
+					html += '	<td>' + list.boardIdx + '</td>';
+					html += '	<td>' + 
+					'<a href="/board/openBoardDetail.do?boardIdx=' + 
+	        		list.boardIdx + '">' +  list.title + '</a>' + '</td>'; 
+					html += '	<td>' + list.hitCnt + '</td>'; 
+					html += '	<td>' + list.createdDatetime + '</td>';
+					html += '	<td>' + '<input type="checkbox" class="deleteCheck" name="deleteCheck" value="' 
+					+ list.boardIdx + '">' + '</td>';
+					html += '</tr>';
+					}
+			 }
+					 
+				tBody.html(html);
+			 });     
+		 });
+			 
+		});    
+
+/*
+var type = $('#type').val();
+var keyword = $('#keyword').val();
+
+	 	
+	 $.ajax({
+      type  : "POST",
+      url    : "/board/searchView.do",
+      data: {
+      "type" : type,          //검색어타입
+      "keyword" : keyword     // 검색어
+      },
+      success: function(result){
+      	console.log(result);
+      	location.href = "/board/searchView.do";
+      },
+      error: function(xhr, status, error) {
+      	alert(error + "검색어를 입력해주세요.");
+      }  
+  });	
+   
+    });
+    */
+    
+ 
+
+</script>	  
+	    
+  
+
+<script type="text/javascript" src="/js/bootstrap.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/popper.min.js"></script>
+ 
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
