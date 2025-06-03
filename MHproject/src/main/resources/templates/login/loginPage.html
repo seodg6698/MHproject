@@ -4,6 +4,26 @@
 <meta charset="UTF-8">
 <title>로그인/회원가입</title>
 <link rel="stylesheet" href="/css/login.css"/>
+
+<style>
+.success-message {
+    color: green;
+    font-size: 12px;
+    margin-top: 3px;
+    display: none;
+}
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 3px;
+    display: none;
+}
+.help-text {
+    color: #666;
+    font-size: 12px;
+    margin-top: 3px;
+}
+</style>
 </head>
 <body>
 
@@ -112,121 +132,265 @@
     	console.log("Document ready 실행됨"); // 이 로그가 나오나요?
     	
     	
-    	//아이디 중복체크
-    	$('#idCheck').on("click", function idValidCheck(){
-    		var userId = $("#register-userid").val();
-    		
-    		console.log(userId);
-    		
-    		if(userId == null || userId == '' 
-    				|| userId == undefined){
-    			alert("사용하실 아이디를 입력해주세요.");
-    		}else{
-    		
-    		
-    		$.ajax({
-    		      type  : "POST",
-    		      url    : "/login/idCheck",
-    		      data: {
-    		      "userId" : userId        // input value(memberId)
-    		      },
-    		      success: function(result){
-    		      	console.log(result);
-    		      	alert(result);
-    		      	var idInput = $('#register-userid');
-    		      	if(result === "아이디 중복 다른아이디를 사용해주세요."){
-    		      		console.log(true);
-    		      		
-    		      		idInput.attr('style', 'border : 2px solid red;');
-    		      		//$('#exampleInputId1').setAtrribute('style', 'background-color : red;');
-    		      		return false;
-    		      	}else if(result === "사용가능한 아이디 입니다."){
-    		      		idInput.attr('style', 'border : 2px solid green;');
-    		      		$('#idMsg').html("사용 가능한 아이디 입니다.");
-    		      		$('#idMsg').attr('style', 'color : green;');
-    		      		return true;
-    		      	}
-    		      	//location.href = "/board/openBoardList.do";
-    		      },
-    		      error: function(xhr, status, error) {
-    		      	alert(error + "전송실패.");
-    		      }  
-    		   });
-    		
-    		}
-    	});
-    	
-    	
-    $("#register").on("click", function(e){
-    	 console.log("버튼 클릭됨!"); // 이 로그가 나오나요?
-    	
-    	e.preventDefault(); // 기본 제출 동작 방지
-    
-    var userId = $("#register-userid").val();
-    var password = $("#register-password").val();
-    var email =	$("#register-email").val();
-    var verificationCode = $("#register-verification").val();
-    
-    $.ajax({
-        type : "POST",
-        url : "/login/register",
-        dataType: 'text',
-        data: {
-        	"userId" : userId,   
-            "password" : password,
-            "email" : email,
-       // "verificationCode" : verificationCode
-        },
-        success: function(result){
-        	console.log(result);
-        	alert("회원가입이 완료되었습니다.");
-        	location.href = "/login/login";
-        },
-        error: function(xhr, status, error) {
-        	 console.log("Error details:", xhr.responseText);
-        	alert(error + "회원가입에 실패했습니다.");
-        }  
-    });	
-    
-    
-    
-    });
-    
-    
-    
-    document.getElementById('login-form').addEventListener('submit', function(e) {
-        e.preventDefault();
+    	 // 검증 상태를 추적하는 변수들
+        let isIdChecked = false;
+        let isPasswordValid = false;
+        let isPasswordMatch = false;
+        let isEmailValid = false;
         
-        const formData = {
-            userid: document.getElementById('login-userid').value,
-            password: document.getElementById('login-password').value
-        };
+        var password = $("#register-password").val();
         
-        fetch('/login/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-                window.location.href = data.redirectUrl;
+        // 비밀번호 유효성 검사 함수
+        function validatePassword(password) {
+            // 10자 이상, 영문 대소문자, 숫자, 특수문자 포함
+            const minLength = 10;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasNumber = /\d/.test(password);
+            const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            
+            return password.length >= minLength && hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
+        }
+        
+        // 이메일 유효성 검사 함수
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // 회원가입 버튼 활성화/비활성화 함수
+        function updateRegisterButton() {
+            const registerButton = $('#register');
+            if (isIdChecked && isPasswordValid && isPasswordMatch && isEmailValid) {
+                registerButton.prop('disabled', false);
+                registerButton.css('opacity', '1');
             } else {
-                alert(data.message);
+                registerButton.prop('disabled', true);
+                registerButton.css('opacity', '0.5');
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('로그인 중 오류가 발생했습니다.');
+        }
+        
+        // 아이디 입력 시 중복체크 상태 초기화
+        $('#register-userid').on('input', function() {
+            isIdChecked = false;
+            $('#userid-success').hide();
+            $('#userid-error').hide();
+            $(this).css('border', '');
+            updateRegisterButton();
         });
-    });
+        
+        // 아이디 중복체크
+        $('#idCheck').on("click", function idValidCheck(){
+            var userId = $("#register-userid").val();
+            
+            console.log(userId);
+            
+            if(userId == null || userId == '' || userId == undefined){
+                alert("사용하실 아이디를 입력해주세요.");
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/login/idCheck",
+                    data: {
+                        "userId": userId
+                    },
+                    success: function(result){
+                        console.log(result);
+                        var idInput = $('#register-userid');
+                        $('#userid-success').hide();
+                        $('#userid-error').hide();
+                        
+                        if(result === "아이디 중복 다른아이디를 사용해주세요."){
+                            console.log(true);
+                            idInput.css('border', '2px solid red');
+                            $('#userid-error').show();
+                            isIdChecked = false;
+                        } else if(result === "사용가능한 아이디 입니다."){
+                            idInput.css('border', '2px solid green');
+                            $('#userid-success').show();
+                            isIdChecked = true;
+                        }
+                        updateRegisterButton();
+                    },
+                    error: function(xhr, status, error) {
+                        alert(error + "전송실패.");
+                    }  
+                });
+            }
+        });
+        
+        // 비밀번호 실시간 검증
+        $('#register-password').on('input', function() {
+            const password = $(this).val();
+            const passwordInput = $(this);
+            
+            $('#password-success').hide();
+            $('#password-invalid').hide();
+            
+            if (password.length > 0) {
+                if (validatePassword(password)) {
+                    passwordInput.css('border', '2px solid green');
+                    $('#password-success').show();
+                    isPasswordValid = true;
+                } else {
+                    passwordInput.css('border', '2px solid red');
+                    $('#password-invalid').show();
+                    isPasswordValid = false;
+                }
+            } else {
+                passwordInput.css('border', '');
+                isPasswordValid = false;
+            }
+            
+            // 비밀번호 확인란도 다시 검사
+            const confirmPassword = $('#register-confirm-password').val();
+            if (confirmPassword.length > 0) {
+                $('#register-confirm-password').trigger('input');
+            }
+            
+            updateRegisterButton();
+        });
+        
+        // 비밀번호 확인 실시간 검증
+        $('#register-confirm-password').on('input', function() {
+            const password = $('#register-password').val();
+            const confirmPassword = $(this).val();
+            const confirmInput = $(this);
+            
+            $('#password-match-success').hide();
+            $('#password-error').hide();
+            
+            if (confirmPassword.length > 0) {
+                if (password === confirmPassword && isPasswordValid) {
+                    confirmInput.css('border', '2px solid green');
+                    $('#password-match-success').show();
+                    isPasswordMatch = true;
+                } else {
+                    confirmInput.css('border', '2px solid red');
+                    $('#password-error').show();
+                    isPasswordMatch = false;
+                }
+            } else {
+                confirmInput.css('border', '');
+                isPasswordMatch = false;
+            }
+            
+            updateRegisterButton();
+        });
+        
+        // 이메일 실시간 검증
+        $('#register-email').on('input', function() {
+            const email = $(this).val();
+            const emailInput = $(this);
+            
+            $('#email-success').hide();
+            $('#email-error').hide();
+            
+            if (email.length > 0) {
+                if (validateEmail(email)) {
+                    emailInput.css('border', '2px solid green');
+                    $('#email-success').show();
+                    isEmailValid = true;
+                } else {
+                    emailInput.css('border', '2px solid red');
+                    $('#email-error').show();
+                    isEmailValid = false;
+                }
+            } else {
+                emailInput.css('border', '');
+                isEmailValid = false;
+            }
+            
+            updateRegisterButton();
+        });
+        
+        // 초기 버튼 상태 설정
+        updateRegisterButton();
+        
+        // 회원가입 처리
+        $("#register").on("click", function(e){
+            console.log("버튼 클릭됨!");
+            
+            e.preventDefault();
+            
+            // 최종 검증
+            if (!isIdChecked) {
+                alert("아이디 중복확인을 완료해주세요.");
+                return;
+            }
+            
+            if (!isPasswordValid) {
+                alert("비밀번호는 10자 이상이며, 영문 대소문자, 숫자, 특수문자를 모두 포함해야 합니다.");
+                return;
+            }
+            
+            if (!isPasswordMatch) {
+                alert("비밀번호가 일치하지 않습니다.");
+                return;
+            }
+            
+            if (!isEmailValid) {
+                alert("올바른 이메일 주소를 입력해주세요.");
+                return;
+            }
+            
+            var userId = $("#register-userid").val();
+            var password = $("#register-password").val();
+            var email = $("#register-email").val();
+            var verificationCode = $("#register-verification").val();
+            
+            $.ajax({
+                type: "POST",
+                url: "/login/register",
+                dataType: 'text',
+                data: {
+                    "userId": userId,   
+                    "password": password,
+                    "email": email
+                },
+                success: function(result){
+                    console.log(result);
+                    alert("회원가입이 완료되었습니다.");
+                    location.href = "/login/login";
+                },
+                error: function(xhr, status, error) {
+                    console.log("Error details:", xhr.responseText);
+                    alert(error + "회원가입에 실패했습니다.");
+                }  
+            });
+        });
+        
+        // 로그인 처리
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                userid: document.getElementById('login-userid').value,
+                password: document.getElementById('login-password').value
+            };
+            
+            fetch('/login/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    window.location.href = data.redirectUrl;
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('로그인 중 오류가 발생했습니다.');
+            });
+        });
 
-    
-    
-    
         // 로그인/회원가입 폼 전환
         const loginTab = document.getElementById('login-tab');
         const registerTab = document.getElementById('register-tab');
