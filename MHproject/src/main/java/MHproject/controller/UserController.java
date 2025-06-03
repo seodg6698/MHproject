@@ -14,7 +14,7 @@ public class UserController {
 	
 	@GetMapping(value = "/main")
 	public String mainPage(HttpSession session, Model model) {
-		System.out.println("main page load OK.");
+		System.out.println("main page load OK...");
 		UserDTO userid = (UserDTO) session.getAttribute("userid");
 		model.addAttribute("userid", userid);
 		return "/user/main";
