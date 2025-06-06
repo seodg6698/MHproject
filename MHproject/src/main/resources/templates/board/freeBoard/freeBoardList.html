@@ -1,265 +1,567 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-	<meta charset="UTF-8">
-	<title>board</title>
-	<link rel="stylesheet" th:href="@{/board_css/freeBoardList.css}"/>
-	<link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
-	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+    <meta charset="UTF-8">
+    <title>자유게시판 - MH 커뮤니티</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}"> 
+    <!-- <link rel="stylesheet" th:href="@{/board_css/freeBoardList.css}"/> -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+    <style>
+         /* 게시판 전용 스타일 */
+        
+        /* 드롭다운 메뉴 간격 문제 해결 - 강제 덮어쓰기 */
+        .main-nav .dropdown {
+            position: absolute !important;
+            top: 100% !important; /* 50%를 100%로 강제 변경 */
+            left: 0 !important;
+            width: 200px !important;
+            background-color: #fff !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: all 0.3s !important;
+            transform: translateY(0) !important;
+            z-index: 10 !important;
+            margin-top: 15px !important; /* margin-top 제거 */
+        }
+
+        .main-nav > ul > li:hover .dropdown {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
+        
+        #main-nav{
+			height: 50px;
+			position: relative;
+   			z-index: 9999;
+		}
+        
+        .board-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .board-section {
+            background-color: #fff;
+            padding: 55px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+        }
+
+        .board-section h2 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 600;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .board_list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background-color: #fff;
+        }
+
+        .board_list thead th {
+            background-color: #3498db;
+            color: #fff;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+            border: 1px solid #2980b9;
+        }
+
+        .board_list tbody td {
+            padding: 12px 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .board_list tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .board_list tbody tr:hover {
+            background-color: #e3f2fd;
+            transition: background-color 0.3s;
+        }
+
+        .board_list .title {
+            text-align: left;
+        }
+
+        .board_list .title a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .board_list .title a:hover {
+            color: #3498db;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        #serch {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        #searchFrm {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #searchFrm select,
+        #searchFrm input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        #searchFrm select {
+            min-width: 100px;
+        }
+
+        #searchFrm input[type="text"] {
+            min-width: 200px;
+        }
+
+        #searchBtn {
+            background-color: #3498db;
+            color: #fff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        #searchBtn:hover {
+            background-color: #2980b9;
+        }
+
+        /* 페이징 스타일 */
+        #paging {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .pagination {
+            display: inline-flex;
+            list-style: none;
+            gap: 5px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-item {
+            display: block;
+        }
+
+        .page-item a {
+            display: block;
+            padding: 8px 12px;
+            color: #3498db;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .page-item a:hover {
+            background-color: #3498db;
+            color: #fff;
+            border-color: #3498db;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* 체크박스 스타일 */
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .board-section {
+                padding: 20px;
+            }
+
+            .board_list {
+                font-size: 14px;
+            }
+
+            .board_list thead th,
+            .board_list tbody td {
+                padding: 8px 5px;
+            }
+
+            #searchFrm {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            #searchFrm select,
+            #searchFrm input[type="text"] {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-		 <!-- 게시글 목록 -->   
-    	<h2>게시글 목록</h2>
-    	 <form id="frm" method="post">
-    	<table id="my-table" class="board_list">
-	        <colgroup>
-	            <col width="15%"/>
-	            <col width="*"/>
-	            <col width="15%"/>
-	            <col width="20%"/>
-	        </colgroup>
-	        <thead>
-	            <tr>
-	                <th scope="col">글번호</th>
-	                <th scope="col">제목</th>
-	                <th scope="col">조회수</th>
-	                <th scope="col">작성일</th>
-	                <th scope="col"><input type="checkbox" id="allCheck"/></th>
-	            </tr>
-	        </thead>
-	        <tbody id="tBody">
-	        	<tr class="boardItem" th:if="${#lists.size(list)} > 0" th:each="list : ${list}">
-	        		<td id="idx" th:text="${list.boardIdx}"></td>
-	        		<td class="title" id="title">
-	        		<a href="/board/openBoardDetail?boardIdx=" 
-	        		th:attrappend="href=${list.boardIdx}" 
-	        		th:text="${list.title}"></a></td>
-	        		<td th:text="${list.hitCnt}"></td>
-	        		<td th:if="
-	        		${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} ==
-	        		${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')} "
-	        		th:text="${#temporals.format(list.createdDatetime, 'HH:mm')}"
-	        		></td>
-	        		<td th:unless="
-	        		${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} ==
-	        		${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')} "
-	        		th:text="${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}"
-	        		></td>
-	        		<td><input type="checkbox" class="deleteCheck" name="deleteCheck" th:value="${list.boardIdx}"/></td>
-	        	</tr> 
-	        	<tr th:unless="${#lists.size(list)} > 0">
-	        		<td colspan="4">조회된 결과가 없습니다.</td>
-	        	</tr>
-	        </tbody>
-	    </table>
-	    <a href="/board/openBoardWrite" class="btn">글 쓰기</a>
-	    <button type="button" id="deleteBtn">삭제</button>
-	    </form>
-	    
-	    <div id="serch">
-	    <form id="searchFrm" method="get">
-		    <select id="type" name="type">
-			    <option value="title">제목</option>
-			    <option value="contents">내용</option>
-		    </select>
-	    	<input type="text" id="keyword" name="keyword" placeholder="검색어입력"/>
-	    	<button type="button" id="searchBtn">검색</button>
-	    </form>
-	    </div>
-	    <br>
-	    
-	    
-	<!-- 페이징처리 -->
-	
-	<div th:each="pageMaker : ${pageMaker}" id="paging">
-	  <ul class="pagination">
-	<!-- 이전 버튼 -->
-      <div th:if="${pageMaker.t_prev} == true ">
-    <li class="page-item">
-        <a href="/board/openBoardList?page="
-        th:attrappend="href=${pageMaker.startPage - 1}">←</a>
-    </li>
-    </div>
-    <!-- 페이지 번호 버튼 -->
-    <div th:each="pageNum : ${#numbers.sequence(pageMaker.startPage,pageMaker.endPage)}" >
-   <!-- <div th:each="pageNum : ${#numbers.sequence(1,10)}" >  -->
-   <li class="page-item">
-    
-        <a href="/board/openBoardList?page="
-        th:attrappend="href=${pageNum}"
-        th:text="${pageNum}"></a>
-    </li>
-    </div>
-      <!-- 다음 버튼 -->
-     <div th:if="${pageMaker.t_next == true && pageMaker.endPage > 0}">
-   <li class="page-item">
-    
-        <a href="/board/openBoardList?page="
-         th:attrappend="href=${pageMaker.endPage + 1}">→</a>
-    </li>
-    </div>
-</ul>
-</div>
-</div>
+    <header>
+        <div class="top-bar">
+            <!-- 로그인하지 않은 경우 -->
+            <div class="auth-buttons" th:if="${session.user == null}">
+                <a href="/login/login">로그인/회원가입</a>
+            </div>
+            
+            <!-- 로그인한 경우 -->
+            <div class="auth-buttons" th:if="${session.user != null}">
+                <span th:text="${session.user.userid + '님'}"></span>
+                <button onclick="logout()">로그아웃</button>
+            </div>
+        </div>
+        <div class="main-header">
+            <div class="logo">
+                <h1><a href="/user/main">MH <span>커뮤니티</span></a></h1>
+            </div>
+        </div>
+        <nav>
+            <div class="main-nav" id="main-nav">
+                <ul>
+                    <li><a href="/user/main">홈</a></li>
+                    <li>
+                        <a href="#">정신의학 정보</a>
+                        <ul class="dropdown">
+                            <li><a href="/user/disorders">질환별 정보</a></li>
+                            <li><a href="/user/medications">약물 정보</a></li>
+                            <li><a href="/user/treatments">치료 방법</a></li>
+                            <li><a href="#">최신 연구</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">커뮤니티</a>
+                        <ul class="dropdown">
+                            <li><a href="/board/openBoardList">자유게시판</a></li>
+                            <li><a href="#">질문과 답변</a></li>
+                            <li><a href="#">경험 나누기</a></li>
+                            <li><a href="#">응원의 메시지</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">상담/도움</a>
+                        <ul class="dropdown">
+                            <li><a href="#">전문가 찾기</a></li>
+                            <li><a href="#">기관 정보</a></li>
+                            <li><a href="#">긴급 지원</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">공지사항</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
 
+    <main class="board-container">
+        <div class="board-section">
+            <h2>자유게시판</h2>
+            
+            <form id="frm" method="post">
+				<div class="btn-group">
+                    <a href="/board/openBoardWrite" class="btn">글 쓰기</a>
+                    <button type="button" id="deleteBtn" class="btn btn-danger">선택 삭제</button>
+                </div>
+                <table id="my-table" class="board_list">
+                    <colgroup>
+                        <col width="10%"/>
+                        <col width="*"/>
+                        <col width="10%"/>
+                        <col width="15%"/>
+                        <col width="8%"/>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col">글번호</th>
+                            <th scope="col">제목</th>
+                            <th scope="col">조회수</th>
+                            <th scope="col">작성일</th>
+                            <th scope="col"><input type="checkbox" id="allCheck"/></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tBody">
+                        <tr class="boardItem" th:if="${#lists.size(list)} > 0" th:each="list : ${list}">
+                            <td id="idx" th:text="${list.boardIdx}"></td>
+                            <td class="title" id="title">
+                                <a href="/board/openBoardDetail?boardIdx=" 
+                                   th:attrappend="href=${list.boardIdx}" 
+                                   th:text="${list.title}"></a>
+                            </td>
+                            <td th:text="${list.hitCnt}"></td>
+                            <td th:if="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
+                                th:text="${#temporals.format(list.createdDatetime, 'HH:mm')}"></td>
+                            <td th:unless="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
+                                th:text="${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}"></td>
+                            <td><input type="checkbox" class="deleteCheck" name="deleteCheck" th:value="${list.boardIdx}"/></td>
+                        </tr> 
+                        <tr th:unless="${#lists.size(list)} > 0">
+                            <td colspan="5" class="no-results">조회된 결과가 없습니다.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="btn-group">
+                    <a href="/board/openBoardWrite" class="btn">글 쓰기</a>
+                    <button type="button" id="deleteBtn" class="btn btn-danger">선택 삭제</button>
+                </div>
+            </form>
+            
+            <div id="serch">
+                <form id="searchFrm" method="get">
+                    <select id="type" name="type">
+                        <option value="title">제목</option>
+                        <option value="contents">내용</option>
+                    </select>
+                    <input type="text" id="keyword" name="keyword" placeholder="검색어를 입력하세요"/>
+                    <button type="button" id="searchBtn">검색</button>
+                </form>
+            </div>
+            
+            <!-- 페이징처리 -->
+            <div th:each="pageMaker : ${pageMaker}" id="paging">
+                <ul class="pagination">
+                    <!-- 이전 버튼 -->
+                    <div th:if="${pageMaker.t_prev} == true">
+                        <li class="page-item">
+                            <a href="/board/openBoardList?page=" th:attrappend="href=${pageMaker.startPage - 1}">←</a>
+                        </li>
+                    </div>
+                    
+                    <!-- 페이지 번호 버튼 -->
+                    <div th:each="pageNum : ${#numbers.sequence(pageMaker.startPage,pageMaker.endPage)}">
+                        <li class="page-item">
+                            <a href="/board/openBoardList?page=" th:attrappend="href=${pageNum}" th:text="${pageNum}"></a>
+                        </li>
+                    </div>
+                    
+                    <!-- 다음 버튼 -->
+                    <div th:if="${pageMaker.t_next == true && pageMaker.endPage > 0}">
+                        <li class="page-item">
+                            <a href="/board/openBoardList?page=" th:attrappend="href=${pageMaker.endPage + 1}">→</a>
+                        </li>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </main>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>	    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">개인정보처리방침</a>
+                <a href="#">이용약관</a>
+                <a href="#">사이트맵</a>
+            </div>
+            <div class="contact">
+                이메일: seogd6698@gamil.com
+            </div>
+            <div class="copyright">
+                &copy; 2025 MH 커뮤니티. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
 
-<script type="text/javascript">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            
+            //체크박스 전체체크 구현
+            $("#allCheck").on("click", function(){
+                console.log('allCheck');
+                var checked = $('#allCheck').is(':checked');
+                if(checked){
+                    $('.deleteCheck').prop('checked',true);	
+                }else{
+                    $('.deleteCheck').prop('checked',false);	
+                }		
+            });
+            
+            //선택삭제 구현			
+            $('#deleteBtn').on("click", function(){
+                var boardIdx = []; 
+                $("input:checkbox[name='deleteCheck']:checked").each(function() {
+                    boardIdx.push($(this).val());     // 체크된 것만 값을 뽑아서 배열에 push
+                    console.log(boardIdx);
+                });
 
+                if(boardIdx.length === 0) {
+                    alert("삭제할 게시글을 선택해주세요.");
+                    return;
+                }
 
+                if(!confirm("선택한 게시글을 삭제하시겠습니까?")) {
+                    return;
+                }
 
-$(document).ready(function(){
-	
-	//체크박스 전체체크 구현
+                //boardIdx배열 파라미터 ajax호출로 controller에 보내기
+                $.ajax({
+                    type  : "POST",
+                    url    : "/board/deleteSelection",
+                    data: {
+                        "boardIdx" : boardIdx        // 체크된 boardIdx 배열
+                    },
+                    success: function(result){
+                        console.log(result);
+                        alert("삭제되었습니다.");
+                        location.href = "/board/openBoardList";
+                    },
+                    error: function(xhr, status, error) {
+                        alert("삭제 중 오류가 발생했습니다.");
+                    }  
+                });
+            });
+            
+            //check 된 boardIdx 콘솔 출력	  
+            $('.deleteCheck').on("click", function(){
+                if($('.deleteCheck').is(':checked')){
+                    console.log($(this).val());
+                }
+            });	
+            
+            $('#allCheck').on("click", function(){
+                if($('.deleteCheck').is(':checked')){
+                    console.log($("input:checkbox[name='deleteCheck']:checked").val());
+                }
+            });	
+            
+            // 검색 기능
+            $(document).on('click', '#searchBtn', function(){
+                var type = $('#type').val();
+                var keyword = $('#keyword').val();
+                
+                if(!keyword.trim()) {
+                    alert("검색어를 입력해주세요.");
+                    return;
+                }
+                
+                // ajax 선언      
+                var request = $.ajax({          
+                    type: "GET",   // 요청 메소드 타입          
+                    url: "/board/boardList", // 접속 url
+                    data: {'type' : type, 'keyword' : keyword},
+                    dataType: 'json' // 응답 메시지의 타입       
+                });        
+                
+                // 결과        
+                request.done(function(data){
+                    console.log("검색완료" + data);
+                    var boardList = data;
+                    var tBody = $('#tBody');					 
+                    var html = '';
 
+                    if(typeof boardList != 'undefined' && boardList != null && boardList.length > 0){
+                        for(let list of boardList){
+                            html += '<tr>';
+                            html += '	<td>' + list.boardIdx + '</td>';
+                            html += '	<td class="title">' + 
+                                    '<a href="/board/openBoardDetail?boardIdx=' + 
+                                    list.boardIdx + '">' +  list.title + '</a>' + '</td>'; 
+                            html += '	<td>' + list.hitCnt + '</td>'; 
+                            html += '	<td>' + list.createdDatetime + '</td>';
+                            html += '	<td>' + '<input type="checkbox" class="deleteCheck" name="deleteCheck" value="' 
+                                    + list.boardIdx + '">' + '</td>';
+                            html += '</tr>';
+                        }
+                    } else {
+                        html = '<tr><td colspan="5" class="no-results">검색 결과가 없습니다.</td></tr>';
+                    }
+                    
+                    tBody.html(html);
+                });     
+            });
+            
+            // 엔터키로 검색
+            $('#keyword').on('keypress', function(e) {
+                if(e.which === 13) {
+                    $('#searchBtn').click();
+                }
+            });
+        });
 
-$("#allCheck").on("click", function(){
-   console.log('allCheck');
-var checked = $('#allCheck').is(':checked');
-if(checked){
-		$('.deleteCheck').prop('checked',true);	
-		}else{
-		$('.deleteCheck').prop('checked',false);	
-		}		
-				});
-		
-			
-//선택삭제 구현			
- 
-$('#deleteBtn').on("click", function(){
- var boardIdx = []; 
-  $("input:checkbox[name='deleteCheck']:checked").each(function() {
-  boardIdx.push($(this).val());     // 체크된 것만 값을 뽑아서 배열에 push
-  console.log(boardIdx);
-});
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                fetch('/login/logout', {
+                    method: 'POST'
+                }).then(() => {
+                    window.location.href = '/user/main';
+                });
+            }
+        }
+    </script>	  
 
-//boardIdx배열 파라미터 ajax호출로 controller에 보내기
-$.ajax({
-      type  : "POST",
-      url    : "/board/deleteSelection",
-      data: {
-      "boardIdx" : boardIdx        // 체크된 boardIdx 배열
-      },
-      success: function(result){
-      	console.log(result);
-      	alert("삭제되었습니다.");
-      	location.href = "/board/openBoardList";
-      },
-      error: function(xhr, status, error) {
-      	alert(error + "게시글을 선택해주세요.");
-      }  
-   });
-
-	  });
-	  
-	  
-	  
-	  
-//check 된 boardIdx 콘솔 출력	  
-$('.deleteCheck').on("click", function(){
-var delCheck = $('.deleteCheck').is(':checked');
-//var selected = document.querySelectorAll(delCheck);
-  
-   if($('.deleteCheck').is(':checked')){
-
-	  console.log($(this).val());
-	  }
-			 
-	 
-	 	});	
-	 	
-$('#allCheck').on("click", function(){
-var delCheck = $('.deleteCheck').is(':checked');
-//var selected = document.querySelectorAll(delCheck);
-  
-   if($('.deleteCheck').is(':checked')){
-
-	  console.log($("input:checkbox[name='deleteCheck']:checked").val());
-	  }
-			 
-	 
-	 	});	
-	 	
-			 
-$(document).on('click', '#searchBtn', function(){
-		 var type = $('#type').val();
-		 var keyword = $('#keyword').val();
-				 
-			// ajax 선언      
-			var request = $.ajax({          
-				type: "GET",   // 요청 메소드 타입          
-				url: "/board/boardList", // 접속 url
-				data: {'type' : type,
-				'keyword' : keyword},
-				dataType: 'json' // 응답 메시지의 타입       
-				});        
-			// 결과        
-			request.done(function(data){
-			 console.log("검색완료" + data);
-			 var boardList = data;
-			 var tBody = $('#tBody');					 
-			 var html = '';
-
-				if(typeof boardList != 'undefined' && boardList != null){
-				 for(let list of boardList){
-					html += '<tr>';
-					html += '	<td>' + list.boardIdx + '</td>';
-					html += '	<td>' + 
-					'<a href="/board/openBoardDetail.do?boardIdx=' + 
-	        		list.boardIdx + '">' +  list.title + '</a>' + '</td>'; 
-					html += '	<td>' + list.hitCnt + '</td>'; 
-					html += '	<td>' + list.createdDatetime + '</td>';
-					html += '	<td>' + '<input type="checkbox" class="deleteCheck" name="deleteCheck" value="' 
-					+ list.boardIdx + '">' + '</td>';
-					html += '</tr>';
-					}
-			 }
-					 
-				tBody.html(html);
-			 });     
-		 });
-			 
-		});    
-
-/*
-var type = $('#type').val();
-var keyword = $('#keyword').val();
-
-	 	
-	 $.ajax({
-      type  : "POST",
-      url    : "/board/searchView.do",
-      data: {
-      "type" : type,          //검색어타입
-      "keyword" : keyword     // 검색어
-      },
-      success: function(result){
-      	console.log(result);
-      	location.href = "/board/searchView.do";
-      },
-      error: function(xhr, status, error) {
-      	alert(error + "검색어를 입력해주세요.");
-      }  
-  });	
-   
-    });
-    */
-    
- 
-
-</script>	  
-	    
-  
-
-<script type="text/javascript" src="/js/bootstrap.js"></script>
-<script type="text/javascript" src="/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/js/popper.min.js"></script>
- 
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-<script src="app.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/popper.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

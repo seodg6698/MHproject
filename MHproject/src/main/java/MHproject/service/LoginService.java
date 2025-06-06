@@ -10,6 +10,12 @@ public interface LoginService {
 	void getRegister(String userId, String password, String email);
 	
 	public int idCheck(String userId);
+
+	boolean isEmailExists(String email);
+
+
+
+
 	
 
 
