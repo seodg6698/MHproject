@@ -6,12 +6,40 @@
         <![CDATA[
         SELECT 
         	userid, 
-        	password, 
-        	email
+        	password
         FROM 
         	users 
         WHERE 
         	userid = #{userid}
         	]]>
     </select>
+    
+    <select id="findUserIdByEmail" parameterType="String" resultType="String">
+    SELECT 
+    	userid 
+    FROM 
+        users 
+    WHERE 
+        email = #{email}
+    LIMIT 1
+</select>
+
+
+<!-- 사용자 비밀번호 업데이트 -->
+<update id="updatePassword" parameterType="map">
+    UPDATE users 
+    SET password = #{password}
+    WHERE userid = #{userid}
+</update>
+
+<!-- 이메일로 사용자 정보 조회 -->
+<select id="findUserByEmail" parameterType="String" resultType="MHproject.DTO.UserDTO">
+    SELECT userid as userId, 
+           password, 
+           email,
+           created_at as createdDate
+    FROM users 
+    WHERE email = #{email}
+    LIMIT 1
+</select>
 </mapper>
