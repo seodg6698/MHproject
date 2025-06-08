@@ -26,15 +26,26 @@
 
 
 <!-- 사용자 비밀번호 업데이트 -->
-<update id="updatePassword" parameterType="map">
+<update id="updatePassword" parameterType="String">
     UPDATE users 
-    SET password = #{password}
+    SET password = #{password}, 
+        updated_at = NOW()
     WHERE userid = #{userid}
 </update>
 
+ <!-- 사용자 ID로 비밀번호 조회 (디버깅용) 
+<select id="getPasswordByUserId" parameterType="String" resultType="String">
+    SELECT password 
+    FROM users 
+    WHERE userid = #{userid}
+    LIMIT 1
+</select> 
+-->
+
+
 <!-- 이메일로 사용자 정보 조회 -->
 <select id="findUserByEmail" parameterType="String" resultType="MHproject.DTO.UserDTO">
-    SELECT userid as userId, 
+    SELECT userid, 
            password, 
            email,
            created_at as createdDate
@@ -42,4 +53,5 @@
     WHERE email = #{email}
     LIMIT 1
 </select>
+
 </mapper>

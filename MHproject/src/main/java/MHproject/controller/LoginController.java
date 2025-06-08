@@ -356,7 +356,7 @@ public class LoginController {
 	/**
 	 * 새 비밀번호 설정
 	 */
-	@PostMapping(value = "/resetPassword")
+	@PostMapping(value = "/resetPassword2")
 	@ResponseBody
 	public Map<String, Object> resetPassword(
 			@RequestParam("token") String token,
