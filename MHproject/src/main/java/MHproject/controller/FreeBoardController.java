@@ -8,7 +8,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,7 @@ import MHproject.DTO.Criteria;
 import MHproject.DTO.PageMaker;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping(value = "/board")
@@ -73,9 +76,10 @@ public class FreeBoardController {
 	
 	//게시글 작성 처리
 	@PostMapping("/insertBoard")
-	public String insertBoard(FreeBoardDTO board) throws Exception{
+	public String insertBoard(FreeBoardDTO board,HttpSession session, Model model) throws Exception{
 		System.out.println(board.toString());
 		boardService.insertBoard(board);
+	
 		return "redirect:/board/openBoardList";
 	}
 	

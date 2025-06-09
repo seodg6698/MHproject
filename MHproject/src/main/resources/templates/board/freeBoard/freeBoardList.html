@@ -264,6 +264,11 @@
             }
         }
     </style>
+    
+    <script th:inline="javascript">
+    var isLoggedIn = /*[[${session.user != null}]]*/ false;
+    var userId = /*[[${session.user?.userid ?: ''}]]*/ '';
+</script>
 </head>
 <body>
     <header>
@@ -326,7 +331,7 @@
             
             <form id="frm" method="post">
 				<div class="btn-group">
-                    <a href="/board/openBoardWrite" class="btn">글 쓰기</a>
+                    <a href="#" class="btn" id="writeBtn1">글 쓰기</a>
                     <button type="button" id="deleteBtn" class="btn btn-danger">선택 삭제</button>
                 </div>
                 <table id="my-table" class="board_list">
@@ -343,6 +348,7 @@
                             <th scope="col">제목</th>
                             <th scope="col">조회수</th>
                             <th scope="col">작성일</th>
+                            <th scope="col">작성자</th>
                             <th scope="col"><input type="checkbox" id="allCheck"/></th>
                         </tr>
                     </thead>
@@ -359,6 +365,7 @@
                                 th:text="${#temporals.format(list.createdDatetime, 'HH:mm')}"></td>
                             <td th:unless="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
                                 th:text="${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}"></td>
+                            <td th:text="${list.creatorId}"></td>
                             <td><input type="checkbox" class="deleteCheck" name="deleteCheck" th:value="${list.boardIdx}"/></td>
                         </tr> 
                         <tr th:unless="${#lists.size(list)} > 0">
@@ -368,7 +375,7 @@
                 </table>
                 
                 <div class="btn-group">
-                    <a href="/board/openBoardWrite" class="btn">글 쓰기</a>
+                    <a href="#" class="btn" id="writeBtn">글 쓰기</a>
                     <button type="button" id="deleteBtn" class="btn btn-danger">선택 삭제</button>
                 </div>
             </form>
@@ -534,8 +541,10 @@
                     }
                     
                     tBody.html(html);
-                });     
-            });
+                });
+                
+                 });     
+          
             
             // 엔터키로 검색
             $('#keyword').on('keypress', function(e) {
@@ -543,7 +552,7 @@
                     $('#searchBtn').click();
                 }
             });
-        });
+       
 
         function logout() {
             if (confirm('로그아웃 하시겠습니까?')) {
@@ -554,6 +563,36 @@
                 });
             }
         }
+        
+        var writeBtn = $("#writeBtn"); // ID 확인
+		writeBtn.on("click", function(e) {
+   		 e.preventDefault(); // a태그 기본 동작 방지
+    
+    	if(!isLoggedIn || userId === '') {
+      	  alert("로그인 후 게시글 작성이 가능합니다.");
+      	  location.href = "/login/login";
+   	 } else {
+        location.href = "/board/openBoardWrite"; // 오타 수정
+   	 }
+});
+		
+		var writeBtn1 = $("#writeBtn1"); // ID 확인
+		writeBtn1.on("click", function(e) {
+    	e.preventDefault(); // a태그 기본 동작 방지
+    
+    	if(!isLoggedIn || userId === '') {
+       	 alert("로그인 후 게시글 작성이 가능합니다.");
+        	location.href = "/login/login";
+   		 } else {
+        	location.href = "/board/openBoardWrite"; // 오타 수정
+    }
+});
+		
+		});
+		
+	
+        
+        
     </script>	  
 
     <script type="text/javascript" src="/js/bootstrap.js"></script>
