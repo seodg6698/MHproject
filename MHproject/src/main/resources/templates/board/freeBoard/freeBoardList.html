@@ -268,6 +268,7 @@
     <script th:inline="javascript">
     var isLoggedIn = /*[[${session.user != null}]]*/ false;
     var userId = /*[[${session.user?.userid ?: ''}]]*/ '';
+    var isAdmin = /*[[${session.user?.userid == 'admin'}]]*/ false; // 추가: admin 여부 확인
 </script>
 </head>
 <body>
@@ -284,11 +285,11 @@
                 <button onclick="logout()">로그아웃</button>
             </div>
         </div>
-        <div class="main-header">
+        <!--<div class="main-header">
             <div class="logo">
                 <h1><a href="/user/main">MH <span>커뮤니티</span></a></h1>
             </div>
-        </div>
+        </div>-->
         <nav>
             <div class="main-nav" id="main-nav">
                 <ul>
@@ -329,66 +330,71 @@
         <div class="board-section">
             <h2>자유게시판</h2>
             
-            <form id="frm" method="post">
-				<div class="btn-group">
-                    <a href="#" class="btn" id="writeBtn1">글 쓰기</a>
-                    <button type="button" id="deleteBtn" class="btn btn-danger">선택 삭제</button>
-                </div>
-                <table id="my-table" class="board_list">
-                    <colgroup>
-                        <col width="10%"/>
-                        <col width="*"/>
-                        <col width="10%"/>
-                        <col width="15%"/>
-                        <col width="8%"/>
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th scope="col">글번호</th>
-                            <th scope="col">제목</th>
-                            <th scope="col">조회수</th>
-                            <th scope="col">작성일</th>
-                            <th scope="col">작성자</th>
-                            <th scope="col"><input type="checkbox" id="allCheck"/></th>
-                        </tr>
-                    </thead>
-                    <tbody id="tBody">
-                        <tr class="boardItem" th:if="${#lists.size(list)} > 0" th:each="list : ${list}">
-                            <td id="idx" th:text="${list.boardIdx}"></td>
-                            <td class="title" id="title">
-                                <a href="/board/openBoardDetail?boardIdx=" 
-                                   th:attrappend="href=${list.boardIdx}" 
-                                   th:text="${list.title}"></a>
-                            </td>
-                            <td th:text="${list.hitCnt}"></td>
-                            <td th:if="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
-                                th:text="${#temporals.format(list.createdDatetime, 'HH:mm')}"></td>
-                            <td th:unless="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
-                                th:text="${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}"></td>
-                            <td th:text="${list.creatorId}"></td>
-                            <td><input type="checkbox" class="deleteCheck" name="deleteCheck" th:value="${list.boardIdx}"/></td>
-                        </tr> 
-                        <tr th:unless="${#lists.size(list)} > 0">
-                            <td colspan="5" class="no-results">조회된 결과가 없습니다.</td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <div class="btn-group">
-                    <a href="#" class="btn" id="writeBtn">글 쓰기</a>
-                    <button type="button" id="deleteBtn" class="btn btn-danger">선택 삭제</button>
-                </div>
-            </form>
-            
-            <div id="serch">
-                <form id="searchFrm" method="get">
-                    <select id="type" name="type">
-                        <option value="title">제목</option>
-                        <option value="contents">내용</option>
-                    </select>
-                    <input type="text" id="keyword" name="keyword" placeholder="검색어를 입력하세요"/>
-                    <button type="button" id="searchBtn">검색</button>
-                </form>
+            <!-- HTML 부분 - 조건부 삭제 버튼 표시 -->
+<form id="frm" method="post">
+    <div class="btn-group">
+        <a href="#" class="btn" id="writeBtn1">글 쓰기</a>
+        <!-- admin일 때만 삭제 버튼 표시 -->
+        <button type="button" id="deleteBtn" class="btn btn-danger" 
+                th:if="${session.user != null && session.user.userid == 'admin'}">선택 삭제</button>
+    </div>
+    
+    <!-- 테이블 헤더에서도 admin일 때만 체크박스 표시 -->
+    <table id="my-table" class="board_list">
+        <colgroup>
+            <col width="10%"/>
+            <col width="*"/>
+            <col width="10%"/>
+            <col width="15%"/>
+            <col width="8%"/>
+            <col th:if="${session.user != null && session.user.userid == 'admin'}" width="5%"/>
+        </colgroup>
+        <thead>
+            <tr>
+                <th scope="col">글번호</th>
+                <th scope="col">제목</th>
+                <th scope="col">조회수</th>
+                <th scope="col">작성일</th>
+                <th scope="col">작성자</th>
+                <th scope="col" th:if="${session.user != null && session.user.userid == 'admin'}">
+                    <input type="checkbox" id="allCheck"/>
+                </th>
+            </tr>
+        </thead>
+        <tbody id="tBody">
+            <tr class="boardItem" th:if="${#lists.size(list)} > 0" th:each="list : ${list}">
+                <td id="idx" th:text="${list.boardIdx}"></td>
+                <td class="title" id="title">
+                    <a href="/board/openBoardDetail?boardIdx=" 
+                       th:attrappend="href=${list.boardIdx}" 
+                       th:text="${list.title}"></a>
+                </td>
+                <td th:text="${list.hitCnt}"></td>
+                <td th:if="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
+                    th:text="${#temporals.format(list.createdDatetime, 'HH:mm')}"></td>
+                <td th:unless="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
+                    th:text="${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}"></td>
+                <td th:text="${list.creatorId}"></td>
+                <!-- admin일 때만 체크박스 표시 -->
+                <td th:if="${session.user != null && session.user.userid == 'admin'}">
+                    <input type="checkbox" class="deleteCheck" name="deleteCheck" th:value="${list.boardIdx}"/>
+                </td>
+            </tr> 
+            <tr th:unless="${#lists.size(list)} > 0">
+                <td th:colspan="${session.user != null && session.user.userid == 'admin' ? 6 : 5}" class="no-results">
+                    조회된 결과가 없습니다.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- 하단 버튼 그룹에서도 admin일 때만 삭제 버튼 표시 -->
+    <div class="btn-group">
+        <a href="#" class="btn" id="writeBtn">글 쓰기</a>
+        <button type="button" id="deleteBtn2" class="btn btn-danger" 
+                th:if="${session.user != null && session.user.userid == 'admin'}">선택 삭제</button>
+    </div>
+</form>
             </div>
             
             <!-- 페이징처리 -->
@@ -436,160 +442,170 @@
     </footer>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    
     <script type="text/javascript">
         $(document).ready(function(){
             
-            //체크박스 전체체크 구현
-            $("#allCheck").on("click", function(){
-                console.log('allCheck');
-                var checked = $('#allCheck').is(':checked');
-                if(checked){
-                    $('.deleteCheck').prop('checked',true);	
-                }else{
-                    $('.deleteCheck').prop('checked',false);	
-                }		
+             // admin일 때만 체크박스 관련 기능 활성화
+    if(isAdmin) {
+        //체크박스 전체체크 구현
+        $("#allCheck").on("click", function(){
+            console.log('allCheck');
+            var checked = $('#allCheck').is(':checked');
+            if(checked){
+                $('.deleteCheck').prop('checked',true);	
+            }else{
+                $('.deleteCheck').prop('checked',false);	
+            }		
+        });
+        
+        //선택삭제 구현 (두 개의 삭제 버튼 모두 처리)			
+        $('#deleteBtn, #deleteBtn2').on("click", function(){
+            var boardIdx = []; 
+            $("input:checkbox[name='deleteCheck']:checked").each(function() {
+                boardIdx.push($(this).val());
+                console.log(boardIdx);
             });
-            
-            //선택삭제 구현			
-            $('#deleteBtn').on("click", function(){
-                var boardIdx = []; 
-                $("input:checkbox[name='deleteCheck']:checked").each(function() {
-                    boardIdx.push($(this).val());     // 체크된 것만 값을 뽑아서 배열에 push
-                    console.log(boardIdx);
-                });
 
-                if(boardIdx.length === 0) {
-                    alert("삭제할 게시글을 선택해주세요.");
-                    return;
-                }
-
-                if(!confirm("선택한 게시글을 삭제하시겠습니까?")) {
-                    return;
-                }
-
-                //boardIdx배열 파라미터 ajax호출로 controller에 보내기
-                $.ajax({
-                    type  : "POST",
-                    url    : "/board/deleteSelection",
-                    data: {
-                        "boardIdx" : boardIdx        // 체크된 boardIdx 배열
-                    },
-                    success: function(result){
-                        console.log(result);
-                        alert("삭제되었습니다.");
-                        location.href = "/board/openBoardList";
-                    },
-                    error: function(xhr, status, error) {
-                        alert("삭제 중 오류가 발생했습니다.");
-                    }  
-                });
-            });
-            
-            //check 된 boardIdx 콘솔 출력	  
-            $('.deleteCheck').on("click", function(){
-                if($('.deleteCheck').is(':checked')){
-                    console.log($(this).val());
-                }
-            });	
-            
-            $('#allCheck').on("click", function(){
-                if($('.deleteCheck').is(':checked')){
-                    console.log($("input:checkbox[name='deleteCheck']:checked").val());
-                }
-            });	
-            
-            // 검색 기능
-            $(document).on('click', '#searchBtn', function(){
-                var type = $('#type').val();
-                var keyword = $('#keyword').val();
-                
-                if(!keyword.trim()) {
-                    alert("검색어를 입력해주세요.");
-                    return;
-                }
-                
-                // ajax 선언      
-                var request = $.ajax({          
-                    type: "GET",   // 요청 메소드 타입          
-                    url: "/board/boardList", // 접속 url
-                    data: {'type' : type, 'keyword' : keyword},
-                    dataType: 'json' // 응답 메시지의 타입       
-                });        
-                
-                // 결과        
-                request.done(function(data){
-                    console.log("검색완료" + data);
-                    var boardList = data;
-                    var tBody = $('#tBody');					 
-                    var html = '';
-
-                    if(typeof boardList != 'undefined' && boardList != null && boardList.length > 0){
-                        for(let list of boardList){
-                            html += '<tr>';
-                            html += '	<td>' + list.boardIdx + '</td>';
-                            html += '	<td class="title">' + 
-                                    '<a href="/board/openBoardDetail?boardIdx=' + 
-                                    list.boardIdx + '">' +  list.title + '</a>' + '</td>'; 
-                            html += '	<td>' + list.hitCnt + '</td>'; 
-                            html += '	<td>' + list.createdDatetime + '</td>';
-                            html += '	<td>' + '<input type="checkbox" class="deleteCheck" name="deleteCheck" value="' 
-                                    + list.boardIdx + '">' + '</td>';
-                            html += '</tr>';
-                        }
-                    } else {
-                        html = '<tr><td colspan="5" class="no-results">검색 결과가 없습니다.</td></tr>';
-                    }
-                    
-                    tBody.html(html);
-                });
-                
-                 });     
-          
-            
-            // 엔터키로 검색
-            $('#keyword').on('keypress', function(e) {
-                if(e.which === 13) {
-                    $('#searchBtn').click();
-                }
-            });
-       
-
-        function logout() {
-            if (confirm('로그아웃 하시겠습니까?')) {
-                fetch('/login/logout', {
-                    method: 'POST'
-                }).then(() => {
-                    window.location.href = '/user/main';
-                });
+            if(boardIdx.length === 0) {
+                alert("삭제할 게시글을 선택해주세요.");
+                return;
             }
+
+            if(!confirm("선택한 게시글을 삭제하시겠습니까?")) {
+                return;
+            }
+
+            //boardIdx배열 파라미터 ajax호출로 controller에 보내기
+            $.ajax({
+                type  : "POST",
+                url    : "/board/deleteSelection",
+                data: {
+                    "boardIdx" : boardIdx
+                },
+                success: function(result){
+                    console.log(result);
+                    alert("삭제되었습니다.");
+                    location.href = "/board/openBoardList";
+                },
+                error: function(xhr, status, error) {
+                    alert("삭제 중 오류가 발생했습니다.");
+                }  
+            });
+        });
+        
+        //check 된 boardIdx 콘솔 출력	  
+        $('.deleteCheck').on("click", function(){
+            if($('.deleteCheck').is(':checked')){
+                console.log($(this).val());
+            }
+        });	
+        
+        $('#allCheck').on("click", function(){
+            if($('.deleteCheck').is(':checked')){
+                console.log($("input:checkbox[name='deleteCheck']:checked").val());
+            }
+        });	
+    }
+    
+    // 검색 기능 수정 (admin일 때만 체크박스 포함)
+    $(document).on('click', '#searchBtn', function(){
+        var type = $('#type').val();
+        var keyword = $('#keyword').val();
+        
+        if(!keyword.trim()) {
+            alert("검색어를 입력해주세요.");
+            return;
         }
         
-        var writeBtn = $("#writeBtn"); // ID 확인
-		writeBtn.on("click", function(e) {
-   		 e.preventDefault(); // a태그 기본 동작 방지
+        var request = $.ajax({          
+            type: "GET",
+            url: "/board/boardList",
+            data: {'type' : type, 'keyword' : keyword},
+            dataType: 'json'
+        });        
+        
+        request.done(function(data){
+            console.log("검색완료" + data);
+            var boardList = data;
+            var tBody = $('#tBody');					 
+            var html = '';
+
+            if(typeof boardList != 'undefined' && boardList != null && boardList.length > 0){
+                for(let list of boardList){
+                    html += '<tr>';
+                    html += '	<td>' + list.boardIdx + '</td>';
+                    html += '	<td class="title">' + 
+                            '<a href="/board/openBoardDetail?boardIdx=' + 
+                            list.boardIdx + '">' +  list.title + '</a>' + '</td>'; 
+                    html += '	<td>' + list.hitCnt + '</td>'; 
+                    html += '	<td>' + list.createdDatetime + '</td>';
+                    html += '	<td>' + list.creatorId + '</td>';
+                    // admin일 때만 체크박스 추가
+                    if(isAdmin) {
+                        html += '	<td>' + '<input type="checkbox" class="deleteCheck" name="deleteCheck" value="' 
+                                + list.boardIdx + '">' + '</td>';
+                    }
+                    html += '</tr>';
+                }
+            } else {
+                var colspan = isAdmin ? 6 : 5;
+                html = '<tr><td colspan="' + colspan + '" class="no-results">검색 결과가 없습니다.</td></tr>';
+            }
+            
+            tBody.html(html);
+        });
+    });     
+
+    // 엔터키로 검색
+    $('#keyword').on('keypress', function(e) {
+        if(e.which === 13) {
+            $('#searchBtn').click();
+        }
+    });
+
+    // 글쓰기 버튼 기능
+    var writeBtn = $("#writeBtn");
+    writeBtn.on("click", function(e) {
+        e.preventDefault();
+        
+        if(!isLoggedIn || userId === '') {
+            alert("로그인 후 게시글 작성이 가능합니다.");
+            location.href = "/login/login";
+        } else {
+            location.href = "/board/openBoardWrite";
+        }
+    });
     
-    	if(!isLoggedIn || userId === '') {
-      	  alert("로그인 후 게시글 작성이 가능합니다.");
-      	  location.href = "/login/login";
-   	 } else {
-        location.href = "/board/openBoardWrite"; // 오타 수정
-   	 }
+    var writeBtn1 = $("#writeBtn1");
+    writeBtn1.on("click", function(e) {
+        e.preventDefault();
+        
+        if(!isLoggedIn || userId === '') {
+            alert("로그인 후 게시글 작성이 가능합니다.");
+            location.href = "/login/login";
+        } else {
+            location.href = "/board/openBoardWrite";
+        }
+    });
+    
+
 });
-		
-		var writeBtn1 = $("#writeBtn1"); // ID 확인
-		writeBtn1.on("click", function(e) {
-    	e.preventDefault(); // a태그 기본 동작 방지
-    
-    	if(!isLoggedIn || userId === '') {
-       	 alert("로그인 후 게시글 작성이 가능합니다.");
-        	location.href = "/login/login";
-   		 } else {
-        	location.href = "/board/openBoardWrite"; // 오타 수정
+
+function logout() {
+    if (confirm('로그아웃 하시겠습니까?')) {
+        fetch('/login/logout', {
+            method: 'POST'
+        }).then(() => {
+            window.location.href = '/user/main';
+            console.log("로그아웃 되었습니다.");
+        });
     }
-});
-		
-		});
-		
+}
+
+
+
+
 	
         
         

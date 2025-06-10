@@ -187,6 +187,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 			board_idx AS boardIdx,
 			title AS title,
 			hit_cnt AS hitCnt,
+			creator_id AS creatorId,
 			created_datetime AS createdDatetime
 	FROM
             t_board
@@ -205,6 +206,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 			board_idx AS boardIdx,
 			title AS title,
 			hit_cnt AS hitCnt,
+			creator_id AS creatorId,
 			created_datetime AS createdDatetime
 	FROM
             t_board
