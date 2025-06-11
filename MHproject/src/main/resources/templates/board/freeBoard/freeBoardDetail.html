@@ -4,6 +4,236 @@
 	<meta charset="UTF-8">
 	<title>게시글 상세 화면</title>
 	<link rel="stylesheet" th:href="@{/board_css/freeBoardDetail.css}"/>
+	<style>
+	/* 댓글 섹션 스타일 */
+		.comment-section {
+			margin-top: 30px;
+			border-top: 2px solid #ddd;
+			padding-top: 20px;
+		}
+		
+		.comment-section h3 {
+			margin-bottom: 20px;
+			color: #333;
+			font-size: 18px;
+		}
+		
+		/* 댓글 작성 폼 */
+		.comment-write {
+			background-color: #f9f9f9;
+			padding: 15px;
+			border-radius: 5px;
+			margin-bottom: 20px;
+		}
+		
+		.comment-input-area {
+			display: flex;
+			gap: 10px;
+			align-items: flex-end;
+		}
+		
+		.comment-input-area textarea {
+			flex: 1;
+			padding: 10px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			resize: vertical;
+			font-family: inherit;
+		}
+		
+		.comment-submit-btn {
+			background-color: #007bff;
+			color: white;
+			border: none;
+			padding: 10px 20px;
+			border-radius: 4px;
+			cursor: pointer;
+			white-space: nowrap;
+		}
+		
+		.comment-submit-btn:hover {
+			background-color: #0056b3;
+		}
+		
+		/* 로그인 안내 */
+		.login-notice {
+			background-color: #f8f9fa;
+			padding: 15px;
+			text-align: center;
+			border-radius: 5px;
+			margin-bottom: 20px;
+			color: #6c757d;
+		}
+		
+		/* 댓글 목록 */
+		.comment-list {
+			margin-top: 20px;
+		}
+		
+		.comment-item {
+			border: 1px solid #e9ecef;
+			border-radius: 5px;
+			padding: 15px;
+			margin-bottom: 10px;
+			background-color: white;
+		}
+		
+		/* 답글 스타일 */
+		.reply-item {
+			margin-left: 30px;
+			border-left: 3px solid #007bff;
+			background-color: #f8f9fa;
+		}
+		
+		.comment-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 10px;
+			border-bottom: 1px solid #eee;
+			padding-bottom: 8px;
+		}
+		
+		.comment-info {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+		
+		.comment-author {
+			font-weight: bold;
+			color: #007bff;
+		}
+		
+		.comment-date {
+			color: #6c757d;
+			font-size: 12px;
+		}
+		
+		.comment-actions {
+			display: flex;
+			gap: 5px;
+		}
+		
+		.btn-small {
+			background-color: #6c757d;
+			color: white;
+			border: none;
+			padding: 4px 8px;
+			border-radius: 3px;
+			cursor: pointer;
+			font-size: 12px;
+		}
+		
+		.btn-small:hover {
+			background-color: #5a6268;
+		}
+		
+		.reply-btn {
+			background-color: #28a745;
+		}
+		
+		.reply-btn:hover {
+			background-color: #218838;
+		}
+		
+		.edit-comment-btn {
+			background-color: #ffc107;
+			color: #212529;
+		}
+		
+		.edit-comment-btn:hover {
+			background-color: #e0a800;
+		}
+		
+		.delete-comment-btn {
+			background-color: #dc3545;
+		}
+		
+		.delete-comment-btn:hover {
+			background-color: #c82333;
+		}
+		
+		.comment-content {
+			margin: 10px 0;
+			line-height: 1.5;
+		}
+		
+		.comment-content p {
+			margin: 0;
+			word-wrap: break-word;
+		}
+		
+		/* 댓글 수정 폼 */
+		.comment-edit-form {
+			margin-top: 10px;
+		}
+		
+		.comment-edit-form textarea {
+			width: 100%;
+			padding: 8px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			resize: vertical;
+			font-family: inherit;
+			box-sizing: border-box;
+		}
+		
+		.edit-actions {
+			margin-top: 8px;
+			display: flex;
+			gap: 5px;
+		}
+		
+		/* 답글 작성 폼 */
+		.reply-form {
+			margin-top: 10px;
+			background-color: #f8f9fa;
+			padding: 10px;
+			border-radius: 4px;
+		}
+		
+		.reply-form textarea {
+			width: 100%;
+			padding: 8px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			resize: vertical;
+			font-family: inherit;
+			box-sizing: border-box;
+		}
+		
+		.reply-actions {
+			margin-top: 8px;
+			display: flex;
+			gap: 5px;
+		}
+		
+		/* 댓글 없을 때 */
+		.no-comments {
+			text-align: center;
+			padding: 30px;
+			color: #6c757d;
+			font-style: italic;
+		}
+		
+		/* 기존 버튼 스타일과 통일 */
+		.btn {
+			display: inline-block;
+			padding: 8px 16px;
+			margin: 5px;
+			background-color: #007bff;
+			color: white;
+			text-decoration: none;
+			border-radius: 4px;
+			border: none;
+			cursor: pointer;
+		}
+		
+		.btn:hover {
+			background-color: #0056b3;
+		}
+	</style>
 </head>
 <body>
 	 <div class="container">
@@ -52,7 +282,94 @@
         <!-- 삭제하기 버튼: 세션 아이디와 작성자 아이디가 일치하거나 admin 계정일 때 표시 -->
         <a href="#this" id="delete" class="btn" 
            th:if="${session.user != null and session.user.userid != null and (session.user.userid == board.creatorId or session.user.userid == 'admin')}">삭제하기</a>
+
+        <!-- 댓글 섹션 -->
+        <div class="comment-section">
+            <h3>댓글 (<span id="commentCount" th:text="${#lists.size(comments)}">0</span>)</h3>
+            
+            <!-- 댓글 작성 폼 -->
+            <div class="comment-write" th:if="${session.user != null}">
+                <form id="commentForm">
+                    <input type="hidden" name="boardIdx" th:value="${board.boardIdx}">
+                    <input type="hidden" name="parentIdx" value="0">
+                    <div class="comment-input-area">
+                        <textarea name="content" placeholder="댓글을 입력하세요..." rows="3"></textarea>
+                        <button type="submit" class="btn comment-submit-btn">댓글 등록</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- 로그인 안내 -->
+            <div class="login-notice" th:unless="${session.user != null}">
+                <p>댓글을 작성하려면 로그인이 필요합니다.</p>
+            </div>
+            
+            <!-- 댓글 목록 -->
+            <div class="comment-list">
+    <div th:each="comment : ${comments}" class="comment-item" th:classappend="${comment.depth > 0} ? 'reply-item' : ''">
+        <div class="comment-header">
+            <div class="comment-info">
+                <span class="comment-author" th:text="${comment.creatorId}"></span>
+                <span class="comment-date" th:text="${#temporals.format(comment.createdDatetime, 'yyyy-MM-dd HH:mm')}"></span>
+            </div>
+            
+            <!-- 댓글 수정/삭제 버튼 -->
+            <div class="comment-actions">
+                <!-- 답글 버튼: 로그인한 사용자에게만 표시 -->
+                <button class="btn-small reply-btn" 
+                        th:if="${session.user != null}" 
+                        th:data-comment-idx="${comment.commentIdx}">답글</button>
+                
+                <!-- 수정 버튼: 댓글 작성자에게만 표시 -->
+                <button class="btn-small edit-comment-btn" 
+                        th:if="${session.user != null and session.user.userid == comment.creatorId}"
+                        th:data-comment-idx="${comment.commentIdx}">수정</button>
+                
+                <!-- 삭제 버튼: 댓글 작성자 또는 admin에게 표시 -->
+                <button class="btn-small delete-comment-btn" 
+                        th:if="${session.user != null and (session.user.userid == comment.creatorId or session.user.userid == 'admin')}"
+                        th:data-comment-idx="${comment.commentIdx}">삭제</button>
+            </div>
+          </div>
+           <!-- 댓글 내용 -->
+        <div class="comment-content" th:id="'comment-content-' + ${comment.commentIdx}">
+            <p th:text="${comment.content}"></p>
+        </div>
+        
+        <!-- 댓글 수정 폼 (숨김 상태) -->
+        <div class="comment-edit-form" th:id="'edit-form-' + ${comment.commentIdx}" style="display: none;">
+            <form class="edit-form" th:data-comment-idx="${comment.commentIdx}">
+                <textarea th:id="'edit-content-' + ${comment.commentIdx}" th:text="${comment.content}" rows="3"></textarea>
+                <div class="edit-actions">
+                    <button type="submit" class="btn-small">수정 완료</button>
+                    <button type="button" class="btn-small cancel-edit-btn" th:data-comment-idx="${comment.commentIdx}">취소</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- 답글 작성 폼 (숨김 상태) -->
+        <div class="reply-form" th:id="'reply-form-' + ${comment.commentIdx}" style="display: none;">
+            <form class="reply-submit-form" th:data-comment-idx="${comment.commentIdx}">
+                <input type="hidden" name="boardIdx" th:value="${board.boardIdx}">
+                <input type="hidden" name="parentIdx" th:value="${comment.commentIdx}">
+                <textarea th:id="'reply-content-' + ${comment.commentIdx}" name="content" placeholder="답글을 입력하세요..." rows="2"></textarea>
+                <div class="reply-actions">
+                    <button type="submit" class="btn-small">답글 등록</button>
+                    <button type="button" class="btn-small cancel-reply-btn" th:data-comment-idx="${comment.commentIdx}">취소</button>
+                </div>
+            </form>
+        </div>
     </div>
+    
+    <!-- 댓글이 없을 때 -->
+    <div class="no-comments" th:if="${#lists.isEmpty(comments)}">
+        <p>첫 번째 댓글을 작성해보세요!</p>
+    </div>
+</div>
+        </div>
+       </div>
+     
+   
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script type="text/javascript">
@@ -87,7 +404,216 @@
 					alert("삭제를 취소했습니다.");
 				}
 			});
-		});
+			
+			// 댓글 등록
+    $("#commentForm").on("submit", function(e){
+        e.preventDefault();
+        var content = $(this).find("textarea[name='content']").val().trim();
+        
+        if(!content){
+            alert("댓글 내용을 입력해주세요.");
+            return;
+        }
+        
+        $.ajax({
+            url: "/comment/insertComment",
+            type: "POST",
+            data: $(this).serialize(),
+            success: function(response){
+                console.log("댓글 등록 성공:", response);
+                if(response.success) {
+                    alert("댓글이 등록되었습니다.");
+                    location.reload();
+                } else {
+                    alert(response.message || "댓글 등록에 실패했습니다.");
+                }
+            },
+            error: function(xhr, status, error){
+                console.error("댓글 등록 오류:", xhr.responseText);
+                alert("댓글 등록 중 오류가 발생했습니다.");
+            }
+        });
+    });
+    
+    // 답글 버튼 클릭 이벤트
+    $(document).on('click', '.reply-btn', function(){
+        var commentIdx = $(this).data('comment-idx');
+        showReplyForm(commentIdx);
+    });
+    
+    // 수정 버튼 클릭 이벤트
+    $(document).on('click', '.edit-comment-btn', function(){
+        var commentIdx = $(this).data('comment-idx');
+        editComment(commentIdx);
+    });
+    
+    // 삭제 버튼 클릭 이벤트
+    $(document).on('click', '.delete-comment-btn', function(){
+        var commentIdx = $(this).data('comment-idx');
+        deleteComment(commentIdx);
+    });
+    
+    // 답글 취소 버튼
+    $(document).on('click', '.cancel-reply-btn', function(){
+        var commentIdx = $(this).data('comment-idx');
+        cancelReply(commentIdx);
+    });
+    
+    // 수정 취소 버튼
+    $(document).on('click', '.cancel-edit-btn', function(){
+        var commentIdx = $(this).data('comment-idx');
+        cancelEdit(commentIdx);
+    });
+    
+    // 답글 등록 폼 제출
+    $(document).on('submit', '.reply-submit-form', function(e){
+        e.preventDefault();
+        var commentIdx = $(this).data('comment-idx');
+        submitReply(commentIdx);
+    });
+    
+    // 댓글 수정 폼 제출
+    $(document).on('submit', '.edit-form', function(e){
+        e.preventDefault();
+        var commentIdx = $(this).data('comment-idx');
+        updateComment(commentIdx);
+    });
+});
+
+// 디버깅을 위한 콘솔 로그 추가
+console.log("현재 세션 사용자:", /*[[${session.user?.userid}]]*/ 'null');
+
+// 답글 폼 표시
+function showReplyForm(commentIdx) {
+    console.log("답글 폼 표시:", commentIdx);
+    // 모든 답글 폼 숨기기
+    $(".reply-form").hide();
+    // 해당 답글 폼만 표시
+    $("#reply-form-" + commentIdx).show();
+    $("#reply-content-" + commentIdx).focus();
+}
+
+// 답글 폼 취소
+function cancelReply(commentIdx) {
+    console.log("답글 취소:", commentIdx);
+    $("#reply-form-" + commentIdx).hide();
+    $("#reply-content-" + commentIdx).val("");
+}
+
+// 답글 등록
+function submitReply(parentIdx) {
+    console.log("답글 등록:", parentIdx);
+    var content = $("#reply-content-" + parentIdx).val().trim();
+    
+    if(!content){
+        alert("답글 내용을 입력해주세요.");
+        return false;
+    }
+    
+    var boardIdx = $("input[name='boardIdx']").first().val();
+    
+    $.ajax({
+        url: "/comment/insertComment",
+        type: "POST",
+        data: {
+            boardIdx: boardIdx,
+            parentIdx: parentIdx,
+            content: content
+        },
+        success: function(response){
+            console.log("답글 등록 성공:", response);
+            if(response.success) {
+                alert("답글이 등록되었습니다.");
+                location.reload();
+            } else {
+                alert(response.message || "답글 등록에 실패했습니다.");
+            }
+        },
+        error: function(xhr, status, error){
+            console.error("답글 등록 오류:", xhr.responseText);
+            alert("답글 등록 중 오류가 발생했습니다.");
+        }
+    });
+    
+    return false;
+}
+
+// 댓글 수정 폼 표시
+function editComment(commentIdx) {
+    console.log("댓글 수정 폼 표시:", commentIdx);
+    $("#comment-content-" + commentIdx).hide();
+    $("#edit-form-" + commentIdx).show();
+    $("#edit-content-" + commentIdx).focus();
+}
+
+// 댓글 수정 취소
+function cancelEdit(commentIdx) {
+    console.log("댓글 수정 취소:", commentIdx);
+    $("#comment-content-" + commentIdx).show();
+    $("#edit-form-" + commentIdx).hide();
+}
+
+// 댓글 수정
+function updateComment(commentIdx) {
+    console.log("댓글 수정:", commentIdx);
+    var content = $("#edit-content-" + commentIdx).val().trim();
+    
+    if(!content){
+        alert("댓글 내용을 입력해주세요.");
+        return false;
+    }
+    
+    $.ajax({
+        url: "/comment/updateComment",
+        type: "POST",
+        data: {
+            commentIdx: commentIdx,
+            content: content
+        },
+        success: function(response){
+            console.log("댓글 수정 성공:", response);
+            if(response.success) {
+                alert("댓글이 수정되었습니다.");
+                location.reload();
+            } else {
+                alert(response.message || "댓글 수정에 실패했습니다.");
+            }
+        },
+        error: function(xhr, status, error){
+            console.error("댓글 수정 오류:", xhr.responseText);
+            alert("댓글 수정 중 오류가 발생했습니다.");
+        }
+    });
+    
+    return false;
+}
+
+// 댓글 삭제
+function deleteComment(commentIdx) {
+    console.log("댓글 삭제:", commentIdx);
+    if(confirm("댓글을 삭제하시겠습니까?")){
+        $.ajax({
+            url: "/comment/deleteComment",
+            type: "POST",
+            data: {
+                commentIdx: commentIdx
+            },
+            success: function(response){
+                console.log("댓글 삭제 성공:", response);
+                if(response.success) {
+                    alert("댓글이 삭제되었습니다.");
+                    location.reload();
+                } else {
+                    alert(response.message || "댓글 삭제에 실패했습니다.");
+                }
+            },
+            error: function(xhr, status, error){
+                console.error("댓글 삭제 오류:", xhr.responseText);
+                alert("댓글 삭제 중 오류가 발생했습니다: " + (xhr.responseText || error));
+            }
+        });
+    }
+}
 	</script>
 </body>
 </html>

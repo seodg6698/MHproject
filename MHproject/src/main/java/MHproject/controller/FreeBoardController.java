@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import MHproject.service.CommentService;
 import MHproject.service.FreeBoardService;
 import MHproject.DTO.FreeBoardDTO;
+import MHproject.DTO.CommentDto;
 import MHproject.DTO.Criteria;
 import MHproject.DTO.PageMaker;
 import jakarta.annotation.PostConstruct;
@@ -36,6 +38,10 @@ public class FreeBoardController {
 
 	@Autowired
 	private FreeBoardService boardService;
+	
+	@Autowired
+	private CommentService commentService;
+
 	
 	
 	@Autowired
@@ -85,15 +91,17 @@ public class FreeBoardController {
 	
 	//게시글 상세화면
 	@GetMapping("/openBoardDetail")
-	public ModelAndView openBoardDetail(@RequestParam(value="boardIdx") int boardIdx) throws Exception{
-		ModelAndView mv = new ModelAndView("/board/freeBoard/freeBoardDetail");
-		FreeBoardDTO board = boardService.selectBoardDetail(boardIdx);
-		
-		
-	
-		mv.addObject("board", board);
-		
-		return mv;
+	public String openBoardDetail(@RequestParam int boardIdx, Model model) throws Exception {
+	    // 기존 게시글 조회 로직
+	    FreeBoardDTO board = boardService.selectBoardDetail(boardIdx);
+	    
+	    // 댓글 목록 조회 추가
+	    List<CommentDto> comments = commentService.selectCommentList(boardIdx);
+	    
+	    model.addAttribute("board", board);
+	    model.addAttribute("comments", comments);
+	    
+	    return "/board/freeBoard/freeBoardDetail";
 	}
 	
 	
