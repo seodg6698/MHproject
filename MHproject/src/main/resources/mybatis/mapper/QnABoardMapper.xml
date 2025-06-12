@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+    <mapper namespace="MHproject.mapper.QnABoardMapper">
+
+<resultMap id="BoardDto" type="MHproject.DTO.QnABoardDTO">
+    <result property="boardIdx" column="board_idx" />
+    <result property="title" column="title" />
+    <result property="contents" column="contents" />
+    <result property="hitCnt" column="hit_cnt" />
+    <result property="creatorId" column="creator_id" />
+    <result property="createdDatetime" column="created_datetime" />
+    <result property="updaterId" column="updater_id" />
+    <result property="updatedDatetime" column="updated_datetime" />
+    
+    <!-- javaType : "객체를 속성으로 가지고있는 해당 객체의 CamelCase명 또는, @Alias("키값")" -->
+<!-- property : "객체참조변수명" -->
+<!-- id : "PK" -->
+    <association property="boardDto" javaType="MHproject.DTO.QnABoardDTO">
+         <id property="boardIdx" column="board_idx" />
+         <result property="title" column="title" />
+         <result property="contents" column="contents" />
+         <result property="hitCnt" column="hit_cnt" />
+         <result property="creatorId" column="creator_id" />
+         <result property="createdDatetime" column="created_datetime" />
+         <result property="updaterId" column="updater_id" />
+         <result property="updatedDatetime" column="updated_datetime" />
+    </association>
+</resultMap>
+
+
+<!-- <select id="selectBoardList" resultMap="BoardDto"> 
+resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시켜준다.
+그렇지 않을 경우 AS 구문을 써준다.-->
+
+<!-- 
+	<select id="selectBoardList" resultType="board.dto.BoardDto">
+		<![CDATA[
+			SELECT
+				board_idx AS boardIdx,
+				title AS title,
+				hit_cnt AS hitCnt,
+				created_datetime AS createdDatetime
+				
+			FROM
+				t_board
+			WHERE
+				deleted_yn = 'N'
+			ORDER BY board_idx DESC	
+		
+		]]>
+	
+	
+	</select>
+	 -->
+	
+	<insert id="insertBoard" parameterType="MHproject.DTO.QnABoardDTO">
+	<![CDATA[
+			INSERT INTO t_board2
+				(
+				title,
+				contents,
+				created_datetime,
+				creator_id
+				)
+			VALUES
+			(
+				#{title},
+				#{contents},
+				NOW(),
+				#{creatorId}
+			)
+		]]>
+	
+	</insert>
+	
+	<update id="updateHitCount" parameterType="int">
+			<![CDATA[
+			UPDATE
+				t_board2
+			SET	
+				hit_cnt = hit_cnt + 1
+			WHERE
+				board_idx = #{boardIdx}
+		]]>
+	
+	</update>
+	
+	<select id="selectBoardDetail" parameterType="int" resultType="MHproject.DTO.QnABoardDTO">
+	<![CDATA[
+		SELECT
+			board_idx AS boardIdx, 
+			title AS title, 
+			contents AS contents, 
+			hit_cnt AS hitCnt,
+			created_datetime AS createdDatetime,
+			creator_id AS creatorId
+		FROM
+			t_board2
+		WHERE
+			board_idx = #{boardIdx} AND deleted_yn = 'N'	
+	
+		]]>
+
+	
+	</select>
+	
+	<update id="updateBoard" parameterType="MHproject.DTO.QnABoardDTO">
+		<![CDATA[
+			UPDATE t_board2 SET 
+				title = #{title},
+				contents = #{contents},
+				updated_datetime = NOW(),
+				updater_id = 'admin'
+			WHERE
+				board_idx = #{boardIdx}		
+			]]>
+	</update>
+	
+	<update id="deleteBoard" parameterType="int">
+		<![CDATA[
+			UPDATE t_board2 SET 
+				deleted_yn = "Y",
+				updated_datetime = NOW(),
+				updater_id = 'admin'
+			WHERE
+			 board_idx = #{boardIdx}		
+		
+		]]>
+	
+	</update>
+	
+	<update id="selectAndDeleteBoard" parameterType="java.util.List">
+	
+			UPDATE 
+				t_board2 
+			SET 
+				deleted_yn = "Y",
+				updated_datetime = NOW(),
+				updater_id = 'admin'
+			WHERE 
+				board_idx
+			IN
+			 <foreach collection="list" item="boardIdx" separator="," open="(" close=")">
+    			#{boardIdx}
+   			 </foreach>	
+   		
+		
+		
+	
+	</update>
+		
+	
+	<select id="selectBoardList" resultType="hashmap" parameterType="hashmap">
+    <![CDATA[
+        SELECT
+            board_idx AS boardIdx,
+			title AS title,
+			hit_cnt AS hitCnt,
+			creator_id AS creatorId,
+			created_datetime AS createdDatetime
+        FROM
+            t_board2
+        WHERE
+            deleted_yn = 'N'
+        ORDER BY board_idx DESC
+        LIMIT #{pageStart}, #{perPageNum}
+    ]]>
+</select>
+	
+	<select id="countBoardList" resultType="Integer">
+    <![CDATA[
+        SELECT
+            count(*)
+        FROM
+            t_board2
+        WHERE
+            deleted_yn = 'N'
+    ]]>
+</select>
+
+<select id="searchTitleBoardList" resultType="MHproject.DTO.QnABoardDTO" parameterType="String">
+ <![CDATA[
+	SELECT
+			board_idx AS boardIdx,
+			title AS title,
+			hit_cnt AS hitCnt,
+			creator_id AS creatorId,
+			created_datetime AS createdDatetime
+	FROM
+            t_board2
+    WHERE
+   			title LIKE CONCAT('%', #{keyword}, '%') 	
+         ]]>
+    		  	
+
+  
+  </select>
+  
+  
+  <select id="searchContentsBoardList" resultType="MHproject.DTO.QnABoardDTO" parameterType="String">
+<![CDATA[
+	SELECT
+			board_idx AS boardIdx,
+			title AS title,
+			hit_cnt AS hitCnt,
+			creator_id AS creatorId,
+			created_datetime AS createdDatetime
+	FROM
+            t_board2
+    WHERE
+    		contents  LIKE CONCAT('%', #{keyword}, '%')       	
+
+  ]]>
+
+</select>
+	
+	
+
+
+
+
+
+</mapper>

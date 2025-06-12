@@ -19,7 +19,7 @@
             </button>
         </div> -->
 
-        <form id="boardForm" method="post" action="/board1/insertBoard1">
+        <form id="boardForm" method="post" action="/board2/insertBoard2">
             <div class="modal-body">
                 <div class="form-section">
                     <h3 class="section-title">신규 게시글 등록</h3>
@@ -130,7 +130,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary">취소</button>
+                <button type="button" id="cancleBtn" class="btn btn-secondary">취소</button>
                 <button type="submit" class="btn btn-primary">저장</button>
             </div>
         </form>
@@ -168,7 +168,9 @@
             <button type="button" class="btn btn-primary" id="linkOkBtn">확인</button>
         </div>
     </div>
-
+    
+    
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
 		
 		 // DOM이 로드된 후 실행
@@ -538,11 +540,12 @@
                 return true;
             });
 
-
+         
             // 취소 버튼 이벤트
-            document.querySelector('.btn-secondary').addEventListener('click', function() {
+            $("#cancleBtn").on('click', function() {
+				console.log("취소 클릭");
                 if (confirm('작성 중인 내용이 있습니다. 정말 취소하시겠습니까?')) {
-                    location.href="/board1/openBoardList1";
+                    location.href="/board2/openBoardList2";
                     document.getElementById('boardForm').reset();
                 }
             });

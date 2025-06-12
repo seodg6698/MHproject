@@ -522,12 +522,12 @@
 
     <main class="board-container">
         <div class="board-section">
-            <h2><a href="/board1/openBoardList1">자유게시판</a></h2>
+            <h2><a href="/board2/openBoardList2">질문과 답변</a></h2>
             
             <!-- HTML 부분 - 조건부 삭제 버튼 표시 -->
 <form id="frm" method="post">
     <div class="btn-group">
-        <a href="/board1/openBoardWrite1" class="btn" id="writeBtn1">글 쓰기</a>
+        <a href="/board2/openBoardWrite2" class="btn" id="writeBtn1">글 쓰기</a>
         <!-- admin일 때만 삭제 버튼 표시 -->
         <button type="button" id="deleteBtn" class="btn btn-danger" 
                 th:if="${session.user != null && session.user.userid == 'admin'}">선택 삭제</button>
@@ -559,7 +559,7 @@
             <tr class="boardItem" th:if="${#lists.size(list)} > 0" th:each="list : ${list}">
                 <td id="idx" th:text="${list.boardIdx}"></td>
                 <td class="title" id="title">
-                    <a href="/board1/openBoardDetail1?boardIdx=" 
+                    <a href="/board2/openBoardDetail2?boardIdx=" 
                        th:attrappend="href=${list.boardIdx}" 
                        th:text="${list.title}"></a>
                 </td>
@@ -584,7 +584,7 @@
     
     <!-- 하단 버튼 그룹에서도 admin일 때만 삭제 버튼 표시 -->
     <div class="btn-group">
-        <a href="/board1/openBoardWrite1" class="btn" id="writeBtn">글 쓰기</a>
+        <a href="/board2/openBoardWrite2" class="btn" id="writeBtn">글 쓰기</a>
         <button type="button" id="deleteBtn2" class="btn btn-danger" 
                 th:if="${session.user != null && session.user.userid == 'admin'}">선택 삭제</button>
     </div>
@@ -623,21 +623,21 @@
                     <!-- 이전 버튼 -->
                     <div th:if="${pageMaker.t_prev} == true">
                         <li class="page-item">
-                            <a href="/board1/openBoardList1?page=" th:attrappend="href=${pageMaker.startPage - 1}">←</a>
+                            <a href="/board2/openBoardList2?page=" th:attrappend="href=${pageMaker.startPage - 1}">←</a>
                         </li>
                     </div>
                     
                     <!-- 페이지 번호 버튼 -->
                     <div th:each="pageNum : ${#numbers.sequence(pageMaker.startPage,pageMaker.endPage)}">
                         <li class="page-item">
-                            <a href="/board1/openBoardList1?page=" th:attrappend="href=${pageNum}" th:text="${pageNum}"></a>
+                            <a href="/board2/openBoardList2?page=" th:attrappend="href=${pageNum}" th:text="${pageNum}"></a>
                         </li>
                     </div>
                     
                     <!-- 다음 버튼 -->
                     <div th:if="${pageMaker.t_next == true && pageMaker.endPage > 0}">
                         <li class="page-item">
-                            <a href="/board1/openBoardList1?page=" th:attrappend="href=${pageMaker.endPage + 1}">→</a>
+                            <a href="/board2/openBoardList2?page=" th:attrappend="href=${pageMaker.endPage + 1}">→</a>
                         </li>
                     </div>
                 </ul>
@@ -699,14 +699,14 @@
             //boardIdx배열 파라미터 ajax호출로 controller에 보내기
             $.ajax({
                 type  : "POST",
-                url    : "/board1/deleteSelection1",
+                url    : "/board2/deleteSelection2",
                 data: {
                     "boardIdx" : boardIdx
                 },
                 success: function(result){
                     console.log(result);
                     alert("삭제되었습니다.");
-                    location.href = "/board1/openBoardList1";
+                    location.href = "/board2/openBoardList2";
                 },
                 error: function(xhr, status, error) {
                     alert("삭제 중 오류가 발생했습니다.");
@@ -740,7 +740,7 @@
         
         var request = $.ajax({          
             type: "GET",
-            url: "/board1/boardList1",
+            url: "/board2/boardList2",
             data: {'type' : type, 'keyword' : keyword},
             dataType: 'json'
         });        
@@ -820,7 +820,7 @@
             alert("로그인 후 게시글 작성이 가능합니다.");
             location.href = "/login/login";
         } else {
-            location.href = "/board1/openBoardWrite1";
+            location.href = "/board2/openBoardWrite2";
         }
     });
     
@@ -832,7 +832,7 @@
             alert("로그인 후 게시글 작성이 가능합니다.");
             location.href = "/login/login";
         } else {
-            location.href = "/board1/openBoardWrite1";
+            location.href = "/board2/openBoardWrite2";
         }
     });
     
