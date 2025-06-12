@@ -2,7 +2,7 @@ package MHproject.DTO;
 
 import java.time.LocalDateTime;
 
-public class CommentDto {
+public class CommentDto1 {
     private int commentIdx;
     private int boardIdx;
     private int parentIdx;
@@ -15,10 +15,10 @@ public class CommentDto {
     private int sortOrder;
     
     // 기본 생성자
-    public CommentDto() {}
+    public CommentDto1() {}
     
     // 생성자
-    public CommentDto(int boardIdx, int parentIdx, String content, String creatorId) {
+    public CommentDto1(int boardIdx, int parentIdx, String content, String creatorId) {
         this.boardIdx = boardIdx;
         this.parentIdx = parentIdx;
         this.content = content;

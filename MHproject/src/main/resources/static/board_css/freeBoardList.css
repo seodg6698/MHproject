@@ -356,3 +356,194 @@
         .status-hot {
             background: #f59e0b;
         }
+        
+         /* 검색바 컨테이너 */
+        .search-container {
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            max-width: 600px;
+            width: 100%;
+            border: 1px solid #e1e5e9;
+        }
+
+        /* 닫기 버튼 */
+        .close-btn {
+            background: none;
+            border: none;
+            padding: 12px;
+            cursor: pointer;
+            color: #9ca3af;
+            font-size: 16px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            margin-left: 4px;
+        }
+
+        .close-btn:hover {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        /* 셀렉트 박스 */
+        .search-select {
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #6b7280;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px 12px;
+            margin-left: 8px;
+            border-right: 1px solid #e5e7eb;
+            min-width: 80px;
+        }
+
+        .search-select:focus {
+            color: #374151;
+        }
+
+        /* 검색 입력창 */
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            padding: 12px 16px;
+            color: #374151;
+            background: transparent;
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+            font-weight: 300;
+        }
+
+        /* 검색 버튼 */
+        .search-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 4px;
+        }
+
+        .search-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 포커스 상태 */
+        .search-container:focus-within {
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+            border-color: #3b82f6;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .search-container {
+                max-width: 100%;
+                padding: 6px;
+            }
+
+            .search-input {
+                font-size: 16px; /* iOS 줌 방지 */
+                padding: 10px 12px;
+            }
+
+            .search-btn {
+                padding: 10px 18px;
+                font-size: 13px;
+            }
+
+            .search-select {
+                font-size: 13px;
+                padding: 6px 8px;
+                min-width: 70px;
+            }
+
+            .close-btn {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-btn span {
+                display: none; /* 작은 화면에서는 텍스트 숨김 */
+            }
+
+            .search-btn {
+                padding: 10px 12px;
+            }
+        }
+
+        /* 애니메이션 */
+        .search-container {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 다크모드 대응 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1f2937;
+            }
+
+            .search-container {
+                background: #374151;
+                border-color: #4b5563;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            }
+
+            .search-input {
+                color: #f9fafb;
+            }
+
+            .search-input::placeholder {
+                color: #9ca3af;
+            }
+
+            .search-select {
+                color: #d1d5db;
+            }
+
+            .close-btn {
+                color: #9ca3af;
+            }
+
+            .close-btn:hover {
+                background-color: #4b5563;
+                color: #d1d5db;
+            }
+
+            .search-container:focus-within {
+                box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+            }
+        }

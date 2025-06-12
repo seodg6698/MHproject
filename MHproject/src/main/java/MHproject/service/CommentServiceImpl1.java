@@ -1,9 +1,9 @@
 package MHproject.service;
 
-import MHproject.mapper.CommentMapper;
-import MHproject.service.CommentService;
+import MHproject.mapper.CommentMapper1;
+import MHproject.service.CommentService1;
 
-import MHproject.DTO.CommentDto;
+import MHproject.DTO.CommentDto1;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,27 +13,27 @@ import java.util.List;
 
 @Service
 @Transactional
-public class CommentServiceImpl implements CommentService {
+public class CommentServiceImpl1 implements CommentService1 {
     
     @Autowired
-    private CommentMapper commentMapper;
+    private CommentMapper1 commentMapper;
     
     @Override
-    public List<CommentDto> selectCommentList(int boardIdx) {
+    public List<CommentDto1> selectCommentList(int boardIdx) {
         return commentMapper.selectCommentList(boardIdx);
     }
     
     @Override
-    public CommentDto selectCommentDetail(int commentIdx) {
+    public CommentDto1 selectCommentDetail(int commentIdx) {
         return commentMapper.selectCommentDetail(commentIdx);
     }
     
     @Override
-    public boolean insertComment(CommentDto comment) {
+    public boolean insertComment(CommentDto1 comment) {
         try {
             // 답글인 경우 부모 댓글 존재 여부 확인
             if (comment.getParentIdx() > 0) {
-                CommentDto parentComment = commentMapper.selectCommentDetail(comment.getParentIdx());
+                CommentDto1 parentComment = commentMapper.selectCommentDetail(comment.getParentIdx());
                 if (parentComment == null) {
                     return false; // 부모 댓글이 존재하지 않음
                 }
@@ -48,10 +48,10 @@ public class CommentServiceImpl implements CommentService {
     }
     
     @Override
-    public boolean updateComment(CommentDto comment, String userId) {
+    public boolean updateComment(CommentDto1 comment, String userId) {
         try {
             // 기존 댓글 조회
-            CommentDto existingComment = commentMapper.selectCommentDetail(comment.getCommentIdx());
+            CommentDto1 existingComment = commentMapper.selectCommentDetail(comment.getCommentIdx());
             
             if (existingComment == null) {
                 return false; // 댓글이 존재하지 않음
@@ -74,7 +74,7 @@ public class CommentServiceImpl implements CommentService {
     public boolean deleteComment(int commentIdx, String userId) {
         try {
             // 기존 댓글 조회
-            CommentDto existingComment = commentMapper.selectCommentDetail(commentIdx);
+            CommentDto1 existingComment = commentMapper.selectCommentDetail(commentIdx);
             
             if (existingComment == null) {
                 return false; // 댓글이 존재하지 않음

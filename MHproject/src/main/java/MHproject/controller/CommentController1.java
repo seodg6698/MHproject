@@ -1,7 +1,7 @@
 package MHproject.controller;
 
-import MHproject.service.CommentService;
-import MHproject.DTO.CommentDto;
+import MHproject.service.CommentService1;
+import MHproject.DTO.CommentDto1;
 import MHproject.DTO.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,16 +13,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/comment")
-public class CommentController {
+@RequestMapping("/comment1")
+public class CommentController1 {
     
     @Autowired
-    private CommentService commentService;
+    private CommentService1 commentService;
     
     /**
      * 댓글 등록
      */
-    @PostMapping("/insertComment")
+    @PostMapping("/insertComment1")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> insertComment(
             @RequestParam int boardIdx,
@@ -42,7 +42,7 @@ public class CommentController {
             }
             
             // 댓글 DTO 생성
-            CommentDto comment = new CommentDto(boardIdx, parentIdx, content, user.getUserid());
+            CommentDto1 comment = new CommentDto1(boardIdx, parentIdx, content, user.getUserid());
             
             // 댓글 등록
             boolean success = commentService.insertComment(comment);
@@ -67,7 +67,7 @@ public class CommentController {
     /**
      * 댓글 수정
      */
-    @PostMapping("/updateComment")
+    @PostMapping("/updateComment1")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateComment(
             @RequestParam int commentIdx,
@@ -86,7 +86,7 @@ public class CommentController {
             }
             
             // 댓글 DTO 생성
-            CommentDto comment = new CommentDto();
+            CommentDto1 comment = new CommentDto1();
             comment.setCommentIdx(commentIdx);
             comment.setContent(content);
             
@@ -113,7 +113,7 @@ public class CommentController {
     /**
      * 댓글 삭제
      */
-    @PostMapping("/deleteComment")
+    @PostMapping("/deleteComment1")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> deleteComment(
             @RequestParam int commentIdx,

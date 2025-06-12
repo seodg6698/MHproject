@@ -265,7 +265,7 @@
                     </tr>
                     <tr>
                         <td colspan="4" class="view_text">
-                            <textarea title="내용" id="contents" name="contents" th:text="${board.contents}"></textarea>
+                            <div id="contents" name="contents" th:utext="${board.contents}"></div>
                         </td>
                     </tr>
                 </tbody>
@@ -375,7 +375,7 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$("#list").on("click", function(){
-				location.href = "/board/openBoardList";
+				location.href = "/board1/openBoardList1";
 			});
 			
 			$("#edit").on("click", function(){
@@ -383,7 +383,7 @@
 				var result = confirm("게시글을 수정하시겠습니까?");
 				
 				if(result){
-					frm.action = "/board/updateBoard";
+					frm.action = "/board1/updateBoard1";
 					frm.submit();
 					alert("글이 수정되었습니다.");
 				}else{
@@ -397,7 +397,7 @@
 				var result = confirm("게시글을 삭제하시겠습니까?");
 				
 				if(result){
-					frm.action = "/board/deleteBoard";
+					frm.action = "/board1/deleteBoard1";
 					frm.submit();
 					alert("글이 삭제되었습니다.");
 				}else{
@@ -416,7 +416,7 @@
         }
         
         $.ajax({
-            url: "/comment/insertComment",
+            url: "/comment1/insertComment1",
             type: "POST",
             data: $(this).serialize(),
             success: function(response){
@@ -513,7 +513,7 @@ function submitReply(parentIdx) {
     var boardIdx = $("input[name='boardIdx']").first().val();
     
     $.ajax({
-        url: "/comment/insertComment",
+        url: "/comment1/insertComment1",
         type: "POST",
         data: {
             boardIdx: boardIdx,
@@ -564,7 +564,7 @@ function updateComment(commentIdx) {
     }
     
     $.ajax({
-        url: "/comment/updateComment",
+        url: "/comment1/updateComment1",
         type: "POST",
         data: {
             commentIdx: commentIdx,
@@ -593,7 +593,7 @@ function deleteComment(commentIdx) {
     console.log("댓글 삭제:", commentIdx);
     if(confirm("댓글을 삭제하시겠습니까?")){
         $.ajax({
-            url: "/comment/deleteComment",
+            url: "/comment1/deleteComment1",
             type: "POST",
             data: {
                 commentIdx: commentIdx

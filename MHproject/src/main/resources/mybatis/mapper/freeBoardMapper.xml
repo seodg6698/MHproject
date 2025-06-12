@@ -58,7 +58,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	
 	<insert id="insertBoard" parameterType="MHproject.DTO.FreeBoardDTO">
 	<![CDATA[
-			INSERT INTO t_board
+			INSERT INTO t_board1
 				(
 				title,
 				contents,
@@ -79,7 +79,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	<update id="updateHitCount" parameterType="int">
 			<![CDATA[
 			UPDATE
-				t_board
+				t_board1
 			SET	
 				hit_cnt = hit_cnt + 1
 			WHERE
@@ -98,7 +98,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 			created_datetime AS createdDatetime,
 			creator_id AS creatorId
 		FROM
-			t_board
+			t_board1
 		WHERE
 			board_idx = #{boardIdx} AND deleted_yn = 'N'	
 	
@@ -109,7 +109,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	
 	<update id="updateBoard" parameterType="MHproject.DTO.FreeBoardDTO">
 		<![CDATA[
-			UPDATE t_board SET 
+			UPDATE t_board1 SET 
 				title = #{title},
 				contents = #{contents},
 				updated_datetime = NOW(),
@@ -121,7 +121,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	
 	<update id="deleteBoard" parameterType="int">
 		<![CDATA[
-			UPDATE t_board SET 
+			UPDATE t_board1 SET 
 				deleted_yn = "Y",
 				updated_datetime = NOW(),
 				updater_id = 'admin'
@@ -135,7 +135,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	<update id="selectAndDeleteBoard" parameterType="java.util.List">
 	
 			UPDATE 
-				t_board 
+				t_board1 
 			SET 
 				deleted_yn = "Y",
 				updated_datetime = NOW(),
@@ -162,7 +162,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 			creator_id AS creatorId,
 			created_datetime AS createdDatetime
         FROM
-            t_board
+            t_board1
         WHERE
             deleted_yn = 'N'
         ORDER BY board_idx DESC
@@ -175,7 +175,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
         SELECT
             count(*)
         FROM
-            t_board
+            t_board1
         WHERE
             deleted_yn = 'N'
     ]]>
@@ -190,7 +190,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 			creator_id AS creatorId,
 			created_datetime AS createdDatetime
 	FROM
-            t_board
+            t_board1
     WHERE
    			title LIKE CONCAT('%', #{keyword}, '%') 	
          ]]>
@@ -209,7 +209,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 			creator_id AS creatorId,
 			created_datetime AS createdDatetime
 	FROM
-            t_board
+            t_board1
     WHERE
     		contents  LIKE CONCAT('%', #{keyword}, '%')       	
 

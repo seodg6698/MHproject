@@ -6,8 +6,7 @@
 	<title>신규 게시글 작성</title>
 	<link rel="stylesheet" th:href="@{/board_css/freeBoardWrite.css}"/>
 	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-	 
-	 
+	
 </head>
 <body>
 	  <div class="modal-overlay"></div>
@@ -20,7 +19,7 @@
             </button>
         </div>
 
-        <form id="boardForm" method="post" action="/board/insertBoard">
+        <form id="boardForm" method="post" action="/board1/insertBoard1">
             <div class="modal-body">
                 <div class="form-section">
                     <h3 class="section-title">신규 게시글 등록</h3>
@@ -140,22 +139,22 @@
     <!-- 색상 선택기 -->
     <div id="colorPicker" class="color-picker">
         <div class="color-grid">
-            <div class="color-option" style="background-color: #000000" data-color="#000000"></div>
-            <div class="color-option" style="background-color: #ffffff" data-color="#ffffff"></div>
-            <div class="color-option" style="background-color: #ff0000" data-color="#ff0000"></div>
-            <div class="color-option" style="background-color: #00ff00" data-color="#00ff00"></div>
-            <div class="color-option" style="background-color: #0000ff" data-color="#0000ff"></div>
-            <div class="color-option" style="background-color: #ffff00" data-color="#ffff00"></div>
-            <div class="color-option" style="background-color: #ff00ff" data-color="#ff00ff"></div>
-            <div class="color-option" style="background-color: #00ffff" data-color="#00ffff"></div>
-            <div class="color-option" style="background-color: #808080" data-color="#808080"></div>
-            <div class="color-option" style="background-color: #800000" data-color="#800000"></div>
-            <div class="color-option" style="background-color: #008000" data-color="#008000"></div>
-            <div class="color-option" style="background-color: #000080" data-color="#000080"></div>
-            <div class="color-option" style="background-color: #800080" data-color="#800080"></div>
-            <div class="color-option" style="background-color: #808000" data-color="#808000"></div>
-            <div class="color-option" style="background-color: #008080" data-color="#008080"></div>
-            <div class="color-option" style="background-color: #c0c0c0" data-color="#c0c0c0"></div>
+            <div class="color-option" style="background-color: #000000" data-color="#000000" title="검정"></div>
+            <div class="color-option" style="background-color: #ffffff; border: 2px solid #ccc;" data-color="#ffffff" title="흰색"></div>
+            <div class="color-option" style="background-color: #ff0000" data-color="#ff0000" title="빨강"></div>
+            <div class="color-option" style="background-color: #00ff00" data-color="#00ff00" title="초록"></div>
+            <div class="color-option" style="background-color: #0000ff" data-color="#0000ff" title="파랑"></div>
+            <div class="color-option" style="background-color: #ffff00" data-color="#ffff00" title="노랑"></div>
+            <div class="color-option" style="background-color: #ff00ff" data-color="#ff00ff" title="자홍"></div>
+            <div class="color-option" style="background-color: #00ffff" data-color="#00ffff" title="청록"></div>
+            <div class="color-option" style="background-color: #808080" data-color="#808080" title="회색"></div>
+            <div class="color-option" style="background-color: #800000" data-color="#800000" title="진빨강"></div>
+            <div class="color-option" style="background-color: #008000" data-color="#008000" title="진초록"></div>
+            <div class="color-option" style="background-color: #000080" data-color="#000080" title="진파랑"></div>
+            <div class="color-option" style="background-color: #800080" data-color="#800080" title="자주"></div>
+            <div class="color-option" style="background-color: #808000" data-color="#808000" title="올리브"></div>
+            <div class="color-option" style="background-color: #008080" data-color="#008080" title="틸"></div>
+            <div class="color-option" style="background-color: #c0c0c0" data-color="#c0c0c0" title="은색"></div>
         </div>
     </div>
 
@@ -172,239 +171,387 @@
 
     <script>
 		
-		// WYSIWYG 에디터 클래스
-        class WysiwygEditor {
-            constructor(editorId) {
-                this.editor = document.getElementById(editorId);
-                this.initializeEditor();
-                this.bindEvents();
-            }
+		 // DOM이 로드된 후 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // WYSIWYG 에디터 클래스
+            class WysiwygEditor {
+                constructor(editorId) {
+                    this.editor = document.getElementById(editorId);
+                    this.currentColor = '#000000';
+                    this.savedRange = null;
+                    this.initializeEditor();
+                    this.bindEvents();
+                }
 
-            initializeEditor() {
-                // 에디터 초기 설정
-                this.editor.style.minHeight = '300px';
-                this.editor.setAttribute('contenteditable', 'true');
-            }
+                initializeEditor() {
+                    this.editor.style.minHeight = '400px';
+                    this.editor.setAttribute('contenteditable', 'true');
+                    this.editor.focus();
+                }
 
-            bindEvents() {
-                // 텍스트 포맷팅 버튼들
-                document.getElementById('boldBtn').addEventListener('click', () => this.executeCommand('bold'));
-                document.getElementById('italicBtn').addEventListener('click', () => this.executeCommand('italic'));
-                document.getElementById('underlineBtn').addEventListener('click', () => this.executeCommand('underline'));
-                document.getElementById('strikeBtn').addEventListener('click', () => this.executeCommand('strikeThrough'));
+                bindEvents() {
+                    // 모든 툴바 버튼에 preventDefault 추가
+                    document.querySelectorAll('.toolbar-btn').forEach(btn => {
+                        btn.addEventListener('mousedown', (e) => {
+                            e.preventDefault();
+                        });
+                    });
 
-                // 정렬 버튼들
-                document.getElementById('alignLeftBtn').addEventListener('click', () => this.executeCommand('justifyLeft'));
-                document.getElementById('alignCenterBtn').addEventListener('click', () => this.executeCommand('justifyCenter'));
-                document.getElementById('alignRightBtn').addEventListener('click', () => this.executeCommand('justifyRight'));
+                    // 텍스트 포맷팅 버튼들
+                    document.getElementById('boldBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('bold');
+                    });
+                    
+                    document.getElementById('italicBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('italic');
+                    });
+                    
+                    document.getElementById('underlineBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('underline');
+                    });
+                    
+                    document.getElementById('strikeBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('strikeThrough');
+                    });
 
-                // 목록 버튼들
-                document.getElementById('listBtn').addEventListener('click', () => this.executeCommand('insertUnorderedList'));
-                document.getElementById('orderedListBtn').addEventListener('click', () => this.executeCommand('insertOrderedList'));
+                    // 정렬 버튼들
+                    document.getElementById('alignLeftBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('justifyLeft');
+                    });
+                    
+                    document.getElementById('alignCenterBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('justifyCenter');
+                    });
+                    
+                    document.getElementById('alignRightBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('justifyRight');
+                    });
 
-                // 실행 취소/다시 실행
-                document.getElementById('undoBtn').addEventListener('click', () => this.executeCommand('undo'));
-                document.getElementById('redoBtn').addEventListener('click', () => this.executeCommand('redo'));
+                    // 목록 버튼들
+                    document.getElementById('listBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('insertUnorderedList');
+                    });
+                    
+                    document.getElementById('orderedListBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('insertOrderedList');
+                    });
 
-                // 포맷 선택
-                document.getElementById('formatSelect').addEventListener('change', (e) => {
-                    this.executeCommand('formatBlock', e.target.value);
-                });
+                    // 실행 취소/다시 실행
+                    document.getElementById('undoBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('undo');
+                    });
+                    
+                    document.getElementById('redoBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('redo');
+                    });
 
-                // 색상 선택
-                document.getElementById('colorBtn').addEventListener('click', (e) => this.showColorPicker(e));
+                    // 포맷 선택
+                    document.getElementById('formatSelect').addEventListener('change', (e) => {
+                        this.executeCommand('formatBlock', e.target.value);
+                        this.editor.focus();
+                    });
 
-                // 링크 삽입
-                document.getElementById('linkBtn').addEventListener('click', () => this.showLinkModal());
+                    // 색상 선택 버튼
+                    document.getElementById('colorBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.showColorPicker(e);
+                    });
 
-                // 이미지 삽입
-                document.getElementById('imageBtn').addEventListener('click', () => this.insertImage());
+                    // 링크 삽입
+                    document.getElementById('linkBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.showLinkModal();
+                    });
 
-                // 표 삽입
-                document.getElementById('tableBtn').addEventListener('click', () => this.insertTable());
+                    // 이미지 삽입
+                    document.getElementById('imageBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.insertImage();
+                    });
 
-                // 에디터 상태 업데이트
-                this.editor.addEventListener('keyup', () => this.updateToolbarState());
-                this.editor.addEventListener('mouseup', () => this.updateToolbarState());
-            }
+                    // 표 삽입
+                    document.getElementById('tableBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.insertTable();
+                    });
 
-            executeCommand(command, value = null) {
-                this.editor.focus();
-                document.execCommand(command, false, value);
-                this.updateToolbarState();
-            }
+                    // 에디터 상태 업데이트
+                    this.editor.addEventListener('keyup', () => this.updateToolbarState());
+                    this.editor.addEventListener('mouseup', () => this.updateToolbarState());
+                    this.editor.addEventListener('focus', () => this.updateToolbarState());
 
-            updateToolbarState() {
-                // 현재 선택된 텍스트의 포맷 상태를 버튼에 반영
-                const commands = ['bold', 'italic', 'underline', 'strikeThrough'];
-                commands.forEach(cmd => {
-                    const btn = document.getElementById(cmd + 'Btn');
-                    if (btn) {
-                        if (document.queryCommandState(cmd)) {
-                            btn.classList.add('active');
-                        } else {
-                            btn.classList.remove('active');
-                        }
+                    // 색상 선택 옵션 초기화
+                    this.initColorOptions();
+                }
+
+                executeCommand(command, value = null) {
+                    this.editor.focus();
+                    try {
+                        const result = document.execCommand(command, false, value);
+                        console.log(`Command ${command} executed:`, result);
+                        setTimeout(() => this.updateToolbarState(), 10);
+                        return result;
+                    } catch (e) {
+                        console.error('Command execution failed:', e);
+                        return false;
                     }
-                });
-            }
+                }
 
-            showColorPicker(e) {
-                const colorPicker = document.getElementById('colorPicker');
-                const rect = e.target.getBoundingClientRect();
-                
-                colorPicker.style.display = 'block';
-                colorPicker.style.left = rect.left + 'px';
-                colorPicker.style.top = (rect.bottom + 5) + 'px';
-
-                // 색상 옵션 클릭 이벤트
-                document.querySelectorAll('.color-option').forEach(option => {
-                    option.onclick = () => {
-                        this.executeCommand('foreColor', option.dataset.color);
-                        colorPicker.style.display = 'none';
+                updateToolbarState() {
+                    const commands = {
+                        'boldBtn': 'bold',
+                        'italicBtn': 'italic', 
+                        'underlineBtn': 'underline',
+                        'strikeBtn': 'strikeThrough'
                     };
-                });
 
-                // 외부 클릭 시 색상 선택기 닫기
-                setTimeout(() => {
-                    document.addEventListener('click', function hideColorPicker(e) {
-                        if (!colorPicker.contains(e.target) && e.target.id !== 'colorBtn') {
-                            colorPicker.style.display = 'none';
-                            document.removeEventListener('click', hideColorPicker);
+                    Object.entries(commands).forEach(([btnId, command]) => {
+                        const btn = document.getElementById(btnId);
+                        if (btn) {
+                            try {
+                                if (document.queryCommandState(command)) {
+                                    btn.classList.add('active');
+                                } else {
+                                    btn.classList.remove('active');
+                                }
+                            } catch (e) {
+                                console.warn(`Could not query state for ${command}`);
+                            }
                         }
                     });
-                }, 0);
-            }
+                }
 
-            showLinkModal() {
-                const modal = document.getElementById('linkModal');
-                const selection = window.getSelection();
-                const selectedText = selection.toString();
-
-                document.getElementById('linkText').value = selectedText;
-                document.getElementById('linkUrl').value = '';
-                modal.style.display = 'block';
-
-                document.getElementById('linkOkBtn').onclick = () => {
-                    const text = document.getElementById('linkText').value;
-                    const url = document.getElementById('linkUrl').value;
+                showColorPicker(e) {
+                    const colorPicker = document.getElementById('colorPicker');
+                    const colorBtn = document.getElementById('colorBtn');
                     
-                    if (url) {
-                        if (selectedText) {
-                            this.executeCommand('createLink', url);
+                    if (colorPicker.style.display === 'block') {
+                        colorPicker.style.display = 'none';
+                        return;
+                    }
+                    
+                    this.saveSelection();
+                    
+                    const rect = colorBtn.getBoundingClientRect();
+                    colorPicker.style.display = 'block';
+                    colorPicker.style.left = Math.max(0, rect.left) + 'px';
+                    colorPicker.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+
+                    setTimeout(() => {
+                        const handleClickOutside = (event) => {
+                            if (!colorPicker.contains(event.target) && !colorBtn.contains(event.target)) {
+                                colorPicker.style.display = 'none';
+                                document.removeEventListener('click', handleClickOutside);
+                            }
+                        };
+                        document.addEventListener('click', handleClickOutside);
+                    }, 10);
+                }
+
+                initColorOptions() {
+                    const colorOptions = document.querySelectorAll('.color-option');
+                    colorOptions.forEach(option => {
+                        option.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const color = option.dataset.color;
+                            this.applyColor(color);
+                            document.getElementById('colorPicker').style.display = 'none';
+                        });
+                    });
+                }
+
+                saveSelection() {
+                    const selection = window.getSelection();
+                    if (selection.rangeCount > 0) {
+                        this.savedRange = selection.getRangeAt(0).cloneRange();
+                    }
+                }
+
+                restoreSelection() {
+                    if (this.savedRange) {
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(this.savedRange);
+                    }
+                }
+
+                applyColor(color) {
+                    this.editor.focus();
+                    
+                    if (this.savedRange) {
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(this.savedRange);
+                    }
+                    
+                    const selection = window.getSelection();
+                    
+                    if (selection.rangeCount > 0) {
+                        const range = selection.getRangeAt(0);
+                        
+                        if (!range.collapsed) {
+                            // 텍스트가 선택된 경우
+                            try {
+                                const contents = range.extractContents();
+                                const span = document.createElement('span');
+                                span.style.color = color;
+                                span.appendChild(contents);
+                                range.insertNode(span);
+                                
+                                // 커서를 span 뒤로 이동
+                                range.setStartAfter(span);
+                                range.collapse(true);
+                                selection.removeAllRanges();
+                                selection.addRange(range);
+                                
+                                console.log('색상 적용 완료:', color);
+                            } catch (e) {
+                                console.error('색상 적용 실패:', e);
+                                this.executeCommand('foreColor', color);
+                            }
                         } else {
+                            // 텍스트가 선택되지 않은 경우
+                            this.executeCommand('foreColor', color);
+                        }
+                    }
+                    
+                    this.savedRange = null;
+                }
+
+                showLinkModal() {
+                    const modal = document.getElementById('linkModal');
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString();
+
+                    document.getElementById('linkText').value = selectedText;
+                    document.getElementById('linkUrl').value = '';
+                    modal.style.display = 'block';
+
+                    // 기존 이벤트 리스너 제거
+                    const okBtn = document.getElementById('linkOkBtn');
+                    const cancelBtn = document.getElementById('linkCancelBtn');
+                    
+                    const newOkBtn = okBtn.cloneNode(true);
+                    const newCancelBtn = cancelBtn.cloneNode(true);
+                    
+                    okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+                    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+                    newOkBtn.addEventListener('click', () => {
+                        const text = document.getElementById('linkText').value;
+                        const url = document.getElementById('linkUrl').value;
+                        
+                        if (url) {
                             this.editor.focus();
-                            document.execCommand('insertHTML', false, `<a href="${url}" target="_blank">${text || url}</a>`);
+                            if (selectedText) {
+                                this.executeCommand('createLink', url);
+                            } else {
+                                this.executeCommand('insertHTML', `<a href="${url}" target="_blank">${text || url}</a>`);
+                            }
                         }
+                        modal.style.display = 'none';
+                    });
+
+                    newCancelBtn.addEventListener('click', () => {
+                        modal.style.display = 'none';
+                    });
+                }
+
+                insertImage() {
+                    const url = prompt('이미지 URL을 입력하세요:');
+                    if (url) {
+                        this.executeCommand('insertHTML', `<img src="${url}" style="max-width: 100%; height: auto;" alt="이미지">`);
                     }
-                    modal.style.display = 'none';
-                };
+                }
 
-                document.getElementById('linkCancelBtn').onclick = () => {
-                    modal.style.display = 'none';
-                };
-            }
+                insertTable() {
+                    const rows = prompt('행 수를 입력하세요:', '3');
+                    const cols = prompt('열 수를 입력하세요:', '3');
+                    
+                    if (rows && cols) {
+                        let tableHTML = '<table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">';
+                        
+                        for (let i = 0; i < parseInt(rows); i++) {
+                            tableHTML += '<tr>';
+                            for (let j = 0; j < parseInt(cols); j++) {
+                                tableHTML += '<td style="padding: 8px; border: 1px solid #ddd;">&nbsp;</td>';
+                            }
+                            tableHTML += '</tr>';
+                        }
+                        
+                        tableHTML += '</table>';
+                        this.executeCommand('insertHTML', tableHTML);
+                    }
+                }
 
-            insertImage() {
-                const url = prompt('이미지 URL을 입력하세요:');
-                if (url) {
-                    this.executeCommand('insertHTML', `<img src="${url}" style="max-width: 100%; height: auto;" alt="이미지">`);
+                getContent() {
+                    return this.editor.innerHTML;
+                }
+
+                setContent(content) {
+                    this.editor.innerHTML = content;
                 }
             }
 
-            insertTable() {
-                const rows = prompt('행 수를 입력하세요:', '3');
-                const cols = prompt('열 수를 입력하세요:', '3');
+            // 에디터 초기화
+            const editor = new WysiwygEditor('editor');
+
+            // 폼 제출 이벤트
+            document.getElementById('boardForm').addEventListener('submit', function(e) {
+                const title = document.getElementById('title').value.trim();
+                const editorContent = editor.getContent().trim();
                 
-                if (rows && cols) {
-                    let tableHTML = '<table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">';
-                    
-                    for (let i = 0; i < parseInt(rows); i++) {
-                        tableHTML += '<tr>';
-                        for (let j = 0; j < parseInt(cols); j++) {
-                            tableHTML += '<td style="padding: 8px; border: 1px solid #ddd;">&nbsp;</td>';
-                        }
-                        tableHTML += '</tr>';
-                    }
-                    
-                    tableHTML += '</table>';
-                    this.executeCommand('insertHTML', tableHTML);
+                document.getElementById('contents').value = editorContent;
+                
+                if (!title) {
+                    e.preventDefault();
+                    alert('제목을 입력해주세요.');
+                    document.getElementById('title').focus();
+                    return false;
                 }
-            }
+                
+                const textContent = editor.editor.textContent || editor.editor.innerText || '';
+                const cleanContent = textContent.trim();
+                
+                if (!cleanContent || cleanContent.length === 0) {
+                    e.preventDefault();
+                    alert('내용을 입력해주세요.');
+                    editor.editor.focus();
+                    return false;
+                }
+                
+                console.log('제출할 내용:', editorContent);
+                return true;
+            });
 
-            getContent() {
-                return this.editor.innerHTML;
-            }
-
-            setContent(content) {
-                this.editor.innerHTML = content;
-            }
-        }
-
-        // 에디터 초기화
-        const editor = new WysiwygEditor('editor');
-		
-        // 툴바 버튼 클릭 이벤트
-        document.querySelectorAll('.toolbar-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                // 서식 버튼들의 토글 기능
-                if (this.innerHTML.includes('fa-bold') || 
-                    this.innerHTML.includes('fa-italic') || 
-                    this.innerHTML.includes('fa-underline')) {
-                    this.classList.toggle('active');
+            // 닫기 버튼 이벤트
+            document.querySelector('.close-btn').addEventListener('click', function() {
+                if (confirm('작성 중인 내용이 있습니다. 정말 닫으시겠습니까?')) {
+                    location.href="/board1/openBoardList1";
                 }
             });
-        });
 
-      // 폼 제출 이벤트
-        document.getElementById('boardForm').addEventListener('submit', function(e) {
-            
-            const title = document.getElementById('title').value.trim();
-            const editorContent = editor.getContent().trim();
-            
-            // 에디터 내용을 hidden textarea에 복사 (제출 전에 먼저 복사)
-            document.getElementById('contents').value = editorContent;
-            
-            // 유효성 검사
-            if (!title) {
-                e.preventDefault();
-                alert('제목을 입력해주세요.');
-                document.getElementById('title').focus();
-                return false;
-            }
-            
-            // 에디터 내용 검사 (HTML 태그 제거하여 순수 텍스트만 검사)
-            const textContent = editor.editor.textContent || editor.editor.innerText || '';
-            const cleanContent = textContent.trim();
-            
-            if (!cleanContent || cleanContent.length === 0) {
-                e.preventDefault();
-                alert('내용을 입력해주세요.');
-                editor.editor.focus();
-                return false;
-            }
-            
-            // 모든 검사 통과 시 정상 제출
-            console.log('제출할 내용:', editorContent); // 디버깅용
-            return true;
-        });
-        
-        
-
-        // 닫기 버튼 이벤트
-        document.querySelector('.close-btn').addEventListener('click', function() {
-            if (confirm('작성 중인 내용이 있습니다. 정말 닫으시겠습니까?')) {
-                location.href="/board/openBoardList"
-                console.log('모달 닫기');
-            }
-        });
-
-        // 취소 버튼 이벤트
-        document.querySelector('.btn-secondary').addEventListener('click', function() {
-            if (confirm('작성 중인 내용이 있습니다. 정말 취소하시겠습니까?')) {
-                location.href="/board/openBoardList"
-                document.getElementById('boardForm').reset();
-            }
+            // 취소 버튼 이벤트
+            document.querySelector('.btn-secondary').addEventListener('click', function() {
+                if (confirm('작성 중인 내용이 있습니다. 정말 취소하시겠습니까?')) {
+                    location.href="/board1/openBoardList1";
+                    document.getElementById('boardForm').reset();
+                }
+            });
         });
     </script>
 </body>

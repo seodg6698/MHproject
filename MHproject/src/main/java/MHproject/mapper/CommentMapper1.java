@@ -1,37 +1,37 @@
 package MHproject.mapper;
 
-import MHproject.DTO.CommentDto;
+import MHproject.DTO.CommentDto1;
 import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface CommentMapper {
+public interface CommentMapper1 {
     
     /**
      * 댓글 목록 조회
      * @param boardIdx 게시글 ID
      * @return 댓글 목록
      */
-    List<CommentDto> selectCommentList(int boardIdx);
+    List<CommentDto1> selectCommentList(int boardIdx);
     
     /**
      * 댓글 상세 조회
      * @param commentIdx 댓글 ID
      * @return 댓글 정보
      */
-    CommentDto selectCommentDetail(int commentIdx);
+    CommentDto1 selectCommentDetail(int commentIdx);
     
     /**
      * 댓글 등록
      * @param comment 댓글 정보
      */
-    void insertComment(CommentDto comment);
+    void insertComment(CommentDto1 comment);
     
     /**
      * 댓글 수정
      * @param comment 댓글 정보
      */
-    void updateComment(CommentDto comment);
+    void updateComment(CommentDto1 comment);
     
     /**
      * 댓글 삭제 (논리삭제)

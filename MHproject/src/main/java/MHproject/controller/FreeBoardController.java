@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import MHproject.service.CommentService;
+import MHproject.service.CommentService1;
 import MHproject.service.FreeBoardService;
 import MHproject.DTO.FreeBoardDTO;
-import MHproject.DTO.CommentDto;
+import MHproject.DTO.CommentDto1;
 import MHproject.DTO.Criteria;
 import MHproject.DTO.PageMaker;
 import jakarta.annotation.PostConstruct;
@@ -29,7 +29,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping(value = "/board")
+@RequestMapping(value = "/board1")
 public class FreeBoardController {
 	
 	// Logger 선언
@@ -40,7 +40,7 @@ public class FreeBoardController {
 	private FreeBoardService boardService;
 	
 	@Autowired
-	private CommentService commentService;
+	private CommentService1 commentService;
 
 	
 	
@@ -74,29 +74,29 @@ public class FreeBoardController {
 	*/
 
 	//게시글 작성화면
-	@GetMapping("/openBoardWrite")
+	@GetMapping("/openBoardWrite1")
 	public String openBoardWrite() throws Exception{
 	
 		return "/board/freeBoard/freeBoardWrite";
 	}
 	
 	//게시글 작성 처리
-	@PostMapping("/insertBoard")
+	@PostMapping("/insertBoard1")
 	public String insertBoard(FreeBoardDTO board,HttpSession session, Model model) throws Exception{
 		System.out.println(board.toString());
 		boardService.insertBoard(board);
 	
-		return "redirect:/board/openBoardList";
+		return "redirect:/board1/openBoardList1";
 	}
 	
 	//게시글 상세화면
-	@GetMapping("/openBoardDetail")
+	@GetMapping("/openBoardDetail1")
 	public String openBoardDetail(@RequestParam int boardIdx, Model model) throws Exception {
 	    // 기존 게시글 조회 로직
 	    FreeBoardDTO board = boardService.selectBoardDetail(boardIdx);
 	    
 	    // 댓글 목록 조회 추가
-	    List<CommentDto> comments = commentService.selectCommentList(boardIdx);
+	    List<CommentDto1> comments = commentService.selectCommentList(boardIdx);
 	    
 	    model.addAttribute("board", board);
 	    model.addAttribute("comments", comments);
@@ -106,27 +106,27 @@ public class FreeBoardController {
 	
 	
 	//게시글 수정처리
-	@PostMapping("/updateBoard")
+	@PostMapping("/updateBoard1")
 	public String updateBoard(FreeBoardDTO board) throws Exception{
 		
 		boardService.updateBoard(board);
-		return "redirect:/board/openBoardList";
+		return "redirect:/board1/openBoardList1";
 	}
 	
 	
 	//게시글 삭제처리
-	@PostMapping("/deleteBoard")
+	@PostMapping("/deleteBoard1")
 	public String deleteBoard(int boardIdx) throws Exception{ 
 		
 		boardService.deleteBoard(boardIdx);
-		return "redirect:/board/openBoardList";
+		return "redirect:/board1/openBoardList1";
   }
 	
 	
 	
 	//게시글 선택삭제
 	@ResponseBody
-	@PostMapping("/deleteSelection")
+	@PostMapping("/deleteSelection1")
 	public String deleteSelection(HttpServletRequest request,
 								@RequestParam(value="boardIdx[]") int[] boardIdx, FreeBoardDTO board) throws Exception {
 	
@@ -235,7 +235,7 @@ public class FreeBoardController {
 	
 	//페이징처리
 	
-	@GetMapping("/openBoardList")
+	@GetMapping("/openBoardList1")
 	public ModelAndView openBoardList(Criteria cri) throws Exception {
 	        
 	    ModelAndView mav = new ModelAndView("/board/freeBoard/freeBoardList");
@@ -260,7 +260,7 @@ public class FreeBoardController {
 	}
 	
 	//검색처리
-	@GetMapping("/boardList")
+	@GetMapping("/boardList1")
 	@ResponseBody
 	public List<FreeBoardDTO> searchView(HttpServletRequest request, 
 									@RequestParam(value="type") String type,
