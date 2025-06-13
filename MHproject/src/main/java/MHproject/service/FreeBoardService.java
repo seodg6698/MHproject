@@ -29,4 +29,6 @@ public interface FreeBoardService {
 
 	public List<FreeBoardDTO> searchContentsBoardList(String keyword);
 
+	public void moveBoardsToAnotherBoard(List<Integer> boardIdxList, String targetBoard) throws Exception;
+	
 }

@@ -529,9 +529,25 @@
     <div class="btn-group">
         <a href="/board1/openBoardWrite1" class="btn" id="writeBtn1">글 쓰기</a>
         <!-- admin일 때만 삭제 버튼 표시 -->
-        <button type="button" id="deleteBtn" class="btn btn-danger" 
-                th:if="${session.user != null && session.user.userid == 'admin'}">선택 삭제</button>
+        <div th:if="${session.user != null && session.user.userid == 'admin'}">
+                        <button type="button" id="deleteBtn" class="btn btn-danger">선택 삭제</button>
+                        <button type="button" id="moveBtn" class="btn btn-warning">게시글 이동</button>
+                    </div>
     </div>
+    
+    
+    <!-- 게시글 이동 컨트롤 (admin일 때만 표시) -->
+                <div class="move-controls" th:if="${session.user != null && session.user.userid == 'admin'}" style="display: none;" id="moveControls">
+                    <span>이동할 게시판:</span>
+                    <select class="move-select" id="targetBoard">
+                        <option value="">게시판 선택</option>
+                        <option value="qna">질문과 답변</option>
+                        <option value="notice">공지사항</option>
+                        <!-- 필요에 따라 추가 게시판 옵션 -->
+                    </select>
+                    <button type="button" id="confirmMoveBtn" class="btn btn-warning">이동 실행</button>
+                    <button type="button" id="cancelMoveBtn" class="btn">취소</button>
+                </div>
     
     <!-- 테이블 헤더에서도 admin일 때만 체크박스 표시 -->
     <table id="my-table" class="board_list">
@@ -585,8 +601,10 @@
     <!-- 하단 버튼 그룹에서도 admin일 때만 삭제 버튼 표시 -->
     <div class="btn-group">
         <a href="/board1/openBoardWrite1" class="btn" id="writeBtn">글 쓰기</a>
-        <button type="button" id="deleteBtn2" class="btn btn-danger" 
-                th:if="${session.user != null && session.user.userid == 'admin'}">선택 삭제</button>
+        <div th:if="${session.user != null && session.user.userid == 'admin'}">
+                        <button type="button" id="deleteBtn2" class="btn btn-danger">선택 삭제</button>
+                        <button type="button" id="moveBtn2" class="btn btn-warning">게시글 이동</button>
+                    </div>
     </div>
 </form>
 <div class="search-container">
@@ -678,6 +696,73 @@
                 $('.deleteCheck').prop('checked',false);	
             }		
         });
+        
+        
+        // 게시글 이동 버튼 클릭 이벤트
+                $('#moveBtn, #moveBtn2').on("click", function(){
+                    var checkedBoxes = $("input:checkbox[name='deleteCheck']:checked");
+                    
+                    if(checkedBoxes.length === 0) {
+                        alert("이동할 게시글을 선택해주세요.");
+                        return;
+                    }
+                    
+                    // 이동 컨트롤 표시
+                    $('#moveControls').show();
+                });
+                
+                // 이동 실행 버튼 클릭 이벤트
+                $('#confirmMoveBtn').on("click", function(){
+                    var boardIdx = [];
+                    var targetBoard = $('#targetBoard').val();
+                    
+                    if(!targetBoard) {
+                        alert("이동할 게시판을 선택해주세요.");
+                        return;
+                    }
+                    
+                    $("input:checkbox[name='deleteCheck']:checked").each(function() {
+                        boardIdx.push($(this).val());
+                    });
+                    
+                    if(boardIdx.length === 0) {
+                        alert("이동할 게시글을 선택해주세요.");
+                        return;
+                    }
+                    
+                    var targetBoardName = $('#targetBoard option:selected').text();
+                    if(!confirm("선택한 게시글을 '" + targetBoardName + "'로 이동하시겠습니까?")) {
+                        return;
+                    }
+                    
+                    // 게시글 이동 AJAX 요청
+                    $.ajax({
+                        type: "POST",
+                        url: "/board1/moveBoards",
+                        data: {
+                            "boardIdx": boardIdx,
+                            "targetBoard": targetBoard
+                        },
+                        success: function(result){
+                            console.log(result);
+                            alert(result);
+                            location.href = "/board1/openBoardList1";
+                        },
+                        error: function(xhr, status, error) {
+                            alert("게시글 이동 중 오류가 발생했습니다.");
+                            console.error("Error:", error);
+                        }
+                    });
+                });
+                
+                // 이동 취소 버튼 클릭 이벤트
+                $('#cancelMoveBtn').on("click", function(){
+                    $('#moveControls').hide();
+                    $('#targetBoard').val('');
+                    $('.deleteCheck').prop('checked', false);
+                    $('#allCheck').prop('checked', false);
+                });
+        
         
         //선택삭제 구현 (두 개의 삭제 버튼 모두 처리)			
         $('#deleteBtn, #deleteBtn2').on("click", function(){

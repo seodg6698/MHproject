@@ -211,7 +211,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	FROM
             t_board2
     WHERE
-    		contents  LIKE CONCAT('%', #{keyword}, '%')       	
+    		contents LIKE CONCAT('%', #{keyword}, '%')       	
 
   ]]>
 

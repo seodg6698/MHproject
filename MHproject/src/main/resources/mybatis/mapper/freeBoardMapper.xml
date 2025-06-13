@@ -132,6 +132,89 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	
 	</update>
 	
+	
+	<!-- 게시글 이동을 위한 쿼리 추가 -->
+	<insert id="insertBoardToTargetBoard" parameterType="map">
+	    <choose>
+	        <when test="targetBoard == 'qna'">
+	            <![CDATA[
+	            INSERT INTO t_board2
+	                (
+	                title,
+	                contents,
+	                hit_cnt,
+	                created_datetime,
+	                creator_id,
+	                updated_datetime,
+	                updater_id
+	                )
+	            VALUES
+	            (
+	                #{board.title},
+	                #{board.contents},
+	                #{board.hitCnt},
+	                #{board.createdDatetime},
+	                #{board.creatorId},
+	                NOW(),
+	                'admin'
+	            )
+	            ]]>
+	        </when>
+	        <!-- 추가 게시판이 있다면 여기에 when 절 추가 -->
+	        <when test="targetBoard == 'notice'">
+	            <![CDATA[
+	            INSERT INTO t_board3
+	                (
+	                title,
+	                contents,
+	                hit_cnt,
+	                created_datetime,
+	                creator_id,
+	                updated_datetime,
+	                updater_id
+	                )
+	            VALUES
+	            (
+	                #{board.title},
+	                #{board.contents},
+	                #{board.hitCnt},
+	                #{board.createdDatetime},
+	                #{board.creatorId},
+	                NOW(),
+	                'admin'
+	            )
+	            ]]>
+	        </when>
+	        <otherwise>
+	            <!-- 기본값 또는 오류 처리 -->
+	            <![CDATA[
+	            INSERT INTO t_board2
+	                (
+	                title,
+	                contents,
+	                hit_cnt,
+	                created_datetime,
+	                creator_id,
+	                updated_datetime,
+	                updater_id
+	                )
+	            VALUES
+	            (
+	                #{board.title},
+	                #{board.contents},
+	                #{board.hitCnt},
+	                #{board.createdDatetime},
+	                #{board.creatorId},
+	                NOW(),
+	                'admin'
+	            )
+	            ]]>
+	        </otherwise>
+	    </choose>
+	</insert>
+	
+	
+	
 	<update id="selectAndDeleteBoard" parameterType="java.util.List">
 	
 			UPDATE 

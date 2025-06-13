@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import MHproject.DTO.Criteria;
 import MHproject.DTO.FreeBoardDTO;
@@ -32,5 +33,7 @@ public interface FreeBoardMapper {
 	public List<FreeBoardDTO> searchTitleBoardList(String keyword);
 
 	public List<FreeBoardDTO> searchContentsBoardList(String keyword);
+	
+	public void insertBoardToTargetBoard(@Param("board") FreeBoardDTO board, @Param("targetBoard") String targetBoard) throws Exception;
 	
 }
