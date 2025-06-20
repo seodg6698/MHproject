@@ -4,19 +4,53 @@
 <meta charset="UTF-8">
 <title>MH 커뮤니티</title>
 <link rel="stylesheet" href="/css/main.css">
+  <!--  <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
  <header>
         <div class="top-bar">
-    <!-- 로그인하지 않은 경우 -->
-    <div class="auth-buttons" th:if="${session.user == null}">
-        <a href="/login/login">로그인/회원가입</a>
-    </div>
-    
-    <!-- 로그인한 경우 -->
-    <div class="auth-buttons" th:if="${session.user != null}">
-        <span th:text="${session.user.userid + '님'}"></span>
-        <button onclick="logout()">로그아웃</button>
+     <!-- 로그인하지 않은 경우 -->
+        <div class="auth-buttons" th:if="${session.user == null}">
+            <a href="/login/login">로그인/회원가입</a>
+        </div>
+        
+        <!-- 로그인한 경우 -->
+        <div class="auth-buttons" th:if="${session.user != null}">
+            <span th:text="${session.user.userid + '님'}"></span>
+            
+            <!-- 알림 버튼 -->
+            <div class="notification-container">
+                <button type="button" class="notification-bell" id="notificationBell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </button>
+                
+                <!-- 알림 드롭다운 -->
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="notification-header">
+                        <h4>알림</h4>
+                        <div class="notification-actions">
+                            <button type="button" class="btn-small" id="markAllReadBtn">모두 읽음</button>
+                            <button type="button" class="btn-small" id="notificationSettingsBtn">설정</button>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-list" id="notificationList">
+                        <div class="loading-message">
+                            <i class="fas fa-spinner fa-spin"></i> 알림을 불러오는 중...
+                        </div>
+                    </div>
+                    
+                    <div class="notification-footer">
+                        <button type="button" class="btn-small" id="loadMoreBtn">더 보기</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="logout()">로그아웃</button>
+        </div>
     </div>
 </div>
         <div class="main-header">
@@ -52,7 +86,7 @@
                         <ul class="dropdown">
                             <li><a href="/board1/openBoardList1">자유게시판</a></li>
                             <li><a href="/board2/openBoardList2">질문과 답변</a></li>
-                            <li><a href="#">경험 나누기</a></li>
+                            <li><a href="/board3/openBoardList3">경험 나누기</a></li>
                             <li><a href="#">토론</a></li>
                             <li><a href="#">응원의 메시지</a></li>
                         </ul>
@@ -100,18 +134,391 @@
             </div>
         </div>
     </footer>
-    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
-    function logout() {
-        if (confirm('로그아웃 하시겠습니까?')) {
-            fetch('/login/logout', {
-                method: 'POST'
-            }).then(() => {
-                window.location.href = '/user/main';
-            });
+$(document).ready(function() {
+    console.log('📢 알림 시스템 초기화 시작');
+    
+    let currentPage = 0;
+    let isLoading = false;
+    let hasMoreNotifications = true;
+    
+    // 페이지 로드 시 읽지 않은 알림 개수 조회
+    loadUnreadCount();
+    
+    // 5분마다 알림 개수 업데이트
+    setInterval(loadUnreadCount, 300000);
+    
+    // 알림 벨 클릭 이벤트
+    $('#notificationBell').on('click', function(e) {
+        console.log('🔔 알림 벨 클릭됨!');
+        e.stopPropagation();
+        toggleNotificationDropdown();
+    });
+    
+    // 문서 클릭 시 드롭다운 닫기
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.notification-container').length) {
+            $('#notificationDropdown').removeClass('show');
+        }
+    });
+    
+    // 모두 읽음 처리 버튼 이벤트 - 이벤트 위임 사용
+    $(document).on('click', '#markAllReadBtn', function(e) {
+        console.log('📖 모두 읽음 버튼 클릭됨!');
+        e.stopPropagation();
+        markAllAsRead();
+    });
+    
+    // 더 보기 버튼 이벤트 - 이벤트 위임 사용
+    $(document).on('click', '#loadMoreBtn', function(e) {
+        console.log('📋 더 보기 버튼 클릭됨!');
+        e.stopPropagation();
+        loadMoreNotifications();
+    });
+    
+    // 알림 설정 버튼 이벤트 - 이벤트 위임 사용
+    $(document).on('click', '#notificationSettingsBtn', function(e) {
+        console.log('⚙️ 설정 버튼 클릭됨!');
+        e.stopPropagation();
+        window.location.href = '/notification/settings';
+    });
+    
+    // 알림 항목 클릭 이벤트 - 이벤트 위임 사용
+    $(document).on('click', '.notification-item', function(e) {
+        console.log('📌 알림 항목 클릭됨!');
+        
+        // 삭제 버튼 클릭시에는 이동하지 않음
+        if ($(e.target).closest('.delete-notification').length) {
+            return;
+        }
+        
+        var notificationIdx = $(this).data('notification-idx');
+        var boardIdx = $(this).data('board-idx');
+        
+        console.log('🔗 알림 이동:', notificationIdx, 'boardIdx:', boardIdx);
+        
+        if (notificationIdx) {
+            // 읽음 처리 후 게시글로 이동
+            window.location.href = '/notification/goto?notificationIdx=' + notificationIdx;
+        }
+    });
+    
+    // 삭제 버튼 이벤트 - 이벤트 위임 사용
+    $(document).on('click', '.delete-notification', function(e) {
+        console.log('🗑️ 삭제 버튼 클릭됨!');
+        e.stopPropagation();
+        
+        var notificationIdx = $(this).data('notification-idx');
+        deleteNotification(notificationIdx);
+    });
+    
+    // 읽지 않은 알림 개수 조회
+    function loadUnreadCount() {
+        console.log('🔢 읽지 않은 알림 개수 조회 중...');
+        
+        $.ajax({
+            url: '/notification/unread-count',
+            type: 'GET',
+            success: function(response) {
+                console.log('✅ 알림 개수 조회 성공:', response);
+                if (response.success) {
+                    updateNotificationBadge(response.unreadCount);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('❌ 알림 개수 조회 실패:', error);
+            }
+        });
+    }
+    
+    // 알림 배지 업데이트
+    function updateNotificationBadge(count) {
+        var $badge = $('#notificationBadge');
+        var $bell = $('#notificationBell');
+        
+        if (count > 0) {
+            $badge.text(count > 99 ? '99+' : count).show();
+            $bell.addClass('has-notifications');
+        } else {
+            $badge.hide();
+            $bell.removeClass('has-notifications');
         }
     }
     
+    // 알림 드롭다운 토글
+    function toggleNotificationDropdown() {
+        var $dropdown = $('#notificationDropdown');
+        
+        if ($dropdown.hasClass('show')) {
+            $dropdown.removeClass('show');
+            console.log('📋 드롭다운 닫음');
+        } else {
+            $dropdown.addClass('show');
+            console.log('📋 드롭다운 열음');
+            loadNotifications(true); // 첫 페이지 로드
+        }
+    }
+    
+    // 알림 목록 로드
+    function loadNotifications(reset) {
+        if (typeof reset === 'undefined') reset = false;
+        if (isLoading) return;
+        
+        console.log('📋 알림 목록 로드 시작 - reset:', reset);
+        
+        if (reset) {
+            currentPage = 0;
+            hasMoreNotifications = true;
+            $('#notificationList').html('<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> 알림을 불러오는 중...</div>');
+        }
+        
+        if (!hasMoreNotifications) return;
+        
+        isLoading = true;
+        
+        $.ajax({
+            url: '/notification/list',
+            type: 'GET',
+            data: {
+                page: currentPage,
+                size: 10
+            },
+            success: function(response) {
+                console.log('✅ 알림 목록 로드 성공:', response);
+                
+                if (response.success) {
+                    renderNotifications(response.notifications, reset);
+                    updateNotificationBadge(response.unreadCount);
+                    
+                    if (response.notifications.length < 10) {
+                        hasMoreNotifications = false;
+                        $('#loadMoreBtn').hide();
+                    } else {
+                        $('#loadMoreBtn').show();
+                    }
+                    
+                    currentPage++;
+                } else {
+                    if (response.needLogin) {
+                        window.location.href = '/login/login';
+                    } else {
+                        showErrorMessage('알림을 불러올 수 없습니다.');
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('❌ 알림 로드 실패:', error);
+                showErrorMessage('알림을 불러오는 중 오류가 발생했습니다.');
+            },
+            complete: function() {
+                isLoading = false;
+            }
+        });
+    }
+    
+    // 더 많은 알림 로드
+    function loadMoreNotifications() {
+        loadNotifications(false);
+    }
+    
+    // 알림 목록 렌더링
+    function renderNotifications(notifications, reset) {
+        var $list = $('#notificationList');
+        
+        console.log('🎨 알림 렌더링:', notifications.length, '개');
+        
+        if (reset) {
+            $list.empty();
+        }
+        
+        if (notifications.length === 0 && reset) {
+            $list.html(
+                '<div class="empty-notifications">' +
+                    '<i class="fas fa-bell-slash"></i>' +
+                    '<p>새로운 알림이 없습니다.</p>' +
+                '</div>'
+            );
+            return;
+        }
+        
+        for (var i = 0; i < notifications.length; i++) {
+            var notification = notifications[i];
+            var notificationHtml = createNotificationItem(notification);
+            $list.append(notificationHtml);
+        }
+    }
+    
+    // 알림 항목 생성
+    function createNotificationItem(notification) {
+        var iconClass = getNotificationIcon(notification.notificationType);
+        var timeAgo = formatTimeAgo(notification.createdDatetime);
+        var isUnread = !notification.isRead;
+        
+        var html = '<div class="notification-item ' + (isUnread ? 'unread' : '') + '" ' +
+                   'data-notification-idx="' + notification.notificationIdx + '" ' +
+                   'data-board-idx="' + notification.boardIdx + '">' +
+                   '<div class="notification-content">' +
+                   '<div class="notification-icon ' + notification.notificationType.toLowerCase() + '">' +
+                   '<i class="' + iconClass + '"></i>' +
+                   '</div>' +
+                   '<div class="notification-text">' +
+                   '<div class="notification-title">' + escapeHtml(notification.title) + '</div>' +
+                   '<div class="notification-message">' + escapeHtml(notification.content) + '</div>' +
+                   '<div class="notification-time">' + timeAgo + '</div>' +
+                   '</div>' +
+                   '</div>' +
+                   '<div class="notification-actions-item">' +
+                   '<button type="button" class="btn-small delete-notification" ' +
+                   'data-notification-idx="' + notification.notificationIdx + '">' +
+                   '<i class="fas fa-times"></i>' +
+                   '</button>' +
+                   '</div>' +
+                   '</div>';
+        
+        return html;
+    }
+    
+    // 알림 타입별 아이콘
+    function getNotificationIcon(type) {
+        switch(type) {
+            case 'LIKE': return 'fas fa-heart';
+            case 'COMMENT': return 'fas fa-comment';
+            case 'REPLY': return 'fas fa-reply';
+            default: return 'fas fa-bell';
+        }
+    }
+    
+    // 시간 경과 포맷팅
+    function formatTimeAgo(datetime) {
+        var now = new Date();
+        var notificationTime = new Date(datetime);
+        var diffInMinutes = Math.floor((now - notificationTime) / (1000 * 60));
+        
+        if (diffInMinutes < 1) return '방금 전';
+        else if (diffInMinutes < 60) return diffInMinutes + '분 전';
+        else if (diffInMinutes < 1440) return Math.floor(diffInMinutes / 60) + '시간 전';
+        else return Math.floor(diffInMinutes / 1440) + '일 전';
+    }
+    
+    // HTML 이스케이프
+    function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // 모든 알림 읽음 처리
+    function markAllAsRead() {
+        console.log('📖 모든 알림 읽음 처리 시작');
+        
+        $.ajax({
+            url: '/notification/mark-all-read',
+            type: 'POST',
+            success: function(response) {
+                console.log('✅ 모든 알림 읽음 처리 응답:', response);
+                
+                if (response.success) {
+                    // 모든 알림을 읽음 상태로 변경
+                    $('.notification-item.unread').removeClass('unread');
+                    updateNotificationBadge(0);
+                    
+                    // 성공 메시지 표시
+                    showSuccessMessage(response.message);
+                } else {
+                    if (response.needLogin) {
+                        window.location.href = '/login/login';
+                    } else {
+                        showErrorMessage(response.message);
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('❌ 모든 알림 읽음 처리 실패:', error);
+                showErrorMessage('알림 처리 중 오류가 발생했습니다.');
+            }
+        });
+    }
+    
+    // 알림 삭제
+    function deleteNotification(notificationIdx) {
+        console.log('🗑️ 알림 삭제 시작:', notificationIdx);
+        
+        
+        $.ajax({
+            url: '/notification/delete',
+            type: 'POST',
+            data: {
+                notificationIdx: notificationIdx
+            },
+            success: function(response) {
+                console.log('✅ 알림 삭제 응답:', response);
+                
+                if (response.success) {
+                    // 해당 알림 항목 제거
+                    var $item = $('.notification-item[data-notification-idx="' + notificationIdx + '"]');
+                    $item.fadeOut(300, function() {
+                        $(this).remove();
+                        
+                        // 알림이 없으면 빈 상태 표시
+                        if ($('.notification-item').length === 0) {
+                            $('#notificationList').html(
+                                '<div class="empty-notifications">' +
+                                    '<i class="fas fa-bell-slash"></i>' +
+                                    '<p>새로운 알림이 없습니다.</p>' +
+                                '</div>'
+                            );
+                        }
+                    });
+                    
+                    updateNotificationBadge(response.unreadCount);
+                } else {
+                    if (response.needLogin) {
+                        window.location.href = '/login/login';
+                    } else {
+                        showErrorMessage(response.message);
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('❌ 알림 삭제 실패:', error);
+                showErrorMessage('알림 삭제 중 오류가 발생했습니다.');
+            }
+        });
+    }
+    
+    // 성공 메시지 표시
+    function showSuccessMessage(message) {
+        console.log('✅ 성공:', message);
+        // 간단한 토스트 메시지 (선택적으로 구현)
+        alert(message); // 임시로 alert 사용
+    }
+    
+    // 에러 메시지 표시
+    function showErrorMessage(message) {
+        console.error('❌ 에러:', message);
+        var $list = $('#notificationList');
+        $list.html(
+            '<div class="loading-message" style="color: #e74c3c;">' +
+                '<i class="fas fa-exclamation-triangle"></i> ' + message +
+            '</div>'
+        );
+    }
+    
+    console.log('✅ 알림 시스템 초기화 완료');
+});
+
+// 전역 함수들
+function logout() {
+    if (confirm('로그아웃 하시겠습니까?')) {
+        fetch('/login/logout', {
+            method: 'POST'
+        }).then(function() {
+            window.location.href = '/user/main';
+            console.log("로그아웃 되었습니다.");
+        });
+    }
+}
     </script>
 </body>
 </html>

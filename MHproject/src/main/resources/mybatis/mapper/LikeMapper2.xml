@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="MHproject.mapper.BoardLikeMapper2">
+
+    <!-- 좋아요 추가 -->
+    <insert id="insertLike" parameterType="MHproject.DTO.BoardLikeDTO2">
+        <![CDATA[
+            INSERT INTO t_board_like2
+                (
+                board_idx,
+                user_id,
+                created_datetime
+                )
+            VALUES
+            (
+                #{boardIdx},
+                #{userId},
+                NOW()
+            )
+        ]]>
+    </insert>
+    
+    <!-- 좋아요 삭제 -->
+    <delete id="deleteLike">
+        <![CDATA[
+            DELETE FROM t_board_like2
+            WHERE board_idx = #{boardIdx} 
+              AND user_id = #{userId}
+        ]]>
+    </delete>
+    
+    <!-- 사용자의 특정 게시글 좋아요 여부 확인 -->
+    <select id="checkUserLike" resultType="int">
+        <![CDATA[
+            SELECT COUNT(*)
+            FROM t_board_like2
+            WHERE board_idx = #{boardIdx} 
+              AND user_id = #{userId}
+        ]]>
+    </select>
+    
+    <!-- 특정 게시글의 총 좋아요 개수 조회 -->
+    <select id="getLikeCount" resultType="int">
+        <![CDATA[
+            SELECT COUNT(*)
+            FROM t_board_like2
+            WHERE board_idx = #{boardIdx}
+        ]]>
+    </select>
+    
+    <!-- 게시글의 좋아요 개수 업데이트 (t_board2 테이블) -->
+    <update id="updateBoardLikeCount">
+        <![CDATA[
+            UPDATE t_board2 
+            SET like_cnt = #{likeCnt}
+            WHERE board_idx = #{boardIdx}
+        ]]>
+    </update>
+
+</mapper>

@@ -3,9 +3,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
     
-    <mapper namespace="MHproject.mapper.QnABoardMapper">
+    <mapper namespace="MHproject.mapper.ExperienceBoardMapper">
 
-<resultMap id="BoardDto" type="MHproject.DTO.QnABoardDTO">
+<resultMap id="BoardDto" type="MHproject.DTO.ExperienceBoardDTO">
     <result property="boardIdx" column="board_idx" />
     <result property="title" column="title" />
     <result property="contents" column="contents" />
@@ -18,7 +18,7 @@
     <!-- javaType : "객체를 속성으로 가지고있는 해당 객체의 CamelCase명 또는, @Alias("키값")" -->
 <!-- property : "객체참조변수명" -->
 <!-- id : "PK" -->
-    <association property="boardDto" javaType="MHproject.DTO.QnABoardDTO">
+    <association property="boardDto" javaType="MHproject.DTO.ExperienceBoardDTO">
          <id property="boardIdx" column="board_idx" />
          <result property="title" column="title" />
          <result property="contents" column="contents" />
@@ -56,9 +56,9 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	</select>
 	 -->
 	
-	<insert id="insertBoard" parameterType="MHproject.DTO.QnABoardDTO">
+	<insert id="insertBoard" parameterType="MHproject.DTO.ExperienceBoardDTO">
 	<![CDATA[
-			INSERT INTO t_board2
+			INSERT INTO t_board3
 				(
 				title,
 				contents,
@@ -79,7 +79,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	<update id="updateHitCount" parameterType="int">
 			<![CDATA[
 			UPDATE
-				t_board2
+				t_board3
 			SET	
 				hit_cnt = hit_cnt + 1
 			WHERE
@@ -88,7 +88,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	
 	</update>
 	
-	<select id="selectBoardDetail" parameterType="int" resultType="MHproject.DTO.QnABoardDTO">
+	<select id="selectBoardDetail" parameterType="int" resultType="MHproject.DTO.ExperienceBoardDTO">
 	<![CDATA[
 		SELECT
 			board_idx AS boardIdx, 
@@ -98,7 +98,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 			created_datetime AS createdDatetime,
 			creator_id AS creatorId
 		FROM
-			t_board2
+			t_board3
 		WHERE
 			board_idx = #{boardIdx} AND deleted_yn = 'N'	
 	
@@ -107,38 +107,9 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	
 	</select>
 	
-	
-	<!-- 좋아요 정보를 포함한 게시글 상세 조회 -->
-	<select id="selectBoardDetailWithLike" resultType="MHproject.DTO.QnABoardDTO">
-	<![CDATA[
-		SELECT
-			b.board_idx AS boardIdx, 
-			b.title AS title, 
-			b.contents AS contents, 
-			b.hit_cnt AS hitCnt,
-			b.created_datetime AS createdDatetime,
-			b.creator_id AS creatorId,
-			b.like_cnt AS likeCnt,
-			CASE 
-				WHEN #{userId} IS NULL THEN false
-				WHEN l.like_idx IS NOT NULL THEN true 
-				ELSE false 
-			END AS isLiked
-		FROM
-			t_board2 b
-		LEFT JOIN t_board_like2 l ON b.board_idx = l.board_idx 
-			AND l.user_id = #{userId}
-		WHERE
-			b.board_idx = #{boardIdx} 
-			AND b.deleted_yn = 'N'	
-		]]>
-	</select>
-	
-	
-	
-	<update id="updateBoard" parameterType="MHproject.DTO.QnABoardDTO">
+	<update id="updateBoard" parameterType="MHproject.DTO.ExperienceBoardDTO">
 		<![CDATA[
-			UPDATE t_board2 SET 
+			UPDATE t_board3 SET 
 				title = #{title},
 				contents = #{contents},
 				updated_datetime = NOW(),
@@ -150,7 +121,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	
 	<update id="deleteBoard" parameterType="int">
 		<![CDATA[
-			UPDATE t_board2 SET 
+			UPDATE t_board3 SET 
 				deleted_yn = "Y",
 				updated_datetime = NOW(),
 				updater_id = 'admin'
@@ -161,32 +132,11 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	
 	</update>
 	
-	<update id="selectAndDeleteBoard" parameterType="java.util.List">
-	
-			UPDATE 
-				t_board2 
-			SET 
-				deleted_yn = "Y",
-				updated_datetime = NOW(),
-				updater_id = 'admin'
-			WHERE 
-				board_idx
-			IN
-			 <foreach collection="list" item="boardIdx" separator="," open="(" close=")">
-    			#{boardIdx}
-   			 </foreach>	
-   		
-		
-		
-	
-	</update>
-	
-	
 	
 	<!-- 게시글 이동을 위한 쿼리 추가 -->
 	<insert id="insertBoardToTargetBoard" parameterType="map">
 	    <choose>
-	        <when test="targetBoard == 'free'">
+	        <when test="targetBoard == 'qna'">
 	            <![CDATA[
 	            INSERT INTO t_board2
 	                (
@@ -211,9 +161,9 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	            ]]>
 	        </when>
 	        <!-- 추가 게시판이 있다면 여기에 when 절 추가 -->
-	        <when test="targetBoard == 'Ex'">
+	        <when test="targetBoard == 'free'">
 	            <![CDATA[
-	            INSERT INTO t_board3
+	            INSERT INTO t_board1
 	                (
 	                title,
 	                contents,
@@ -263,6 +213,27 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	    </choose>
 	</insert>
 	
+	
+	
+	<update id="selectAndDeleteBoard" parameterType="java.util.List">
+	
+			UPDATE 
+				t_board3 
+			SET 
+				deleted_yn = "Y",
+				updated_datetime = NOW(),
+				updater_id = 'admin'
+			WHERE 
+				board_idx
+			IN
+			 <foreach collection="list" item="boardIdx" separator="," open="(" close=")">
+    			#{boardIdx}
+   			 </foreach>	
+   		
+		
+		
+	
+	</update>
 		
 	
 	<select id="selectBoardList" resultType="hashmap" parameterType="hashmap">
@@ -274,54 +245,26 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 			creator_id AS creatorId,
 			created_datetime AS createdDatetime
         FROM
-            t_board2
+            t_board3
         WHERE
             deleted_yn = 'N'
         ORDER BY board_idx DESC
         LIMIT #{pageStart}, #{perPageNum}
     ]]>
 </select>
-
-
-<!-- 좋아요 정보를 포함한 게시글 목록 조회 -->
-	<select id="selectBoardListWithLike" resultType="hashmap">
-    <![CDATA[
-        SELECT
-            b.board_idx AS boardIdx,
-			b.title AS title,
-			b.hit_cnt AS hitCnt,
-			b.creator_id AS creatorId,
-			b.created_datetime AS createdDatetime,
-			b.like_cnt AS likeCnt,
-			CASE 
-				WHEN #{userId} IS NULL THEN false
-				WHEN l.like_idx IS NOT NULL THEN true 
-				ELSE false 
-			END AS isLiked
-        FROM
-            t_board2 b
-        LEFT JOIN t_board_like2 l ON b.board_idx = l.board_idx 
-			AND l.user_id = #{userId}
-        WHERE
-            b.deleted_yn = 'N'
-        ORDER BY b.board_idx DESC
-        LIMIT #{cri.pageStart}, #{cri.perPageNum}
-    ]]>
-	</select>
-
 	
 	<select id="countBoardList" resultType="Integer">
     <![CDATA[
         SELECT
             count(*)
         FROM
-            t_board2
+            t_board3
         WHERE
             deleted_yn = 'N'
     ]]>
 </select>
 
-<select id="searchTitleBoardList" resultType="MHproject.DTO.QnABoardDTO" parameterType="String">
+<select id="searchTitleBoardList" resultType="MHproject.DTO.ExperienceBoardDTO" parameterType="String">
  <![CDATA[
 	SELECT
 			board_idx AS boardIdx,
@@ -330,7 +273,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 			creator_id AS creatorId,
 			created_datetime AS createdDatetime
 	FROM
-            t_board2
+            t_board3
     WHERE
    			title LIKE CONCAT('%', #{keyword}, '%') 	
          ]]>
@@ -340,34 +283,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
   </select>
   
   
-  
-  <!-- 좋아요 정보 포함한 제목 검색 -->
-	<select id="searchTitleBoardListWithLike" resultType="MHproject.DTO.FreeBoardDTO">
-	 <![CDATA[
-		SELECT
-				b.board_idx AS boardIdx,
-				b.title AS title,
-				b.hit_cnt AS hitCnt,
-				b.creator_id AS creatorId,
-				b.created_datetime AS createdDatetime,
-				b.like_cnt AS likeCnt,
-				CASE 
-					WHEN #{userId} IS NULL THEN false
-					WHEN l.like_idx IS NOT NULL THEN true 
-					ELSE false 
-				END AS isLiked
-		FROM
-	            t_board2 b
-	    LEFT JOIN t_board_like2 l ON b.board_idx = l.board_idx 
-			AND l.user_id = #{userId}
-	    WHERE
-	   			b.title LIKE CONCAT('%', #{keyword}, '%') 
-	   			AND b.deleted_yn = 'N'
-	     ]]>
-	</select>
-  
-  
-  <select id="searchContentsBoardList" resultType="MHproject.DTO.QnABoardDTO" parameterType="String">
+  <select id="searchContentsBoardList" resultType="MHproject.DTO.ExperienceBoardDTO" parameterType="String">
 <![CDATA[
 	SELECT
 			board_idx AS boardIdx,
@@ -376,9 +292,9 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 			creator_id AS creatorId,
 			created_datetime AS createdDatetime
 	FROM
-            t_board2
+            t_board3
     WHERE
-    		contents LIKE CONCAT('%', #{keyword}, '%')       	
+    		contents  LIKE CONCAT('%', #{keyword}, '%')       	
 
   ]]>
 
@@ -386,30 +302,7 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	
 	
 
-<!-- 좋아요 정보 포함한 내용 검색 -->
-	<select id="searchContentsBoardListWithLike" resultType="MHproject.DTO.FreeBoardDTO">
-	<![CDATA[
-		SELECT
-				b.board_idx AS boardIdx,
-				b.title AS title,
-				b.hit_cnt AS hitCnt,
-				b.creator_id AS creatorId,
-				b.created_datetime AS createdDatetime,
-				b.like_cnt AS likeCnt,
-				CASE 
-					WHEN #{userId} IS NULL THEN false
-					WHEN l.like_idx IS NOT NULL THEN true 
-					ELSE false 
-				END AS isLiked
-		FROM
-	            t_board2 b
-	    LEFT JOIN t_board_like2 l ON b.board_idx = l.board_idx 
-			AND l.user_id = #{userId}
-	    WHERE
-	    		b.contents  LIKE CONCAT('%', #{keyword}, '%')
-	    		AND b.deleted_yn = 'N'      	
-	  ]]>
-	</select>
+
 
 
 

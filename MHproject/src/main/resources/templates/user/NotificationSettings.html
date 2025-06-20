@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알림 설정 - MH 커뮤니티</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .settings-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .settings-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .settings-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .settings-header p {
+            margin: 8px 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .settings-body {
+            padding: 30px;
+        }
+
+        .setting-group {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .setting-group:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .setting-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .setting-icon {
+            width: 20px;
+            color: #667eea;
+        }
+
+        /* 토글 스위치 스타일 */
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 28px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .toggle-slider:hover {
+            box-shadow: 0 0 0 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .save-button {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .save-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .save-button:active {
+            transform: translateY(0);
+        }
+
+        .save-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .settings-container {
+                margin: 20px auto;
+                padding: 0 15px;
+            }
+
+            .settings-header {
+                padding: 20px;
+            }
+
+            .settings-header h1 {
+                font-size: 20px;
+            }
+
+            .settings-body {
+                padding: 20px;
+            }
+
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .toggle-switch {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <a href="javascript:history.back()" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            뒤로 가기
+        </a>
+
+        <div class="settings-card">
+            <div class="settings-header">
+                <h1><i class="fas fa-bell"></i> 알림 설정</h1>
+                <p>원하는 알림만 받아보세요</p>
+            </div>
+
+            <div class="settings-body">
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i>
+                    <span>설정이 저장되었습니다.</span>
+                </div>
+
+                <div class="error-message" id="errorMessage">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>설정 저장 중 오류가 발생했습니다.</span>
+                </div>
+
+                <form id="notificationSettingsForm">
+                    <div class="setting-group">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">
+                                    <i class="fas fa-heart setting-icon"></i>
+                                    좋아요 알림
+                                </div>
+                                <div class="setting-description">
+                                    다른 사용자가 회원님의 게시글에 좋아요를 눌렀을 때 알림을 받습니다.
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="likeNotification" name="likeNotification" 
+                                       th:checked="${setting.likeNotification}">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">
+                                    <i class="fas fa-comment setting-icon"></i>
+                                    댓글 알림
+                                </div>
+                                <div class="setting-description">
+                                    다른 사용자가 회원님의 게시글에 댓글을 남겼을 때 알림을 받습니다.
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="commentNotification" name="commentNotification"
+                                       th:checked="${setting.commentNotification}">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">
+                                    <i class="fas fa-reply setting-icon"></i>
+                                    답글 알림
+                                </div>
+                                <div class="setting-description">
+                                    다른 사용자가 회원님의 댓글에 답글을 남겼을 때 알림을 받습니다.
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="replyNotification" name="replyNotification"
+                                       th:checked="${setting.replyNotification}">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">
+                                    <i class="fas fa-envelope setting-icon"></i>
+                                    이메일 알림 (추후 제공)
+                                </div>
+                                <div class="setting-description">
+                                    중요한 알림을 이메일로도 받아보세요. (현재 준비 중)
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="emailNotification" name="emailNotification" 
+                                       disabled th:checked="${setting.emailNotification}">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="save-button" id="saveButton">
+                        <i class="fas fa-save"></i> 설정 저장
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 폼 제출 이벤트
+            $('#notificationSettingsForm').on('submit', function(e) {
+                e.preventDefault();
+                saveNotificationSettings();
+            });
+
+            // 설정 저장 함수
+            function saveNotificationSettings() {
+                const $saveButton = $('#saveButton');
+                const originalText = $saveButton.html();
+                
+                // 버튼 로딩 상태
+                $saveButton.prop('disabled', true)
+                          .html('<i class="fas fa-spinner fa-spin"></i> 저장 중...');
+
+                // 폼 데이터 수집
+                const formData = {
+                    likeNotification: $('#likeNotification').is(':checked'),
+                    commentNotification: $('#commentNotification').is(':checked'),
+                    replyNotification: $('#replyNotification').is(':checked'),
+                    emailNotification: $('#emailNotification').is(':checked')
+                };
+
+                $.ajax({
+                    url: '/notification/settings/update',
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            showSuccessMessage(response.message);
+                        } else {
+                            if (response.needLogin) {
+                                alert('로그인이 필요합니다.');
+                                window.location.href = '/login/login';
+                            } else {
+                                showErrorMessage(response.message);
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('설정 저장 실패:', error);
+                        showErrorMessage('설정 저장 중 오류가 발생했습니다.');
+                    },
+                    complete: function() {
+                        // 버튼 상태 복원
+                        $saveButton.prop('disabled', false).html(originalText);
+                    }
+                });
+            }
+
+            // 성공 메시지 표시
+            function showSuccessMessage(message) {
+                $('#errorMessage').hide();
+                $('#successMessage').find('span').text(message);
+                $('#successMessage').show();
+                
+                // 3초 후 자동 숨김
+                setTimeout(function() {
+                    $('#successMessage').fadeOut();
+                }, 3000);
+            }
+
+            // 에러 메시지 표시
+            function showErrorMessage(message) {
+                $('#successMessage').hide();
+                $('#errorMessage').find('span').text(message);
+                $('#errorMessage').show();
+                
+                // 5초 후 자동 숨김
+                setTimeout(function() {
+                    $('#errorMessage').fadeOut();
+                }, 5000);
+            }
+
+            // 토글 스위치 애니메이션 개선
+            $('.toggle-switch input').on('change', function() {
+                const $slider = $(this).siblings('.toggle-slider');
+                $slider.addClass('animate');
+                
+                setTimeout(function() {
+                    $slider.removeClass('animate');
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>

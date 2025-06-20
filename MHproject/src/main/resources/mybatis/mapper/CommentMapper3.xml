@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MHproject.mapper.CommentMapper3">
+
+    <!-- 댓글 목록 조회 -->
+    <select id="selectCommentList" parameterType="int" resultType="MHproject.DTO.CommentDto3">
+        SELECT 
+            comment_idx AS commentIdx,
+            board_idx AS boardIdx,
+            parent_idx AS parentIdx,
+            content,
+            creator_id AS creatorId,
+            created_datetime AS createdDatetime,
+            updated_datetime AS updatedDatetime,
+            deleted_yn,
+            depth,
+            sort_order AS sortOrder
+        FROM tb_comment3
+        WHERE board_idx = #{boardIdx} 
+          AND deleted_yn = 'N'
+        ORDER BY 
+            CASE WHEN parent_idx = 0 THEN comment_idx ELSE parent_idx END,
+            depth,
+            sort_order,
+            comment_idx
+    </select>
+
+    <!-- 댓글 상세 조회 -->
+    <select id="selectCommentDetail" parameterType="int" resultType="MHproject.DTO.CommentDto3">
+        SELECT 
+            comment_idx,
+            board_idx,
+            parent_idx,
+            content,
+            creator_id,
+            created_datetime,
+            updated_datetime,
+            deleted_yn,
+            depth,
+            sort_order
+        FROM tb_comment3 
+        WHERE comment_idx = #{commentIdx}
+          AND deleted_yn = 'N'
+    </select>
+
+    <!-- 댓글 등록 -->
+    <insert id="insertComment" parameterType="MHproject.DTO.CommentDto3">
+        <selectKey keyProperty="commentIdx" resultType="int" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO tb_comment3 (
+            board_idx,
+            parent_idx,
+            content,
+            creator_id,
+            depth,
+            sort_order
+        ) VALUES (
+            #{boardIdx},
+            #{parentIdx},
+            #{content},
+            #{creatorId},
+            #{depth},
+            (SELECT IFNULL(MAX(sort_order), 0) + 1 
+             FROM tb_comment3 c 
+             WHERE c.board_idx = #{boardIdx} 
+               AND c.parent_idx = #{parentIdx}
+               AND c.deleted_yn = 'N')
+        )
+    </insert>
+
+    <!-- 댓글 수정 -->
+    <update id="updateComment" parameterType="MHproject.DTO.CommentDto3">
+        UPDATE tb_comment3 
+        SET content = #{content},
+            updated_datetime = CURRENT_TIMESTAMP
+        WHERE comment_idx = #{commentIdx}
+          AND deleted_yn = 'N'
+    </update>
+
+    <!-- 댓글 삭제 (논리삭제) -->
+    <update id="deleteComment" parameterType="int">
+        UPDATE tb_comment3 
+        SET deleted_yn = 'Y',
+            updated_datetime = CURRENT_TIMESTAMP
+        WHERE comment_idx = #{commentIdx}
+    </update>
+
+    <!-- 댓글 개수 조회 -->
+    <select id="selectCommentCount" parameterType="int" resultType="int">
+        SELECT COUNT(*) 
+        FROM tb_comment3 
+        WHERE board_idx = #{boardIdx} 
+          AND deleted_yn = 'N'
+    </select>
+
+    <!-- 정렬 순서 업데이트 -->
+    <update id="updateSortOrder">
+        UPDATE tb_comment3
+        SET sort_order = #{sortOrder}
+        WHERE comment_idx = #{commentIdx}
+    </update>
+
+    <!-- 최대 정렬 순서 조회 -->
+    <select id="selectMaxSortOrder" resultType="int">
+        SELECT IFNULL(MAX(sort_order), 0)
+        FROM tb_comment3 
+        WHERE board_idx = #{boardIdx} 
+          AND parent_idx = #{parentIdx}
+          AND deleted_yn = 'N'
+    </select>
+
+</mapper>

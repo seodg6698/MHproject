@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <title>자유게시판 - MH 커뮤니티</title>
     <link rel="stylesheet" th:href="@{/css/main.css}"> 
-    <!-- <link rel="stylesheet" th:href="@{/board_css/freeBoardList.css}"/> -->
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
          /* 게시판 전용 스타일 */
         
         /* 드롭다운 메뉴 간격 문제 해결 - 강제 덮어쓰기 */
         .main-nav .dropdown {
             position: absolute !important;
-            top: 100% !important; /* 50%를 100%로 강제 변경 */
+            top: 100% !important; 
             left: 0 !important;
             width: 200px !important;
             background-color: #fff !important;
@@ -23,7 +23,7 @@
             transition: all 0.3s !important;
             transform: translateY(0) !important;
             z-index: 10 !important;
-            margin-top: 15px !important; /* margin-top 제거 */
+            margin-top: 15px !important;
         }
 
         .main-nav > ul > li:hover .dropdown {
@@ -108,6 +108,27 @@
             color: #3498db;
         }
 
+        /* 좋아요 관련 스타일 */
+        .like-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #ff6b6b;
+            font-size: 14px;
+        }
+
+        .like-info i {
+            font-size: 12px;
+        }
+
+        .like-info.has-likes {
+            color: #ff6b6b;
+        }
+
+        .like-info.no-likes {
+            color: #ccc;
+        }
+
         .btn-group {
             display: flex;
             gap: 10px;
@@ -140,49 +161,105 @@
             background-color: #c0392b;
         }
 
-        #serch {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
+        .btn-warning {
+            background-color: #f39c12;
         }
 
-        #searchFrm {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
+        .btn-warning:hover {
+            background-color: #e67e22;
         }
 
-        #searchFrm select,
-        #searchFrm input[type="text"] {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
+        /* 검색바 컨테이너 */
+        .search-container {
+		    background: white;
+		    border-radius: 50px;
+		    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+		    padding: 8px;
+		    display: flex;
+		    align-items: center;
+		    width: 100%;
+		    border: 1px solid #e1e5e9;
+		    justify-content: center
+		}
 
-        #searchFrm select {
-            min-width: 100px;
-        }
-
-        #searchFrm input[type="text"] {
-            min-width: 200px;
-        }
-
-        #searchBtn {
-            background-color: #3498db;
-            color: #fff;
-            padding: 8px 16px;
+        .close-btn {
+            background: none;
             border: none;
-            border-radius: 4px;
+            padding: 12px;
             cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
+            color: #9ca3af;
+            font-size: 16px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            margin-left: 4px;
         }
 
-        #searchBtn:hover {
-            background-color: #2980b9;
+        .close-btn:hover {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .search-select {
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #6b7280;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px 12px;
+            margin-left: 8px;
+            border-right: 1px solid #e5e7eb;
+            min-width: 80px;
+        }
+
+        .search-select:focus {
+            color: #374151;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            padding: 12px 16px;
+            color: #374151;
+            background: transparent;
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+            font-weight: 300;
+        }
+
+        .search-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 4px;
+        }
+
+        .search-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
+        .search-container:focus-within {
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+            border-color: #3b82f6;
         }
 
         /* 페이징 스타일 */
@@ -226,7 +303,6 @@
             font-size: 1.1rem;
         }
 
-        /* 체크박스 스타일 */
         input[type="checkbox"] {
             width: 18px;
             height: 18px;
@@ -248,131 +324,13 @@
                 padding: 8px 5px;
             }
 
-            #searchFrm {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            #searchFrm select,
-            #searchFrm input[type="text"] {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-            
-            }
-            
-             /* 검색바 컨테이너 */
-        .search-container {
-		    background: white;
-		    border-radius: 50px;
-		    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-		    padding: 8px;
-		    display: flex;
-		    align-items: center;
-		    width: 100%;
-		    border: 1px solid #e1e5e9;
-		   justify-content: center
-		    
-		}
-
-        /* 닫기 버튼 */
-        .close-btn {
-            background: none;
-            border: none;
-            padding: 12px;
-            cursor: pointer;
-            color: #9ca3af;
-            font-size: 16px;
-            border-radius: 50%;
-            transition: all 0.2s ease;
-            margin-left: 4px;
-        }
-
-        .close-btn:hover {
-            background-color: #f3f4f6;
-            color: #6b7280;
-        }
-
-        /* 셀렉트 박스 */
-        .search-select {
-            border: none;
-            outline: none;
-            background: transparent;
-            color: #6b7280;
-            font-size: 14px;
-            cursor: pointer;
-            padding: 8px 12px;
-            margin-left: 8px;
-            border-right: 1px solid #e5e7eb;
-            min-width: 80px;
-        }
-
-        .search-select:focus {
-            color: #374151;
-        }
-
-        /* 검색 입력창 */
-        .search-input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 16px;
-            padding: 12px 16px;
-            color: #374151;
-            background: transparent;
-        }
-
-        .search-input::placeholder {
-            color: #9ca3af;
-            font-weight: 300;
-        }
-
-        /* 검색 버튼 */
-        .search-btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 40px;
-            padding: 12px 24px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-right: 4px;
-        }
-
-        .search-btn:hover {
-            background: #2563eb;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .search-btn:active {
-            transform: translateY(0);
-        }
-
-        /* 포커스 상태 */
-        .search-container:focus-within {
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
-            border-color: #3b82f6;
-        }
-
-        /* 반응형 디자인 */
-        @media (max-width: 768px) {
             .search-container {
                 max-width: 100%;
                 padding: 6px;
             }
 
             .search-input {
-                font-size: 16px; /* iOS 줌 방지 */
+                font-size: 16px;
                 padding: 10px 12px;
             }
 
@@ -391,11 +349,15 @@
                 padding: 8px;
                 font-size: 14px;
             }
+
+            .btn-group {
+                flex-direction: column;
+            }
         }
 
         @media (max-width: 480px) {
             .search-btn span {
-                display: none; /* 작은 화면에서는 텍스트 숨김 */
+                display: none;
             }
 
             .search-btn {
@@ -403,7 +365,6 @@
             }
         }
 
-        /* 애니메이션 */
         .search-container {
             animation: slideUp 0.3s ease-out;
         }
@@ -418,51 +379,18 @@
                 transform: translateY(0);
             }
         }
-
-        /* 다크모드 대응 */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #1f2937;
-            }
-
-            .search-container {
-                background: #374151;
-                border-color: #4b5563;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            }
-
-            .search-input {
-                color: #f9fafb;
-            }
-
-            .search-input::placeholder {
-                color: #9ca3af;
-            }
-
-            .search-select {
-                color: #d1d5db;
-            }
-
-            .close-btn {
-                color: #9ca3af;
-            }
-
-            .close-btn:hover {
-                background-color: #4b5563;
-                color: #d1d5db;
-            }
-
-            .search-container:focus-within {
-                box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
-            }
-        }
-        
     </style>
     
-    <script th:inline="javascript">
-    var isLoggedIn = /*[[${session.user != null}]]*/ false;
-    var userId = /*[[${session.user?.userid ?: ''}]]*/ '';
-    var isAdmin = /*[[${session.user?.userid == 'admin'}]]*/ false; // 추가: admin 여부 확인
+   <script th:inline="javascript">
+// 더 안전한 방식으로 변수 초기화
+var isLoggedIn = /*[[${session.user != null}]]*/ false;
+var userId = /*[[${session.user != null ? session.user.userid : ''}]]*/ '';
+var isAdmin = /*[[${session.user != null && session.user.userid == 'admin'}]]*/ false;
+
+// 디버깅을 위한 콘솔 출력
+console.log('isLoggedIn:', isLoggedIn);
+console.log('userId:', userId);
+console.log('isAdmin:', isAdmin);
 </script>
 </head>
 <body>
@@ -479,11 +407,6 @@
                 <button onclick="logout()">로그아웃</button>
             </div>
         </div>
-        <!--<div class="main-header">
-            <div class="logo">
-                <h1><a href="/user/main">MH <span>커뮤니티</span></a></h1>
-            </div>
-        </div>-->
         <nav>
             <div class="main-nav" id="main-nav">
                 <ul>
@@ -502,7 +425,7 @@
                         <ul class="dropdown">
                             <li><a href="/board1/openBoardList1">자유게시판</a></li>
                             <li><a href="/board2/openBoardList2">질문과 답변</a></li>
-                            <li><a href="#">경험 나누기</a></li>
+                            <li><a href="/board3/openBoardList3">경험 나누기</a></li>
                             <li><a href="#">응원의 메시지</a></li>
                         </ul>
                     </li>
@@ -524,97 +447,135 @@
         <div class="board-section">
             <h2><a href="/board2/openBoardList2">질문과 답변</a></h2>
             
-            <!-- HTML 부분 - 조건부 삭제 버튼 표시 -->
-<form id="frm" method="post">
-    <div class="btn-group">
-        <a href="/board2/openBoardWrite2" class="btn" id="writeBtn1">글 쓰기</a>
-        <!-- admin일 때만 삭제 버튼 표시 -->
-        <button type="button" id="deleteBtn" class="btn btn-danger" 
-                th:if="${session.user != null && session.user.userid == 'admin'}">선택 삭제</button>
-    </div>
-    
-    <!-- 테이블 헤더에서도 admin일 때만 체크박스 표시 -->
-    <table id="my-table" class="board_list">
-        <colgroup>
-            <col width="10%"/>
-            <col width="*"/>
-            <col width="10%"/>
-            <col width="15%"/>
-            <col width="8%"/>
-            <col th:if="${session.user != null && session.user.userid == 'admin'}" width="5%"/>
-        </colgroup>
-        <thead>
-            <tr>
-                <th scope="col">글번호</th>
-                <th scope="col">제목</th>
-                <th scope="col">조회수</th>
-                <th scope="col">작성일</th>
-                <th scope="col">작성자</th>
-                <th scope="col" th:if="${session.user != null && session.user.userid == 'admin'}">
-                    <input type="checkbox" id="allCheck"/>
-                </th>
-            </tr>
-        </thead>
-        <tbody id="tBody">
-            <tr class="boardItem" th:if="${#lists.size(list)} > 0" th:each="list : ${list}">
-                <td id="idx" th:text="${list.boardIdx}"></td>
-                <td class="title" id="title">
-                    <a href="/board2/openBoardDetail2?boardIdx=" 
-                       th:attrappend="href=${list.boardIdx}" 
-                       th:text="${list.title}"></a>
-                </td>
-                <td th:text="${list.hitCnt}"></td>
-                <td th:if="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
-                    th:text="${#temporals.format(list.createdDatetime, 'HH:mm')}"></td>
-                <td th:unless="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
-                    th:text="${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}"></td>
-                <td th:text="${list.creatorId}"></td>
-                <!-- admin일 때만 체크박스 표시 -->
-                <td th:if="${session.user != null && session.user.userid == 'admin'}">
-                    <input type="checkbox" class="deleteCheck" name="deleteCheck" th:value="${list.boardIdx}"/>
-                </td>
-            </tr> 
-            <tr th:unless="${#lists.size(list)} > 0">
-                <td th:colspan="${session.user != null && session.user.userid == 'admin' ? 6 : 5}" class="no-results">
-                    조회된 결과가 없습니다.
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <!-- 하단 버튼 그룹에서도 admin일 때만 삭제 버튼 표시 -->
-    <div class="btn-group">
-        <a href="/board2/openBoardWrite2" class="btn" id="writeBtn">글 쓰기</a>
-        <button type="button" id="deleteBtn2" class="btn btn-danger" 
-                th:if="${session.user != null && session.user.userid == 'admin'}">선택 삭제</button>
-    </div>
-</form>
-<div class="search-container">
-        <!-- 닫기 버튼 -->
-        <button class="close-btn" onclick="clearSearch()" title="지우기">
-            <i class="fas fa-times"></i>
-        </button>
+            <form id="frm" method="post">
+                <div class="btn-group">
+                    <!-- 로그인하지 않은 경우 -->
+                    <div th:if="${session.user == null}">
+                        <button type="button" class="btn" onclick="alertLogin()">글 쓰기</button>
+                    </div>
+                    
+                    <!-- 로그인한 경우 -->
+                    <div th:if="${session.user != null}">
+                        <a href="/board2/openBoardWrite2" class="btn">글 쓰기</a>
+                    </div>
+                    
+                    <!-- admin일 때만 삭제 버튼 표시 -->
+                    <div th:if="${session.user != null && session.user.userid == 'admin'}">
+                        <button type="button" id="deleteBtn" class="btn btn-danger">선택 삭제</button>
+                        <button type="button" id="moveBtn" class="btn btn-warning">게시글 이동</button>
+                    </div>
+                </div>
+                
+                <!-- 게시글 이동 컨트롤 (admin일 때만 표시) -->
+                <div class="move-controls" th:if="${session.user != null && session.user.userid == 'admin'}" style="display: none;" id="moveControls">
+                    <span>이동할 게시판:</span>
+                    <select class="move-select" id="targetBoard">
+                        <option value="">게시판 선택</option>
+                        <option value="qna">질문과 답변</option>
+                        <option value="Ex">경험나누기</option>
+                    </select>
+                    <button type="button" id="confirmMoveBtn" class="btn btn-warning">이동 실행</button>
+                    <button type="button" id="cancelMoveBtn" class="btn">취소</button>
+                </div>
+                
+                <!-- 테이블 헤더에서도 admin일 때만 체크박스 표시 -->
+                <table id="my-table" class="board_list">
+                    <colgroup>
+                        <col width="10%"/>
+                        <col width="*"/>
+                        <col width="10%"/>
+                        <col width="10%"/> <!-- 좋아요 컬럼 추가 -->
+                        <col width="15%"/>
+                        <col width="8%"/>
+                        <col th:if="${session.user != null && session.user.userid == 'admin'}" width="5%"/>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col">글번호</th>
+                            <th scope="col">제목</th>
+                            <th scope="col">조회수</th>
+                            <th scope="col">좋아요</th> <!-- 좋아요 헤더 추가 -->
+                            <th scope="col">작성일</th>
+                            <th scope="col">작성자</th>
+                            <th scope="col" th:if="${session.user != null && session.user.userid == 'admin'}">
+                                <input type="checkbox" id="allCheck"/>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tBody">
+                        <tr class="boardItem" th:if="${#lists.size(list)} > 0" th:each="list : ${list}">
+                            <td id="idx" th:text="${list.boardIdx}"></td>
+                            <td class="title" id="title">
+                                <a href="/board2/openBoardDetail2?boardIdx=" 
+                                   th:attrappend="href=${list.boardIdx}" 
+                                   th:text="${list.title}"></a>
+                            </td>
+                            <td th:text="${list.hitCnt}"></td>
+                            <!-- 좋아요 정보 표시 -->
+                            <td>
+                                <div class="like-info" th:classappend="${list.likeCnt > 0} ? 'has-likes' : 'no-likes'">
+                                    <i class="fas fa-heart"></i>
+                                    <span th:text="${list.likeCnt ?: 0}">0</span>
+                                </div>
+                            </td>
+                            <td th:if="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
+                                th:text="${#temporals.format(list.createdDatetime, 'HH:mm')}"></td>
+                            <td th:unless="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
+                                th:text="${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}"></td>
+                            <td th:text="${list.creatorId}"></td>
+                            <!-- admin일 때만 체크박스 표시 -->
+                            <td th:if="${session.user != null && session.user.userid == 'admin'}">
+                                <input type="checkbox" class="deleteCheck" name="deleteCheck" th:value="${list.boardIdx}"/>
+                            </td>
+                        </tr> 
+                        <tr th:unless="${#lists.size(list)} > 0">
+                            <td th:colspan="${session.user != null && session.user.userid == 'admin' ? 7 : 6}" class="no-results">
+                                조회된 결과가 없습니다.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- 하단 버튼 그룹에서도 admin일 때만 삭제 버튼 표시 -->
+                <div class="btn-group">
+                    <!-- 로그인하지 않은 경우 -->
+                    <div th:if="${session.user == null}">
+                        <button type="button" class="btn" onclick="alertLogin()">글 쓰기</button>
+                    </div>
+                    
+                    <!-- 로그인한 경우 -->
+                    <div th:if="${session.user != null}">
+                        <a href="/board1/openBoardWrite1" class="btn">글 쓰기</a>
+                    </div>
+                    <div th:if="${session.user != null && session.user.userid == 'admin'}">
+                        <button type="button" id="deleteBtn2" class="btn btn-danger">선택 삭제</button>
+                        <button type="button" id="moveBtn2" class="btn btn-warning">게시글 이동</button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="search-container">
+                <button class="close-btn" onclick="clearSearch()" title="지우기">
+                    <i class="fas fa-times"></i>
+                </button>
 
-        <!-- 검색 옵션 셀렉트 -->
-        <select class="search-select" id="type">
-            <option value="title">제목</option>
-            <option value="contents">내용</option>
-        </select>
+                <select class="search-select" id="type">
+                    <option value="title">제목</option>
+                    <option value="contents">내용</option>
+                </select>
 
-        <!-- 검색 입력창 -->
-        <input 
-            type="text" 
-            class="search-input" 
-            placeholder="검색어를 입력하세요..." 
-            id="keyword"
-        >
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="검색어를 입력하세요..." 
+                    id="keyword"
+                >
 
-        <!-- 검색 버튼 -->
-        <button class="search-btn" id="searchBtn">
-            <i class="fas fa-search"></i>
-            <span>검색</span>
-        </button>
-    </div>
+                <button class="search-btn" id="searchBtn">
+                    <i class="fas fa-search"></i>
+                    <span>검색</span>
+                </button>
+            </div>
             </div>
             
             <!-- 페이징처리 -->
@@ -653,7 +614,7 @@
                 <a href="#">사이트맵</a>
             </div>
             <div class="contact">
-                이메일: seogd6698@gamil.com
+                이메일: seogd6698@gmail.com
             </div>
             <div class="copyright">
                 &copy; 2025 MH 커뮤니티. All Rights Reserved.
@@ -666,196 +627,261 @@
     <script type="text/javascript">
         $(document).ready(function(){
             
-             // admin일 때만 체크박스 관련 기능 활성화
-    if(isAdmin) {
-        //체크박스 전체체크 구현
-        $("#allCheck").on("click", function(){
-            console.log('allCheck');
-            var checked = $('#allCheck').is(':checked');
-            if(checked){
-                $('.deleteCheck').prop('checked',true);	
-            }else{
-                $('.deleteCheck').prop('checked',false);	
-            }		
-        });
-        
-        //선택삭제 구현 (두 개의 삭제 버튼 모두 처리)			
-        $('#deleteBtn, #deleteBtn2').on("click", function(){
-            var boardIdx = []; 
-            $("input:checkbox[name='deleteCheck']:checked").each(function() {
-                boardIdx.push($(this).val());
-                console.log(boardIdx);
-            });
-
-            if(boardIdx.length === 0) {
-                alert("삭제할 게시글을 선택해주세요.");
-                return;
-            }
-
-            if(!confirm("선택한 게시글을 삭제하시겠습니까?")) {
-                return;
-            }
-
-            //boardIdx배열 파라미터 ajax호출로 controller에 보내기
-            $.ajax({
-                type  : "POST",
-                url    : "/board2/deleteSelection2",
-                data: {
-                    "boardIdx" : boardIdx
-                },
-                success: function(result){
-                    console.log(result);
-                    alert("삭제되었습니다.");
-                    location.href = "/board2/openBoardList2";
-                },
-                error: function(xhr, status, error) {
-                    alert("삭제 중 오류가 발생했습니다.");
-                }  
-            });
-        });
-        
-        //check 된 boardIdx 콘솔 출력	  
-        $('.deleteCheck').on("click", function(){
-            if($('.deleteCheck').is(':checked')){
-                console.log($(this).val());
-            }
-        });	
-        
-        $('#allCheck').on("click", function(){
-            if($('.deleteCheck').is(':checked')){
-                console.log($("input:checkbox[name='deleteCheck']:checked").val());
-            }
-        });	
-    }
-    
-    // 검색 기능 수정 (admin일 때만 체크박스 포함)
-    $(document).on('click', '#searchBtn', function(){
-        var type = $('#type').val();
-        var keyword = $('#keyword').val();
-        
-        if(!keyword.trim()) {
-            alert("검색어를 입력해주세요.");
-            return;
-        }
-        
-        var request = $.ajax({          
-            type: "GET",
-            url: "/board2/boardList2",
-            data: {'type' : type, 'keyword' : keyword},
-            dataType: 'json'
-        });        
-        
-        request.done(function(data){
-            console.log("검색완료" + data);
-            var boardList = data;
-            var tBody = $('#tBody');					 
-            var html = '';
-
-            if(typeof boardList != 'undefined' && boardList != null && boardList.length > 0){
-                for(let list of boardList){
-                    html += '<tr>';
-                    html += '	<td>' + list.boardIdx + '</td>';
-                    html += '	<td class="title">' + 
-                            '<a href="/board2/openBoardDetail2?boardIdx=' + 
-                            list.boardIdx + '">' +  list.title + '</a>' + '</td>'; 
-                    html += '	<td>' + list.hitCnt + '</td>'; 
-                    html += '	<td>' + list.createdDatetime + '</td>';
-                    html += '	<td>' + list.creatorId + '</td>';
-                    // admin일 때만 체크박스 추가
-                    if(isAdmin) {
-                        html += '	<td>' + '<input type="checkbox" class="deleteCheck" name="deleteCheck" value="' 
-                                + list.boardIdx + '">' + '</td>';
+            // admin일 때만 체크박스 관련 기능 활성화
+            if(isAdmin) {
+                //체크박스 전체체크 구현
+                $("#allCheck").on("click", function(){
+                    console.log('allCheck');
+                    var checked = $('#allCheck').is(':checked');
+                    if(checked){
+                        $('.deleteCheck').prop('checked',true);	
+                    }else{
+                        $('.deleteCheck').prop('checked',false);	
+                    }		
+                });
+                
+                // 게시글 이동 버튼 클릭 이벤트
+                $('#moveBtn, #moveBtn2').on("click", function(){
+                    var checkedBoxes = $("input:checkbox[name='deleteCheck']:checked");
+                    
+                    if(checkedBoxes.length === 0) {
+                        alert("이동할 게시글을 선택해주세요.");
+                        return;
                     }
-                    html += '</tr>';
-                }
-            } else {
-                var colspan = isAdmin ? 6 : 5;
-                html = '<tr><td colspan="' + colspan + '" class="no-results">검색 결과가 없습니다.</td></tr>';
+                    
+                    // 이동 컨트롤 표시
+                    $('#moveControls').show();
+                });
+                
+                // 이동 실행 버튼 클릭 이벤트
+                $('#confirmMoveBtn').on("click", function(){
+                    var boardIdx = [];
+                    var targetBoard = $('#targetBoard').val();
+                    
+                    if(!targetBoard) {
+                        alert("이동할 게시판을 선택해주세요.");
+                        return;
+                    }
+                    
+                    $("input:checkbox[name='deleteCheck']:checked").each(function() {
+                        boardIdx.push($(this).val());
+                    });
+                    
+                    if(boardIdx.length === 0) {
+                        alert("이동할 게시글을 선택해주세요.");
+                        return;
+                    }
+                    
+                    var targetBoardName = $('#targetBoard option:selected').text();
+                    if(!confirm("선택한 게시글을 '" + targetBoardName + "'로 이동하시겠습니까?")) {
+                        return;
+                    }
+                    
+                    // 게시글 이동 AJAX 요청
+                    $.ajax({
+                        type: "POST",
+                        url: "/board2/moveBoards",
+                        data: {
+                            "boardIdx": boardIdx,
+                            "targetBoard": targetBoard
+                        },
+                        success: function(result){
+                            console.log(result);
+                            alert(result);
+                            location.href = "/board2/openBoardList2";
+                        },
+                        error: function(xhr, status, error) {
+                            alert("게시글 이동 중 오류가 발생했습니다.");
+                            console.error("Error:", error);
+                        }
+                    });
+                });
+                
+                // 이동 취소 버튼 클릭 이벤트
+                $('#cancelMoveBtn').on("click", function(){
+                    $('#moveControls').hide();
+                    $('#targetBoard').val('');
+                    $('.deleteCheck').prop('checked', false);
+                    $('#allCheck').prop('checked', false);
+                });
+                
+                //선택삭제 구현 (두 개의 삭제 버튼 모두 처리)			
+                $('#deleteBtn, #deleteBtn2').on("click", function(){
+                    var boardIdx = []; 
+                    $("input:checkbox[name='deleteCheck']:checked").each(function() {
+                        boardIdx.push($(this).val());
+                        console.log(boardIdx);
+                    });
+
+                    if(boardIdx.length === 0) {
+                        alert("삭제할 게시글을 선택해주세요.");
+                        return;
+                    }
+
+                    if(!confirm("선택한 게시글을 삭제하시겠습니까?")) {
+                        return;
+                    }
+
+                    //boardIdx배열 파라미터 ajax호출로 controller에 보내기
+                    $.ajax({
+                        type  : "POST",
+                        url    : "/board2/deleteSelection2",
+                        data: {
+                            "boardIdx" : boardIdx
+                        },
+                        success: function(result){
+                            console.log(result);
+                            alert("삭제되었습니다.");
+                            location.href = "/board2/openBoardList2";
+                        },
+                        error: function(xhr, status, error) {
+                            alert("삭제 중 오류가 발생했습니다.");
+                        }  
+                    });
+                });
+                
+                //check 된 boardIdx 콘솔 출력	  
+                $('.deleteCheck').on("click", function(){
+                    if($('.deleteCheck').is(':checked')){
+                        console.log($(this).val());
+                    }
+                });	
+                
+                $('#allCheck').on("click", function(){
+                    if($('.deleteCheck').is(':checked')){
+                        console.log($("input:checkbox[name='deleteCheck']:checked").val());
+                    }
+                });	
             }
             
-            tBody.html(html);
-        });
-    });     
-    
-      // 검색창 지우기 함수
-        function clearSearch() {
-			
-			 var type = $('#type');
-       		 var keyword = $('#keyword');
-        
-            keyword.value = '';
-            type.value = 'title';
-            keyword.focus();
-        }
-        
-        
-        
-       		 var type = $('#type');
-       		 var keyword = $('#keyword');
-         	
-         // 검색 옵션 변경 시 플레이스홀더 업데이트
-        type.addEventListener('change', function() {
-			 
-            const placeholders = {
-                'title': '제목에서 검색할 내용을 입력하세요...',
-                'content': '내용에서 검색할 내용을 입력하세요...'
-            };
+            // 검색 기능 수정 (admin일 때만 체크박스 포함, 좋아요 정보 포함)
+            $(document).on('click', '#searchBtn', function(){
+                var type = $('#type').val();
+                var keyword = $('#keyword').val();
+                
+                if(!keyword.trim()) {
+                    alert("검색어를 입력해주세요.");
+                    return;
+                }
+                
+                var request = $.ajax({          
+                    type: "GET",
+                    url: "/board1/boardList1",
+                    data: {'type' : type, 'keyword' : keyword},
+                    dataType: 'json'
+                });        
+                
+                request.done(function(data){
+                    console.log("검색완료" + data);
+                    var boardList = data;
+                    var tBody = $('#tBody');					 
+                    var html = '';
+
+                    if(typeof boardList != 'undefined' && boardList != null && boardList.length > 0){
+                        for(let list of boardList){
+                            html += '<tr>';
+                            html += '<td>' + list.boardIdx + '</td>';
+                            html += '<td class="title">' + 
+                                    '<a href="/board2/openBoardDetail2?boardIdx=' + 
+                                    list.boardIdx + '">' +  list.title + '</a>' + '</td>'; 
+                            html += '<td>' + list.hitCnt + '</td>';
+                            // 좋아요 정보 추가
+                            html += '<td><div class="like-info ' + (list.likeCnt > 0 ? 'has-likes' : 'no-likes') + '">';
+                            html += '<i class="fas fa-heart"></i>';
+                            html += '<span>' + (list.likeCnt || 0) + '</span>';
+                            html += '</div></td>';
+                            html += '<td>' + list.createdDatetime + '</td>';
+                            html += '<td>' + list.creatorId + '</td>';
+                            // admin일 때만 체크박스 추가
+                            if(isAdmin) {
+                                html += '<td>' + '<input type="checkbox" class="deleteCheck" name="deleteCheck" value="' 
+                                        + list.boardIdx + '">' + '</td>';
+                            }
+                            html += '</tr>';
+                        }
+                    } else {
+                        var colspan = isAdmin ? 7 : 6; // 좋아요 컬럼 추가로 colspan 증가
+                        html = '<tr><td colspan="' + colspan + '" class="no-results">검색 결과가 없습니다.</td></tr>';
+                    }
+                    
+                    tBody.html(html);
+                });
+            });     
             
-            keyword.placeholder = placeholders[this.value] || '검색어를 입력하세요...';
+            // 검색창 지우기 함수
+            function clearSearch() {
+                var type = $('#type');
+                var keyword = $('#keyword');
+            
+                keyword.val(''); // jQuery 방식으로 수정
+                type.val('title'); // jQuery 방식으로 수정
+                keyword.focus();
+            }
+            
+            // 전역 함수로 등록
+            window.clearSearch = clearSearch;
+            
+            var type = $('#type');
+            var keyword = $('#keyword');
+             	
+            // 검색 옵션 변경 시 플레이스홀더 업데이트
+            type.on('change', function() {
+                const placeholders = {
+                    'title': '제목에서 검색할 내용을 입력하세요...',
+                    'contents': '내용에서 검색할 내용을 입력하세요...'
+                };
+                
+                keyword.attr('placeholder', placeholders[this.value] || '검색어를 입력하세요...');
+            });
+
+            // 엔터키로 검색
+            $('#keyword').on('keypress', function(e) {
+                if(e.which === 13) {
+                    $('#searchBtn').click();
+                }
+            });
+
+            // 글쓰기 버튼 기능
+            var writeBtn = $("#writeBtn");
+            writeBtn.on("click", function(e) {
+                e.preventDefault();
+                
+                if(!isLoggedIn || userId === '') {
+                    alert("로그인 후 게시글 작성이 가능합니다.");
+                    location.href = "/login/login";
+                } else {
+                    location.href = "/board2/openBoardWrite2";
+                }
+            });
+            
+            var writeBtn1 = $("#writeBtn1");
+            writeBtn1.on("click", function(e) {
+                e.preventDefault();
+                
+                if(!isLoggedIn || userId === '') {
+                    alert("로그인 후 게시글 작성이 가능합니다.");
+                    location.href = "/login/login";
+                } else {
+                    location.href = "/board2/openBoardWrite2";
+                }
+            });
         });
 
-    // 엔터키로 검색
-    $('#keyword').on('keypress', function(e) {
-        if(e.which === 13) {
-            $('#searchBtn').click();
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                fetch('/login/logout', {
+                    method: 'POST'
+                }).then(() => {
+                    window.location.href = '/user/main';
+                    console.log("로그아웃 되었습니다.");
+                });
+            }
         }
-    });
 
-    // 글쓰기 버튼 기능
-    var writeBtn = $("#writeBtn");
-    writeBtn.on("click", function(e) {
-        e.preventDefault();
-        
-        if(!isLoggedIn || userId === '') {
+        function alertLogin() {
             alert("로그인 후 게시글 작성이 가능합니다.");
             location.href = "/login/login";
-        } else {
-            location.href = "/board2/openBoardWrite2";
         }
-    });
-    
-    var writeBtn1 = $("#writeBtn1");
-    writeBtn1.on("click", function(e) {
-        e.preventDefault();
-        
-        if(!isLoggedIn || userId === '') {
-            alert("로그인 후 게시글 작성이 가능합니다.");
-            location.href = "/login/login";
-        } else {
-            location.href = "/board2/openBoardWrite2";
-        }
-    });
-    
-
-});
-
-function logout() {
-    if (confirm('로그아웃 하시겠습니까?')) {
-        fetch('/login/logout', {
-            method: 'POST'
-        }).then(() => {
-            window.location.href = '/user/main';
-            console.log("로그아웃 되었습니다.");
-        });
-    }
-}
-
-
-
-
-	
-        
-        
     </script>	  
 
     <script type="text/javascript" src="/js/bootstrap.js"></script>

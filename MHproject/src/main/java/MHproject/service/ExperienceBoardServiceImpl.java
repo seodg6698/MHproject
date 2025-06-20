@@ -10,53 +10,44 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import MHproject.DTO.Criteria;
-import MHproject.DTO.FreeBoardDTO;
-import MHproject.mapper.FreeBoardMapper;
+import MHproject.DTO.ExperienceBoardDTO;
+import MHproject.mapper.ExperienceBoardMapper;
+
 
 @Service
-public class FreeBoardServiceImpl implements FreeBoardService {
+public class ExperienceBoardServiceImpl implements ExperienceBoardService {
 	
+	// Logger 추가
 	private static final Logger logger = LoggerFactory.getLogger(FreeBoardServiceImpl.class);
 	
 	@Autowired
-	private FreeBoardMapper boardMapper;
+	private ExperienceBoardMapper boardMapper;
+	
+	@Autowired
+	public void FreeBoardMapper(ExperienceBoardMapper boardMapper) {
+		this.boardMapper = boardMapper;
+	}
 	
 	@Override
-	public List<FreeBoardDTO> selectBoardList() throws Exception{
+	public List<ExperienceBoardDTO> selectBoardList() throws Exception{
 		return boardMapper.selectBoardList();
 	}
 
 	@Override
-	public void insertBoard(FreeBoardDTO board) throws Exception {
+	public void insertBoard(ExperienceBoardDTO board) throws Exception {
 		boardMapper.insertBoard(board);
 	}
 
 	@Override
-	public FreeBoardDTO selectBoardDetail(int boardIdx) throws Exception {
+	public ExperienceBoardDTO selectBoardDetail(int boardIdx) throws Exception {
 		boardMapper.updateHitCount(boardIdx);
 		
-		FreeBoardDTO board = boardMapper.selectBoardDetail(boardIdx);
+		ExperienceBoardDTO board = boardMapper.selectBoardDetail(boardIdx);
 		return board;
 	}
 	
 	@Override
-	public FreeBoardDTO selectBoardDetailWithLike(int boardIdx, String userId) throws Exception {
-		logger.info("좋아요 정보 포함 게시글 상세 조회 - boardIdx: {}, userId: {}", boardIdx, userId);
-		
-		boardMapper.updateHitCount(boardIdx);
-		
-		FreeBoardDTO board = boardMapper.selectBoardDetailWithLike(boardIdx, userId);
-		
-		if (board != null) {
-			logger.debug("게시글 조회 완료 - 제목: {}, 좋아요 수: {}, 사용자 좋아요 여부: {}", 
-						board.getTitle(), board.getLikeCnt(), board.isLiked());
-		}
-		
-		return board;
-	}
-	
-	@Override
-	public void updateBoard(FreeBoardDTO board) throws Exception{
+	public void updateBoard(ExperienceBoardDTO board) throws Exception{
 		boardMapper.updateBoard(board);
 	}
 	
@@ -65,12 +56,14 @@ public class FreeBoardServiceImpl implements FreeBoardService {
 		boardMapper.deleteBoard(boardIdx);
 	}
 	
+	//게시글 선택삭제
 	@Override
 	public void selectAndDeleteBoard(List<Integer> idxList) throws Exception{
 		logger.info("선택 삭제할 게시글 목록: {}", idxList);
 		boardMapper.selectAndDeleteBoard(idxList);
 	}
 	
+	// 게시글 이동 구현 - 로깅 개선
 	@Override
 	@Transactional
 	public void moveBoardsToAnotherBoard(List<Integer> boardIdxList, String targetBoard) throws Exception {
@@ -82,10 +75,14 @@ public class FreeBoardServiceImpl implements FreeBoardService {
 	    
 	    for (Integer boardIdx : boardIdxList) {
 	        try {
-	            FreeBoardDTO originalBoard = boardMapper.selectBoardDetail(boardIdx);
+	            // 1. 원본 게시글 정보 조회
+	        	ExperienceBoardDTO originalBoard = boardMapper.selectBoardDetail(boardIdx);
 	            
 	            if (originalBoard != null) {
+	                // 2. 대상 게시판에 게시글 복사
 	                boardMapper.insertBoardToTargetBoard(originalBoard, targetBoard);
+	                
+	                // 3. 원본 게시글 삭제 (soft delete)
 	                boardMapper.deleteBoard(boardIdx);
 	                
 	                successCount++;
@@ -96,7 +93,7 @@ public class FreeBoardServiceImpl implements FreeBoardService {
 	            }
 	        } catch (Exception e) {
 	            logger.error("게시글 이동 실패 - ID: {}, 오류: {}", boardIdx, e.getMessage());
-	            throw e;
+	            throw e; // 트랜잭션 롤백을 위해 예외 재발생
 	        }
 	    }
 	    
@@ -108,12 +105,6 @@ public class FreeBoardServiceImpl implements FreeBoardService {
 	public List<Map<String, Object>> selectBoardList(Criteria cri) throws Exception {
 		 return boardMapper.selectBoardList(cri);
 	}
-	
-	@Override
-	public List<Map<String, Object>> selectBoardListWithLike(Criteria cri, String userId) throws Exception {
-		logger.debug("좋아요 정보 포함 게시글 목록 조회 - 페이지: {}, userId: {}", cri.getPage(), userId);
-		return boardMapper.selectBoardListWithLike(cri, userId);
-	}
 	 
 	@Override
 	public int countBoardListTotal() throws Exception {
@@ -121,33 +112,17 @@ public class FreeBoardServiceImpl implements FreeBoardService {
 	}
 
 	@Override
-	public List<FreeBoardDTO> searchTitleBoardList(String keyword) throws Exception {
+	public List<ExperienceBoardDTO> searchTitleBoardList(String keyword) throws Exception {
 		logger.debug("제목 검색 키워드: {}", keyword);
-		List<FreeBoardDTO> boardList = boardMapper.searchTitleBoardList(keyword);
-		logger.debug("검색 결과 개수: {}", boardList.size());
-		return boardList;
-	}
-	
-	@Override
-	public List<FreeBoardDTO> searchTitleBoardListWithLike(String keyword, String userId) throws Exception {
-		logger.debug("좋아요 정보 포함 제목 검색 - 키워드: {}, userId: {}", keyword, userId);
-		List<FreeBoardDTO> boardList = boardMapper.searchTitleBoardListWithLike(keyword, userId);
+		List<ExperienceBoardDTO> boardList = boardMapper.searchTitleBoardList(keyword);
 		logger.debug("검색 결과 개수: {}", boardList.size());
 		return boardList;
 	}
 
 	@Override
-	public List<FreeBoardDTO> searchContentsBoardList(String keyword) {
+	public List<ExperienceBoardDTO> searchContentsBoardList(String keyword) {
 		logger.debug("내용 검색 키워드: {}", keyword);
-		List<FreeBoardDTO> boardList = boardMapper.searchContentsBoardList(keyword);
-		logger.debug("검색 결과 개수: {}", boardList.size());
-		return boardList;
-	}
-	
-	@Override
-	public List<FreeBoardDTO> searchContentsBoardListWithLike(String keyword, String userId) throws Exception {
-		logger.debug("좋아요 정보 포함 내용 검색 - 키워드: {}, userId: {}", keyword, userId);
-		List<FreeBoardDTO> boardList = boardMapper.searchContentsBoardListWithLike(keyword, userId);
+		List<ExperienceBoardDTO> boardList = boardMapper.searchContentsBoardList(keyword);
 		logger.debug("검색 결과 개수: {}", boardList.size());
 		return boardList;
 	}

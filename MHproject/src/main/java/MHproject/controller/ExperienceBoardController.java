@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import MHproject.service.CommentService1;
-import MHproject.service.FreeBoardService;
-import MHproject.DTO.FreeBoardDTO;
-import MHproject.DTO.CommentDto1;
+import MHproject.service.CommentService3;
+import MHproject.service.ExperienceBoardService;
+import MHproject.DTO.ExperienceBoardDTO;
+import MHproject.DTO.CommentDto3;
 import MHproject.DTO.Criteria;
 import MHproject.DTO.PageMaker;
 import jakarta.annotation.PostConstruct;
@@ -28,117 +28,91 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping(value = "/board1")
-public class FreeBoardController {
+@RequestMapping(value = "/board3")
+public class ExperienceBoardController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(FreeBoardController.class);
+	// Logger 선언
+    private static final Logger logger = LoggerFactory.getLogger(ExperienceBoardController.class);
 
 	@Autowired
-	private FreeBoardService boardService;
+	private ExperienceBoardService boardService;
 	
 	@Autowired
-	private CommentService1 commentService;
+	private CommentService3 commentService;
 	
 	@PostConstruct
-    public void FreeBoardControllerInit() {
+    public void ExperienceBoardControllerInit() {
         logger.info("FreeBoardController bean 생성 완료");
     }
-    
-    /**
-     * 세션에서 사용자 ID 추출하는 헬퍼 메소드
-     */
-    private String getUserIdFromSession(HttpSession session) {
-        Object userObj = session.getAttribute("user");
-        if (userObj == null) {
-            return null;
-        }
-        
-        try {
-            // User 객체의 실제 구조에 따라 수정 필요
-            if (userObj instanceof Map) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> userMap = (Map<String, Object>) userObj;
-                return (String) userMap.get("userid");
-            }
-            
-            // User 클래스가 있는 경우 reflection 사용
-            java.lang.reflect.Method getUserIdMethod = userObj.getClass().getMethod("getUserid");
-            return (String) getUserIdMethod.invoke(userObj);
-            
-        } catch (Exception e) {
-            logger.error("사용자 ID 추출 중 오류 발생: {}", e.getMessage());
-            return null;
-        }
-    }
 
-	@GetMapping("/openBoardWrite1")
+	//게시글 작성화면
+	@GetMapping("/openBoardWrite3")
 	public String openBoardWrite() throws Exception{
 		logger.debug("게시글 작성 화면 요청");
-		return "/board/freeBoard/freeBoardWrite";
+		return "/board/ExperienceBoard/ExperienceBoardWrite";
 	}
 	
-	@PostMapping("/insertBoard1")
-	public String insertBoard(FreeBoardDTO board, HttpSession session, Model model) throws Exception{
+	//게시글 작성 처리
+	@PostMapping("/insertBoard3")
+	public String insertBoard(ExperienceBoardDTO board, HttpSession session, Model model) throws Exception{
 		logger.info("게시글 작성 요청 - 제목: {}, 작성자: {}", board.getTitle(), board.getCreatorId());
 		logger.debug("게시글 상세 정보: {}", board.toString());
 		
 		boardService.insertBoard(board);
 		
 		logger.info("게시글 작성 완료 - 제목: {}", board.getTitle());
-		return "redirect:/board1/openBoardList1";
+		return "redirect:/board3/openBoardList3";
 	}
 	
-	// 좋아요 기능이 포함된 게시글 상세화면
-	@GetMapping("/openBoardDetail1")
-	public String openBoardDetail(@RequestParam int boardIdx, Model model, HttpSession session) throws Exception {
+	//게시글 상세화면 - 디버깅 강화
+	@GetMapping("/openBoardDetail3")
+	public String openBoardDetail(@RequestParam int boardIdx, Model model) throws Exception {
 		logger.info("게시글 상세 조회 요청 - boardIdx: {}", boardIdx);
 		
 		try {
-			// 세션에서 사용자 ID 추출
-			String userId = getUserIdFromSession(session);
-			logger.debug("현재 사용자 ID: {}", userId);
+			// 게시글 조회
+			ExperienceBoardDTO board = boardService.selectBoardDetail(boardIdx);
 			
-			// 좋아요 정보를 포함한 게시글 조회
-			FreeBoardDTO board = boardService.selectBoardDetailWithLike(boardIdx, userId);
-			
+			// 디버깅을 위한 상세 로그
 			logger.debug("서비스에서 반환된 board 객체: {}", board);
 			if (board != null) {
-				logger.debug("board 상세 정보 - boardIdx: {}, title: {}, creatorId: {}, likeCnt: {}, isLiked: {}", 
-						board.getBoardIdx(), board.getTitle(), board.getCreatorId(), 
-						board.getLikeCnt(), board.isLiked());
+				logger.debug("board 상세 정보 - boardIdx: {}, title: {}, creatorId: {}", 
+							board.getBoardIdx(), board.getTitle(), board.getCreatorId());
 			}
 			
+			// null 체크 - 하지만 더 상세한 로그와 함께
 			if (board == null) {
 				logger.error("게시글을 찾을 수 없습니다 - boardIdx: {} (DB에서 null 반환)", boardIdx);
 				model.addAttribute("errorMessage", "게시글을 찾을 수 없습니다. (ID: " + boardIdx + ")");
-				return "redirect:/board1/openBoardList1";
+				return "redirect:/board3/openBoardList3";
 			}
 			
 			// 댓글 목록 조회
-			List<CommentDto1> comments = commentService.selectCommentList(boardIdx);
+			List<CommentDto3> comments = commentService.selectCommentList(boardIdx);
 			if (comments == null) {
-				comments = new ArrayList<>();
+				comments = new ArrayList<>(); // null 방지
 				logger.debug("댓글 목록이 null이어서 빈 리스트로 초기화");
 			}
 			
 			model.addAttribute("board", board);
 			model.addAttribute("comments", comments);
 			
-			logger.info("게시글 상세 조회 성공 - boardIdx: {}, 제목: {}, 댓글 수: {}, 좋아요 수: {}, 사용자 좋아요 여부: {}", 
-						boardIdx, board.getTitle(), comments.size(), board.getLikeCnt(), board.isLiked());
+			logger.info("게시글 상세 조회 성공 - boardIdx: {}, 제목: {}, 댓글 수: {}", 
+						boardIdx, board.getTitle(), comments.size());
 			
 		} catch (Exception e) {
 			logger.error("게시글 상세 조회 중 예외 발생 - boardIdx: {}, 예외 타입: {}, 메시지: {}", 
 						boardIdx, e.getClass().getSimpleName(), e.getMessage(), e);
 			model.addAttribute("errorMessage", "게시글 조회 중 오류가 발생했습니다.");
-			return "redirect:/board1/openBoardList1";
+			return "redirect:/board3/openBoardList3";
 		}
 		
-		return "/board/freeBoard/freeBoardDetail";
+		return "/board/ExperienceBoard/ExperienceBoardDetail";
 	}
 	
-	@PostMapping("/updateBoard1")
-	public String updateBoard(FreeBoardDTO board) throws Exception{
+	//게시글 수정처리
+	@PostMapping("/updateBoard3")
+	public String updateBoard(ExperienceBoardDTO board) throws Exception{
 		logger.info("게시글 수정 요청 - boardIdx: {}, 제목: {}", board.getBoardIdx(), board.getTitle());
 		
 		try {
@@ -149,10 +123,11 @@ public class FreeBoardController {
 			throw e;
 		}
 		
-		return "redirect:/board1/openBoardList1";
+		return "redirect:/board3/openBoardList3";
 	}
 	
-	@PostMapping("/deleteBoard1")
+	//게시글 삭제처리
+	@PostMapping("/deleteBoard3")
 	public String deleteBoard(int boardIdx) throws Exception{ 
 		logger.info("게시글 삭제 요청 - boardIdx: {}", boardIdx);
 		
@@ -164,13 +139,14 @@ public class FreeBoardController {
 			throw e;
 		}
 		
-		return "redirect:/board1/openBoardList1";
+		return "redirect:/board3/openBoardList3";
 	}
 	
+	//게시글 선택삭제
 	@ResponseBody
-	@PostMapping("/deleteSelection1")
+	@PostMapping("/deleteSelection3")
 	public String deleteSelection(HttpServletRequest request,
-								@RequestParam(value="boardIdx[]") int[] boardIdx, FreeBoardDTO board) throws Exception {
+								@RequestParam(value="boardIdx[]") int[] boardIdx, ExperienceBoardDTO board) throws Exception {
 	
 		logger.info("게시글 선택 삭제 요청 - 선택된 게시글: {}", Arrays.toString(boardIdx));
 		
@@ -196,6 +172,7 @@ public class FreeBoardController {
 		}
 	}
 	
+	// 게시글 이동 처리
 	@ResponseBody
 	@PostMapping("/moveBoards")
 	public String moveBoards(@RequestParam(value="boardIdx[]") int[] boardIdx,
@@ -225,32 +202,28 @@ public class FreeBoardController {
 	    }
 	}
 	
-	// 좋아요 기능이 포함된 페이징 처리
-	@GetMapping("/openBoardList1")
-	public ModelAndView openBoardList(Criteria cri, HttpSession session) throws Exception {
+	//페이징처리
+	@GetMapping("/openBoardList3")
+	public ModelAndView openBoardList(Criteria cri) throws Exception {
 		logger.debug("게시글 목록 조회 요청 - 페이지: {}, 페이지당 개수: {}", 
 		           cri.getPage(), cri.getPerPageNum());
 	        
-	    ModelAndView mav = new ModelAndView("/board/freeBoard/freeBoardList");
+	    ModelAndView mav = new ModelAndView("/board/ExperienceBoard/ExperienceBoardList");
 	        
 	    try {
 	    	PageMaker pageMaker = new PageMaker();
 	    	pageMaker.setCri(cri);
 	    	
+	    	// 총 게시글 수 조회
 	    	int totalCount = boardService.countBoardListTotal();
 	    	pageMaker.setTotalCount(totalCount);
 	    	
 	    	logger.debug("페이징 정보 - 시작 페이지: {}, 끝 페이지: {}, 총 개수: {}", 
 	    	           pageMaker.getStartPage(), pageMaker.getEndPage(), pageMaker.getTotalCount());
-	    	
-	    	// 세션에서 사용자 ID 추출
-	    	String userId = getUserIdFromSession(session);
-	    	logger.debug("게시글 목록 조회 - 현재 사용자 ID: {}", userId);
-	    	
-	    	// 좋아요 정보를 포함한 게시글 목록 조회
-	    	List<Map<String,Object>> list = boardService.selectBoardListWithLike(cri, userId);
+	    	        
+	    	List<Map<String,Object>> list = boardService.selectBoardList(cri);
 	    	if (list == null) {
-	    		list = new ArrayList<>();
+	    		list = new ArrayList<>(); // null 방지
 	    	}
 	    	
 	    	mav.addObject("list", list);
@@ -267,16 +240,16 @@ public class FreeBoardController {
 	    return mav;
 	}
 	
-	// 좋아요 기능이 포함된 검색 처리
-	@GetMapping("/boardList1")
+	//검색처리
+	@GetMapping("/boardList3")
 	@ResponseBody
-	public List<FreeBoardDTO> searchView(HttpServletRequest request, 
+	public List<ExperienceBoardDTO> searchView(HttpServletRequest request, 
 									@RequestParam(value="type") String type,
-									@RequestParam(value="keyword") String keyword,
-									HttpSession session) throws Exception {
+									@RequestParam(value="keyword") String keyword) throws Exception {
 		
 		logger.info("게시글 검색 요청 - 검색 타입: {}, 키워드: '{}'", type, keyword);
 		
+		// 입력값 검증
 		if (keyword == null || keyword.trim().isEmpty()) {
 			logger.warn("검색 키워드가 비어있음");
 			return new ArrayList<>();
@@ -287,31 +260,32 @@ public class FreeBoardController {
 			return new ArrayList<>();
 		}
 		
-		// 세션에서 사용자 ID 추출
-		String userId = getUserIdFromSession(session);
-		logger.debug("검색 요청 - 현재 사용자 ID: {}", userId);
+		ExperienceBoardDTO searchKey = new ExperienceBoardDTO();
+		searchKey.setKeyword(keyword.trim());
+		searchKey.setType(type.trim());
 		
-		String searchKeyword = keyword.trim();
-		String searchType = type.trim();
+		String searchKeyword = searchKey.getKeyword();
+		String searchType = searchKey.getType();
 		
 		logger.debug("검색 파라미터 확인 - 키워드: '{}', 타입: '{}'", searchKeyword, searchType);
 		
-		List<FreeBoardDTO> boardList = new ArrayList<>();
+		List<ExperienceBoardDTO> boardList = new ArrayList<>();
 		
 		try {
 			if("title".equals(searchType)) {
 				logger.debug("제목 검색 실행");
-				boardList = boardService.searchTitleBoardListWithLike(searchKeyword, userId);
+				boardList = boardService.searchTitleBoardList(searchKeyword);
 				
 			} else if("contents".equals(searchType)) {
 				logger.debug("내용 검색 실행");
-				boardList = boardService.searchContentsBoardListWithLike(searchKeyword, userId);
+				boardList = boardService.searchContentsBoardList(searchKeyword);
 				
 			} else {
 				logger.warn("잘못된 검색 타입 - 타입: '{}'", searchType);
 				return new ArrayList<>();
 			}
 			
+			// null 체크
 			if (boardList == null) {
 				boardList = new ArrayList<>();
 			}

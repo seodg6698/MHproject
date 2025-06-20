@@ -29,6 +29,18 @@ public interface QnABoardService {
 	public List<QnABoardDTO> searchTitleBoardList(String keyword) throws Exception;
 
 	public List<QnABoardDTO> searchContentsBoardList(String keyword);
+	
+	public void moveBoardsToAnotherBoard(List<Integer> boardIdxList, String targetBoard) throws Exception;
+
+	QnABoardDTO selectBoardDetailWithLike(int boardIdx, String userId) throws Exception;
+
+	List<Map<String, Object>> selectBoardListWithLike(Criteria cri, String userId) throws Exception;
+
+	List<QnABoardDTO> searchTitleBoardListWithLike(String keyword, String userId) throws Exception;
+
+	List<QnABoardDTO> searchContentsBoardListWithLike(String keyword, String userId) throws Exception;
+	
+	
 
 }
 
