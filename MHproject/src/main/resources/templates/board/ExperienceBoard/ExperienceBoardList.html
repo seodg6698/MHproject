@@ -8,461 +8,857 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
     <style>
-         /* 게시판 전용 스타일 */
-        
-        /* 드롭다운 메뉴 간격 문제 해결 - 강제 덮어쓰기 */
-        .main-nav .dropdown {
-            position: absolute !important;
-            top: 100% !important; /* 50%를 100%로 강제 변경 */
-            left: 0 !important;
-            width: 200px !important;
-            background-color: #fff !important;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-            transition: all 0.3s !important;
-            transform: translateY(0) !important;
-            z-index: 10 !important;
-            margin-top: 15px !important; /* margin-top 제거 */
+         /* CSS 변수 정의 - 푸른색 테마 */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary-color: #0ea5e9;
+            --secondary-hover: #0284c7;
+            --accent-color: #06b6d4;
+            --accent-light: #22d3ee;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            --background-main: rgba(255, 255, 255, 0.95);
+            --background-soft: rgba(248, 250, 252, 0.8);
+            --background-card: rgba(255, 255, 255, 0.9);
+            --background-glass: rgba(255, 255, 255, 0.7);
+            --border-light: rgba(226, 232, 240, 0.6);
+            --border-medium: rgba(203, 213, 225, 0.7);
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-blue: 0 10px 25px -5px rgba(37, 99, 235, 0.3);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #0ea5e9 100%);
+            --gradient-secondary: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #22d3ee 100%);
+            --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            --gradient-backdrop: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
+        }
+
+        /* 전체 기본 설정 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--gradient-backdrop);
+            min-height: 100vh;
+            font-weight: 400;
+            letter-spacing: -0.025em;
+            backdrop-filter: blur(10px);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            background: none;
+            transition: var(--transition);
+        }
+
+        /* 헤더 스타일 - 글래스모피즘 효과 */
+        header {
+            background: var(--gradient-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 12px 5%;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(14, 165, 233, 0.05) 100%);
+            border-bottom: 1px solid var(--border-light);
+            backdrop-filter: blur(10px);
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .auth-buttons span {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .auth-buttons a {
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+
+        .auth-buttons a:hover {
+            color: var(--primary-color);
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+
+        .auth-buttons button {
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .auth-buttons button:hover {
+            color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        /* 네비게이션 스타일 - 그라데이션 적용 */
+        nav {
+            background: var(--gradient-primary);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            height: 55px;
+        }
+
+        nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.1) 50%, 
+                transparent 100%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .main-nav {
+            display: flex;
+            justify-content: center;
+            padding: 0 5%;
+        }
+
+        .main-nav > ul {
+            display: flex;
+            list-style: none;
+            align-items: center;
+        }
+
+        .main-nav > ul > li {
+            position: relative;
+        }
+
+        .main-nav > ul > li > a {
+            display: block;
+            padding: 16px 24px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            border-radius: var(--radius-md);
+            margin: 0 2px;
+        }
+
+        .main-nav > ul > li:hover > a,
+        .main-nav > ul > li > a:focus {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        /* 드롭다운 메뉴 - 글래스모피즘 효과 */
+        .dropdown {
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 200px;
+            background: var(--gradient-glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl), 0 0 40px rgba(37, 99, 235, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+            list-style: none;
+            padding: 12px 0;
+            margin: 0;
+        }
+
+        .dropdown::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 12px solid rgba(255, 255, 255, 0.9);
+            filter: drop-shadow(0 -4px 8px rgba(0, 0, 0, 0.1));
         }
 
         .main-nav > ul > li:hover .dropdown {
-            opacity: 1 !important;
-            visibility: visible !important;
-            transform: translateY(0) !important;
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
         }
-        
-        #main-nav{
-			height: 50px;
-			position: relative;
-   			z-index: 9999;
-		}
-        
+
+        .dropdown li {
+            list-style: none;
+            margin: 0;
+            display: block;
+            width: 100%;
+        }
+
+        .dropdown li a {
+            display: block;
+            padding: 14px 20px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-light);
+            transition: var(--transition);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .dropdown li:last-child a {
+            border-bottom: none;
+        }
+
+        .dropdown li a:hover {
+            background: var(--gradient-secondary);
+            color: white;
+            padding-left: 28px;
+            transform: translateX(4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* 메인 컨테이너 */
         .board-container {
             max-width: 1200px;
-            margin: 20px auto;
+            margin: 40px auto;
             padding: 0 20px;
         }
 
         .board-section {
-            background-color: #fff;
-            padding: 55px;
-            border-radius: 8px;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-            margin-bottom: 40px;
+            background: var(--gradient-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl), var(--shadow-blue);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
         }
 
-        .board-section h2 {
+        .board-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(37, 99, 235, 0.5) 50%, 
+                transparent 100%);
+        }
+
+       .board-section h2 {
+    background: var(--gradient-primary);
+    color: white !important;  /* !important 추가 */
+    padding: 30px 35px;
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    /* 그라데이션 텍스트 효과 제거 */
+    -webkit-text-fill-color: white !important;
+    background-clip: initial !important;
+    -webkit-background-clip: initial !important;
+}
+
+h2 {
             font-size: 2rem;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            font-weight: 600;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #0ea5e9 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: #2563eb; /* 폴백 색상 추가 */
+            margin-bottom: 20px;
         }
 
+        .board-section h2::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                transparent 100%);
+            animation: headerShine 4s ease-in-out infinite;
+        }
+
+        @keyframes headerShine {
+            0%, 100% { left: -100%; }
+            50% { left: 100%; }
+        }
+
+        .board-section h2 a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* 버튼 그룹 - 글래스 효과 */
+        .btn-group {
+            padding: 30px 35px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border-light);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.3) 50%, 
+                transparent 100%);
+            transition: var(--transition);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:not(.btn-danger):not(.btn-warning) {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn:not(.btn-danger):not(.btn-warning):hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-blue), var(--shadow-lg);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(239, 68, 68, 0.4), var(--shadow-lg);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+            color: white;
+        }
+
+      .btn-warning:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(217, 119, 6, 0.4), var(--shadow-lg);
+}
+
+        /* 이동 컨트롤 */
+        .move-controls {
+            padding: 20px 30px;
+            background: var(--background-soft);
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .move-select {
+            padding: 10px 15px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            background: var(--background-card);
+            font-size: 14px;
+            min-width: 150px;
+            transition: var(--transition);
+        }
+
+        .move-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* 테이블 스타일 */
         .board_list {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
-            background-color: #fff;
+            font-size: 14px;
         }
 
-        .board_list thead th {
-            background-color: #3498db;
-            color: #fff;
-            padding: 15px 10px;
+        .board_list thead {
+            background: var(--background-soft);
+        }
+
+        .board_list th {
+            padding: 20px 15px;
             text-align: center;
             font-weight: 600;
-            border: 1px solid #2980b9;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border-light);
+            font-size: 14px;
         }
 
-        .board_list tbody td {
-            padding: 12px 10px;
+        .board_list td {
+            padding: 18px 15px;
             text-align: center;
-            border: 1px solid #ddd;
+            border-bottom: 1px solid var(--border-light);
             vertical-align: middle;
         }
 
-        .board_list tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
+        .board_list tbody tr {
+            transition: var(--transition);
         }
 
         .board_list tbody tr:hover {
-            background-color: #e3f2fd;
-            transition: background-color 0.3s;
+            background: var(--background-soft);
+            transform: translateX(5px);
         }
 
         .board_list .title {
             text-align: left;
+            font-weight: 500;
         }
 
         .board_list .title a {
-            color: #2c3e50;
+            color: var(--text-primary);
             text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
+            transition: var(--transition);
         }
 
         .board_list .title a:hover {
-            color: #3498db;
+            color: var(--primary-color);
         }
 
-        .btn-group {
+        /* 좋아요 정보 스타일 */
+        .like-info {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            background-color: #3498db;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: inline-block;
-        }
-
-        .btn:hover {
-            background-color: #2980b9;
-            color: #fff;
-        }
-
-        .btn-danger {
-            background-color: #e74c3c;
-        }
-
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
-
-        #serch {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-
-        #searchFrm {
-            display: flex;
-            gap: 10px;
             align-items: center;
             justify-content: center;
-        }
-
-        #searchFrm select,
-        #searchFrm input[type="text"] {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        #searchFrm select {
-            min-width: 100px;
-        }
-
-        #searchFrm input[type="text"] {
-            min-width: 200px;
-        }
-
-        #searchBtn {
-            background-color: #3498db;
-            color: #fff;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-
-        #searchBtn:hover {
-            background-color: #2980b9;
-        }
-
-        /* 페이징 스타일 */
-        #paging {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .pagination {
-            display: inline-flex;
-            list-style: none;
             gap: 5px;
-            margin: 0;
-            padding: 0;
+            font-size: 13px;
         }
 
-        .page-item {
-            display: block;
+        .like-info.has-likes {
+            color: #ef4444;
         }
 
-        .page-item a {
-            display: block;
-            padding: 8px 12px;
-            color: #3498db;
-            text-decoration: none;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            transition: all 0.3s;
+        .like-info.no-likes {
+            color: var(--text-light);
         }
 
-        .page-item a:hover {
-            background-color: #3498db;
-            color: #fff;
-            border-color: #3498db;
+        .like-info i {
+            font-size: 12px;
         }
 
         .no-results {
             text-align: center;
+            color: var(--text-light);
+            font-style: italic;
             padding: 40px;
-            color: #666;
-            font-size: 1.1rem;
+        }
+
+        /* 검색 컨테이너 */
+        .search-container {
+            padding: 25px 30px;
+            background: var(--background-soft);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .close-btn {
+            background: var(--background-card);
+            border: 1px solid var(--border-light);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            color: var(--text-secondary);
+        }
+
+        .close-btn:hover {
+            background: var(--background-soft);
+            border-color: var(--border-medium);
+            color: var(--text-primary);
+        }
+
+        .search-select {
+            padding: 12px 15px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            background: var(--background-card);
+            font-size: 14px;
+            min-width: 100px;
+            transition: var(--transition);
+        }
+
+        .search-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            min-width: 200px;
+            transition: var(--transition);
+            background: var(--background-card);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .search-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* 페이징 */
+        #paging {
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .page-item a {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            font-weight: 500;
+            min-width: 45px;
+            text-align: center;
+            border: 1px solid var(--border-light);
+            background: var(--background-card);
+        }
+
+        .page-item a:hover {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+        }
+
+        /* 푸터 */
+        footer {
+            background: linear-gradient(135deg, var(--text-primary) 0%, #374151 100%);
+            color: #f9fafb;
+            padding: 48px 5% 32px;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: #d1d5db;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 8px 0;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        .contact {
+            color: #d1d5db;
+            font-size: 0.95rem;
+        }
+
+        .copyright {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            padding-top: 20px;
+            border-top: 1px solid #4b5563;
         }
 
         /* 체크박스 스타일 */
         input[type="checkbox"] {
             width: 18px;
             height: 18px;
+            accent-color: var(--primary-color);
             cursor: pointer;
         }
 
         /* 반응형 디자인 */
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
+            .board-container {
+                margin: 32px auto;
+                padding: 0 16px;
+            }
+            
             .board-section {
+                border-radius: var(--radius-lg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                padding: 8px 4%;
+            }
+            
+            .main-nav {
+                padding: 0 4%;
+                overflow-x: auto;
+            }
+            
+            .main-nav > ul {
+                flex-wrap: nowrap;
+                min-width: max-content;
+            }
+            
+            .main-nav > ul > li > a {
+                padding: 12px 16px;
+                font-size: 0.875rem;
+                white-space: nowrap;
+            }
+            
+            .dropdown {
+                position: fixed;
+                top: auto;
+                left: 50%;
+                bottom: 100px;
+                transform: translateX(-50%);
+                width: 90vw;
+                max-width: 300px;
+            }
+            
+            .board-container {
+                margin: 20px auto;
+                padding: 0 15px;
+            }
+
+            .btn-group {
                 padding: 20px;
             }
 
-            .board_list {
-                font-size: 14px;
-            }
-
-            .board_list thead th,
-            .board_list tbody td {
-                padding: 8px 5px;
-            }
-
-            #searchFrm {
+            .search-container {
+                padding: 20px;
                 flex-direction: column;
                 align-items: stretch;
             }
 
-            #searchFrm select,
-            #searchFrm input[type="text"] {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-            
-            }
-            
-             /* 검색바 컨테이너 */
-        .search-container {
-		    background: white;
-		    border-radius: 50px;
-		    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-		    padding: 8px;
-		    display: flex;
-		    align-items: center;
-		    width: 100%;
-		    border: 1px solid #e1e5e9;
-		   justify-content: center
-		    
-		}
-
-        /* 닫기 버튼 */
-        .close-btn {
-            background: none;
-            border: none;
-            padding: 12px;
-            cursor: pointer;
-            color: #9ca3af;
-            font-size: 16px;
-            border-radius: 50%;
-            transition: all 0.2s ease;
-            margin-left: 4px;
-        }
-
-        .close-btn:hover {
-            background-color: #f3f4f6;
-            color: #6b7280;
-        }
-
-        /* 셀렉트 박스 */
-        .search-select {
-            border: none;
-            outline: none;
-            background: transparent;
-            color: #6b7280;
-            font-size: 14px;
-            cursor: pointer;
-            padding: 8px 12px;
-            margin-left: 8px;
-            border-right: 1px solid #e5e7eb;
-            min-width: 80px;
-        }
-
-        .search-select:focus {
-            color: #374151;
-        }
-
-        /* 검색 입력창 */
-        .search-input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 16px;
-            padding: 12px 16px;
-            color: #374151;
-            background: transparent;
-        }
-
-        .search-input::placeholder {
-            color: #9ca3af;
-            font-weight: 300;
-        }
-
-        /* 검색 버튼 */
-        .search-btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 40px;
-            padding: 12px 24px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-right: 4px;
-        }
-
-        .search-btn:hover {
-            background: #2563eb;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .search-btn:active {
-            transform: translateY(0);
-        }
-
-        /* 포커스 상태 */
-        .search-container:focus-within {
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
-            border-color: #3b82f6;
-        }
-
-        /* 반응형 디자인 */
-        @media (max-width: 768px) {
-            .search-container {
-                max-width: 100%;
-                padding: 6px;
-            }
-
             .search-input {
-                font-size: 16px; /* iOS 줌 방지 */
-                padding: 10px 12px;
+                min-width: auto;
             }
 
-            .search-btn {
-                padding: 10px 18px;
+            .board_list {
                 font-size: 13px;
             }
 
-            .search-select {
-                font-size: 13px;
-                padding: 6px 8px;
-                min-width: 70px;
+            .board_list th,
+            .board_list td {
+                padding: 12px 8px;
             }
 
-            .close-btn {
-                padding: 8px;
-                font-size: 14px;
+            .auth-buttons {
+                gap: 12px;
+                font-size: 0.8rem;
+            }
+
+            .auth-buttons a,
+            .auth-buttons button {
+                padding: 6px 12px;
+            }
+
+            footer {
+                padding: 32px 4% 24px;
             }
         }
 
         @media (max-width: 480px) {
-            .search-btn span {
-                display: none; /* 작은 화면에서는 텍스트 숨김 */
+            .board_list thead {
+                display: none;
             }
 
-            .search-btn {
-                padding: 10px 12px;
+            .board_list,
+            .board_list tbody,
+            .board_list tr,
+            .board_list td {
+                display: block;
+            }
+
+            .board_list tr {
+                border: 1px solid var(--border-light);
+                border-radius: var(--radius-md);
+                margin-bottom: 10px;
+                padding: 15px;
+                position: relative;
+            }
+
+            .board_list td {
+                border: none;
+                padding: 5px 0;
+                text-align: left;
+            }
+
+            .board_list td:before {
+                content: attr(data-label) ": ";
+                font-weight: 600;
+                color: var(--text-secondary);
             }
         }
 
-        /* 애니메이션 */
-        .search-container {
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* 다크모드 대응 */
+        /* 다크모드 지원 */
         @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #1f2937;
-            }
-
-            .search-container {
-                background: #374151;
-                border-color: #4b5563;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            }
-
-            .search-input {
-                color: #f9fafb;
-            }
-
-            .search-input::placeholder {
-                color: #9ca3af;
-            }
-
-            .search-select {
-                color: #d1d5db;
-            }
-
-            .close-btn {
-                color: #9ca3af;
-            }
-
-            .close-btn:hover {
-                background-color: #4b5563;
-                color: #d1d5db;
-            }
-
-            .search-container:focus-within {
-                box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+            :root {
+                --primary-color: #6366f1;
+                --primary-hover: #5b21b6;
+                --secondary-color: #06b6d4;
+                --accent-color: #10b981;
+                --text-primary: #f9fafb;
+                --text-secondary: #d1d5db;
+                --text-light: #9ca3af;
+                --background-main: #111827;
+                --background-soft: #0f172a;
+                --background-card: #1f2937;
+                --border-light: #374151;
+                --border-medium: #4b5563;
             }
         }
-        
+
     </style>
     
-    <script th:inline="javascript">
-    var isLoggedIn = /*[[${session.user != null}]]*/ false;
-    var userId = /*[[${session.user?.userid ?: ''}]]*/ '';
-    var isAdmin = /*[[${session.user?.userid == 'admin'}]]*/ false; // 추가: admin 여부 확인
+      <script th:inline="javascript">
+// 더 안전한 방식으로 변수 초기화
+var isLoggedIn = /*[[${session.user != null}]]*/ false;
+var userId = /*[[${session.user != null ? session.user.userid : ''}]]*/ '';
+var isAdmin = /*[[${session.user != null && session.user.userid == 'admin'}]]*/ false;
+
+// 디버깅을 위한 콘솔 출력
+console.log('isLoggedIn:', isLoggedIn);
+console.log('userId:', userId);
+console.log('isAdmin:', isAdmin);
 </script>
 </head>
 <body>
@@ -479,11 +875,6 @@
                 <button onclick="logout()">로그아웃</button>
             </div>
         </div>
-        <!--<div class="main-header">
-            <div class="logo">
-                <h1><a href="/user/main">MH <span>커뮤니티</span></a></h1>
-            </div>
-        </div>-->
         <nav>
             <div class="main-nav" id="main-nav">
                 <ul>
@@ -524,132 +915,135 @@
         <div class="board-section">
             <h2><a href="/board3/openBoardList3">경험나누기</a></h2>
             
-            <!-- HTML 부분 - 조건부 삭제 버튼 표시 -->
-<form id="frm" method="post">
-    <div class="btn-group">
-         <!-- 로그인하지 않은 경우 -->
-    <div th:if="${session.user == null}">
-        <button type="button" class="btn" onclick="alertLogin()">글 쓰기</button>
-    </div>
-    
-    <!-- 로그인한 경우 -->
-    <div th:if="${session.user != null}">
-        <a href="/board3/openBoardWrite3" class="btn">글 쓰기</a>
-    </div>
-        <!-- admin일 때만 삭제 버튼 표시 -->
-        <div th:if="${session.user != null && session.user.userid == 'admin'}">
+            <form id="frm" method="post">
+                <div class="btn-group">
+                    <!-- 로그인하지 않은 경우 -->
+                    <div th:if="${session.user == null}">
+                        <button type="button" class="btn" onclick="alertLogin()">글 쓰기</button>
+                    </div>
+                    
+                    <!-- 로그인한 경우 -->
+                    <div th:if="${session.user != null}">
+                        <a href="/board3/openBoardWrite3" class="btn">글 쓰기</a>
+                    </div>
+                    
+                    <!-- admin일 때만 삭제 버튼 표시 -->
+                    <div th:if="${session.user != null && session.user.userid == 'admin'}">
                         <button type="button" id="deleteBtn" class="btn btn-danger">선택 삭제</button>
                         <button type="button" id="moveBtn" class="btn btn-warning">게시글 이동</button>
                     </div>
-    </div>
-    
-    
-    <!-- 게시글 이동 컨트롤 (admin일 때만 표시) -->
+                </div>
+                
+                <!-- 게시글 이동 컨트롤 (admin일 때만 표시) -->
                 <div class="move-controls" th:if="${session.user != null && session.user.userid == 'admin'}" style="display: none;" id="moveControls">
                     <span>이동할 게시판:</span>
                     <select class="move-select" id="targetBoard">
                         <option value="">게시판 선택</option>
-                        <option value="free">자유게시판</option>
                         <option value="qna">질문과 답변</option>
-                        <!-- 필요에 따라 추가 게시판 옵션 -->
+                        <option value="Ex">경험나누기</option>
                     </select>
                     <button type="button" id="confirmMoveBtn" class="btn btn-warning">이동 실행</button>
                     <button type="button" id="cancelMoveBtn" class="btn">취소</button>
                 </div>
-    
-    <!-- 테이블 헤더에서도 admin일 때만 체크박스 표시 -->
-    <table id="my-table" class="board_list">
-        <colgroup>
-            <col width="10%"/>
-            <col width="*"/>
-            <col width="10%"/>
-            <col width="15%"/>
-            <col width="8%"/>
-            <col th:if="${session.user != null && session.user.userid == 'admin'}" width="5%"/>
-        </colgroup>
-        <thead>
-            <tr>
-                <th scope="col">글번호</th>
-                <th scope="col">제목</th>
-                <th scope="col">조회수</th>
-                <th scope="col">작성일</th>
-                <th scope="col">작성자</th>
-                <th scope="col" th:if="${session.user != null && session.user.userid == 'admin'}">
-                    <input type="checkbox" id="allCheck"/>
-                </th>
-            </tr>
-        </thead>
-        <tbody id="tBody">
-            <tr class="boardItem" th:if="${#lists.size(list)} > 0" th:each="list : ${list}">
-                <td id="idx" th:text="${list.boardIdx}"></td>
-                <td class="title" id="title">
-                    <a href="/board3/openBoardDetail3?boardIdx=" 
-                       th:attrappend="href=${list.boardIdx}" 
-                       th:text="${list.title}"></a>
-                </td>
-                <td th:text="${list.hitCnt}"></td>
-                <td th:if="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
-                    th:text="${#temporals.format(list.createdDatetime, 'HH:mm')}"></td>
-                <td th:unless="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
-                    th:text="${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}"></td>
-                <td th:text="${list.creatorId}"></td>
-                <!-- admin일 때만 체크박스 표시 -->
-                <td th:if="${session.user != null && session.user.userid == 'admin'}">
-                    <input type="checkbox" class="deleteCheck" name="deleteCheck" th:value="${list.boardIdx}"/>
-                </td>
-            </tr> 
-            <tr th:unless="${#lists.size(list)} > 0">
-                <td th:colspan="${session.user != null && session.user.userid == 'admin' ? 6 : 5}" class="no-results">
-                    조회된 결과가 없습니다.
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <!-- 하단 버튼 그룹에서도 admin일 때만 삭제 버튼 표시 -->
-    <div class="btn-group">
-        <!-- 로그인하지 않은 경우 -->
-    <div th:if="${session.user == null}">
-        <button type="button" class="btn" onclick="alertLogin()">글 쓰기</button>
-    </div>
-    
-    <!-- 로그인한 경우 -->
-    <div th:if="${session.user != null}">
-        <a href="/board3/openBoardWrite3" class="btn">글 쓰기</a>
-    </div>
-        <!-- admin일 때만 삭제 버튼 표시 -->
-        <div th:if="${session.user != null && session.user.userid == 'admin'}">
+                
+                <!-- 테이블 헤더에서도 admin일 때만 체크박스 표시 -->
+                <table id="my-table" class="board_list">
+                    <colgroup>
+                        <col width="10%"/>
+                        <col width="*"/>
+                        <col width="10%"/>
+                        <col width="10%"/> <!-- 좋아요 컬럼 추가 -->
+                        <col width="15%"/>
+                        <col width="8%"/>
+                        <col th:if="${session.user != null && session.user.userid == 'admin'}" width="5%"/>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col">글번호</th>
+                            <th scope="col">제목</th>
+                            <th scope="col">조회수</th>
+                            <th scope="col">좋아요</th> <!-- 좋아요 헤더 추가 -->
+                            <th scope="col">작성일</th>
+                            <th scope="col">작성자</th>
+                            <th scope="col" th:if="${session.user != null && session.user.userid == 'admin'}">
+                                <input type="checkbox" id="allCheck"/>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tBody">
+                        <tr class="boardItem" th:if="${#lists.size(list)} > 0" th:each="list : ${list}">
+                            <td id="idx" th:text="${list.boardIdx}"></td>
+                            <td class="title" id="title">
+                                <a href="/board3/openBoardDetail3?boardIdx=" 
+                                   th:attrappend="href=${list.boardIdx}" 
+                                   th:text="${list.title}"></a>
+                            </td>
+                            <td th:text="${list.hitCnt}"></td>
+                            <!-- 좋아요 정보 표시 -->
+                            <td>
+                                <div class="like-info" th:classappend="${list.likeCnt > 0} ? 'has-likes' : 'no-likes'">
+                                    <i class="fas fa-heart"></i>
+                                    <span th:text="${list.likeCnt ?: 0}">0</span>
+                                </div>
+                            </td>
+                            <td th:if="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
+                                th:text="${#temporals.format(list.createdDatetime, 'HH:mm')}"></td>
+                            <td th:unless="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')} == ${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}" 
+                                th:text="${#temporals.format(list.createdDatetime, 'yyyy-MM-dd')}"></td>
+                            <td th:text="${list.creatorId}"></td>
+                            <!-- admin일 때만 체크박스 표시 -->
+                            <td th:if="${session.user != null && session.user.userid == 'admin'}">
+                                <input type="checkbox" class="deleteCheck" name="deleteCheck" th:value="${list.boardIdx}"/>
+                            </td>
+                        </tr> 
+                        <tr th:unless="${#lists.size(list)} > 0">
+                            <td th:colspan="${session.user != null && session.user.userid == 'admin' ? 7 : 6}" class="no-results">
+                                조회된 결과가 없습니다.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- 하단 버튼 그룹에서도 admin일 때만 삭제 버튼 표시 -->
+                <div class="btn-group">
+                    <!-- 로그인하지 않은 경우 -->
+                    <div th:if="${session.user == null}">
+                        <button type="button" class="btn" onclick="alertLogin()">글 쓰기</button>
+                    </div>
+                    
+                    <!-- 로그인한 경우 -->
+                    <div th:if="${session.user != null}">
+                        <a href="/board3/openBoardWrite3" class="btn">글 쓰기</a>
+                    </div>
+                    <div th:if="${session.user != null && session.user.userid == 'admin'}">
                         <button type="button" id="deleteBtn2" class="btn btn-danger">선택 삭제</button>
                         <button type="button" id="moveBtn2" class="btn btn-warning">게시글 이동</button>
                     </div>
-    </div>
-</form>
-<div class="search-container">
-        <!-- 닫기 버튼 -->
-        <button class="close-btn" onclick="clearSearch()" title="지우기">
-            <i class="fas fa-times"></i>
-        </button>
+                </div>
+            </form>
+            
+            <div class="search-container">
+                <button class="close-btn" onclick="clearSearch()" title="지우기">
+                    <i class="fas fa-times"></i>
+                </button>
 
-        <!-- 검색 옵션 셀렉트 -->
-        <select class="search-select" id="type">
-            <option value="title">제목</option>
-            <option value="contents">내용</option>
-        </select>
+                <select class="search-select" id="type">
+                    <option value="title">제목</option>
+                    <option value="contents">내용</option>
+                </select>
 
-        <!-- 검색 입력창 -->
-        <input 
-            type="text" 
-            class="search-input" 
-            placeholder="검색어를 입력하세요..." 
-            id="keyword"
-        >
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="검색어를 입력하세요..." 
+                    id="keyword"
+                >
 
-        <!-- 검색 버튼 -->
-        <button class="search-btn" id="searchBtn">
-            <i class="fas fa-search"></i>
-            <span>검색</span>
-        </button>
-    </div>
+                <button class="search-btn" id="searchBtn">
+                    <i class="fas fa-search"></i>
+                    <span>검색</span>
+                </button>
+            </div>
             </div>
             
             <!-- 페이징처리 -->
@@ -688,7 +1082,7 @@
                 <a href="#">사이트맵</a>
             </div>
             <div class="contact">
-                이메일: seodg4571@gamil.com
+                이메일: seogd6698@gmail.com
             </div>
             <div class="copyright">
                 &copy; 2025 MH 커뮤니티. All Rights Reserved.

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import MHproject.DTO.Criteria;
 import MHproject.DTO.ExperienceBoardDTO;
+import MHproject.DTO.FreeBoardDTO;
 import MHproject.mapper.ExperienceBoardMapper;
 
 
@@ -24,7 +25,7 @@ public class ExperienceBoardServiceImpl implements ExperienceBoardService {
 	private ExperienceBoardMapper boardMapper;
 	
 	@Autowired
-	public void FreeBoardMapper(ExperienceBoardMapper boardMapper) {
+	public void ExperienceBoardMapper(ExperienceBoardMapper boardMapper) {
 		this.boardMapper = boardMapper;
 	}
 	
@@ -45,6 +46,23 @@ public class ExperienceBoardServiceImpl implements ExperienceBoardService {
 		ExperienceBoardDTO board = boardMapper.selectBoardDetail(boardIdx);
 		return board;
 	}
+	
+	@Override
+	public ExperienceBoardDTO selectBoardDetailWithLike(int boardIdx, String userId) throws Exception {
+		logger.info("좋아요 정보 포함 게시글 상세 조회 - boardIdx: {}, userId: {}", boardIdx, userId);
+		
+		boardMapper.updateHitCount(boardIdx);
+		
+		ExperienceBoardDTO board = boardMapper.selectBoardDetailWithLike(boardIdx, userId);
+		
+		if (board != null) {
+			logger.debug("게시글 조회 완료 - 제목: {}, 좋아요 수: {}, 사용자 좋아요 여부: {}", 
+						board.getTitle(), board.getLikeCnt(), board.isLiked());
+		}
+		
+		return board;
+	}
+	
 	
 	@Override
 	public void updateBoard(ExperienceBoardDTO board) throws Exception{
@@ -105,6 +123,12 @@ public class ExperienceBoardServiceImpl implements ExperienceBoardService {
 	public List<Map<String, Object>> selectBoardList(Criteria cri) throws Exception {
 		 return boardMapper.selectBoardList(cri);
 	}
+	
+	@Override
+	public List<Map<String, Object>> selectBoardListWithLike(Criteria cri, String userId) throws Exception {
+		logger.debug("좋아요 정보 포함 게시글 목록 조회 - 페이지: {}, userId: {}", cri.getPage(), userId);
+		return boardMapper.selectBoardListWithLike(cri, userId);
+	}
 	 
 	@Override
 	public int countBoardListTotal() throws Exception {
@@ -118,11 +142,27 @@ public class ExperienceBoardServiceImpl implements ExperienceBoardService {
 		logger.debug("검색 결과 개수: {}", boardList.size());
 		return boardList;
 	}
+	
+	@Override
+	public List<ExperienceBoardDTO> searchTitleBoardListWithLike(String keyword, String userId) throws Exception {
+		logger.debug("좋아요 정보 포함 제목 검색 - 키워드: {}, userId: {}", keyword, userId);
+		List<ExperienceBoardDTO> boardList = boardMapper.searchTitleBoardListWithLike(keyword, userId);
+		logger.debug("검색 결과 개수: {}", boardList.size());
+		return boardList;
+	}
 
 	@Override
 	public List<ExperienceBoardDTO> searchContentsBoardList(String keyword) {
 		logger.debug("내용 검색 키워드: {}", keyword);
 		List<ExperienceBoardDTO> boardList = boardMapper.searchContentsBoardList(keyword);
+		logger.debug("검색 결과 개수: {}", boardList.size());
+		return boardList;
+	}
+	
+	@Override
+	public List<ExperienceBoardDTO> searchContentsBoardListWithLike(String keyword, String userId) throws Exception {
+		logger.debug("좋아요 정보 포함 내용 검색 - 키워드: {}, userId: {}", keyword, userId);
+		List<ExperienceBoardDTO> boardList = boardMapper.searchContentsBoardListWithLike(keyword, userId);
 		logger.debug("검색 결과 개수: {}", boardList.size());
 		return boardList;
 	}

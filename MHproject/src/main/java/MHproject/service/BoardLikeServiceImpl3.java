@@ -7,20 +7,18 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import MHproject.DTO.BoardLikeDTO1;
-import MHproject.DTO.BoardLikeDTO2;
 import MHproject.DTO.BoardLikeDTO3;
 import MHproject.mapper.BoardLikeMapper1;
 import MHproject.mapper.BoardLikeMapper2;
 import MHproject.mapper.BoardLikeMapper3;
 
 @Service
-public class BoardLikeServiceImpl2 implements BoardLikeService2 {
+public class BoardLikeServiceImpl3 implements BoardLikeService3 {
     
-    private static final Logger logger = LoggerFactory.getLogger(BoardLikeServiceImpl2.class);
+    private static final Logger logger = LoggerFactory.getLogger(BoardLikeServiceImpl3.class);
     
     @Autowired
-    private BoardLikeMapper2 boardLikeMapper;
+    private BoardLikeMapper3 boardLikeMapper;
     
     @Autowired
     @Qualifier("notificationServiceImpl")  // 구체적인 Bean 이름 지정
@@ -43,7 +41,7 @@ public class BoardLikeServiceImpl2 implements BoardLikeService2 {
                 logger.info("좋아요 취소 완료 - boardIdx: {}, userId: {}", boardIdx, userId);
             } else {
                 // 좋아요하지 않은 상태 -> 좋아요 추가
-                BoardLikeDTO2 boardLike = new BoardLikeDTO2(boardIdx, userId);
+            	BoardLikeDTO3 boardLike = new BoardLikeDTO3(boardIdx, userId);
                 boardLikeMapper.insertLike(boardLike);
                 isLiked = true;
                 logger.info("좋아요 추가 완료 - boardIdx: {}, userId: {}", boardIdx, userId);

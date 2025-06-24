@@ -68,6 +68,8 @@ public interface QnABoardMapper {
 	
 	public void insertBoardToTargetBoard(@Param("board") QnABoardDTO board, @Param("targetBoard") String targetBoard) throws Exception;
 
+	public void updateBoard(@Param("title") String title,@Param("contents") String contents,@Param("boardIdx") int boardIdx,@Param("creatorId") String creatorId);
+
 
 	
 }

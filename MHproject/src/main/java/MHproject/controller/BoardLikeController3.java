@@ -14,18 +14,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import MHproject.service.BoardLikeService2;
+
+import MHproject.service.BoardLikeService3;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping(value = "/like2")
-public class BoardLikeController2 {
+@RequestMapping(value = "/like3")
+public class BoardLikeController3 {
     
-    private static final Logger logger = LoggerFactory.getLogger(BoardLikeController2.class);
+    private static final Logger logger = LoggerFactory.getLogger(BoardLikeController3.class);
     
     @Autowired
-    @Qualifier("boardLikeServiceImpl2")
-    private BoardLikeService2 boardLikeService;
+    @Qualifier("boardLikeServiceImpl3")
+    private BoardLikeService3 boardLikeService;
     
     /**
      * 좋아요 토글 (추가/취소)
@@ -33,7 +34,7 @@ public class BoardLikeController2 {
      * @param session HTTP 세션
      * @return JSON 응답 (성공 여부, 좋아요 상태, 총 좋아요 수)
      */
-    @PostMapping("/toggle2")
+    @PostMapping("/toggle3")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> toggleLike(
             @RequestParam("boardIdx") int boardIdx,

@@ -39,6 +39,8 @@ public interface QnABoardService {
 	List<QnABoardDTO> searchTitleBoardListWithLike(String keyword, String userId) throws Exception;
 
 	List<QnABoardDTO> searchContentsBoardListWithLike(String keyword, String userId) throws Exception;
+
+	public void updateBoard(String title, String contents, int boardIdx, String creatorId);
 	
 	
 

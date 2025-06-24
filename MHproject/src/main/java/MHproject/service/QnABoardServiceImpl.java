@@ -75,11 +75,6 @@ public class QnABoardServiceImpl implements QnABoardService {
 	
 	
 	@Override
-	public void updateBoard(QnABoardDTO board) throws Exception{
-		boardMapper.updateBoard(board);
-	}
-	
-	@Override
 	public void deleteBoard(int boardIdx) throws Exception{
 		boardMapper.deleteBoard(boardIdx);
 	}
@@ -203,6 +198,18 @@ public class QnABoardServiceImpl implements QnABoardService {
 		List<QnABoardDTO> boardList = boardMapper.searchContentsBoardListWithLike(keyword, userId);
 		logger.debug("검색 결과 개수: {}", boardList.size());
 		return boardList;
+	}
+
+	@Override
+	public void updateBoard(String title, String contents, int boardIdx, String creatorId) {
+		 boardMapper.updateBoard(title,contents,boardIdx,creatorId);
+		
+	}
+
+	@Override
+	public void updateBoard(QnABoardDTO board) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 	

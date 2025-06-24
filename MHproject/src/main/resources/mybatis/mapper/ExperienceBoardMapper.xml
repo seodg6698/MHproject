@@ -55,6 +55,58 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	
 	</select>
 	 -->
+	 
+	 <!-- 좋아요 정보를 포함한 게시글 목록 조회 -->
+	<select id="selectBoardListWithLike" resultType="hashmap">
+    <![CDATA[
+        SELECT
+            b.board_idx AS boardIdx,
+			b.title AS title,
+			b.hit_cnt AS hitCnt,
+			b.creator_id AS creatorId,
+			b.created_datetime AS createdDatetime,
+			b.like_cnt AS likeCnt,
+			CASE 
+				WHEN #{userId} IS NULL THEN false
+				WHEN l.like_idx IS NOT NULL THEN true 
+				ELSE false 
+			END AS isLiked
+        FROM
+            t_board3 b
+        LEFT JOIN t_board_like3 l ON b.board_idx = l.board_idx 
+			AND l.user_id = #{userId}
+        WHERE
+            b.deleted_yn = 'N'
+        ORDER BY b.board_idx DESC
+        LIMIT #{cri.pageStart}, #{cri.perPageNum}
+    ]]>
+	</select>
+	 
+	 <!-- 좋아요 정보를 포함한 게시글 상세 조회 -->
+	<select id="selectBoardDetailWithLike" resultType="MHproject.DTO.ExperienceBoardDTO">
+	<![CDATA[
+		SELECT
+			b.board_idx AS boardIdx, 
+			b.title AS title, 
+			b.contents AS contents, 
+			b.hit_cnt AS hitCnt,
+			b.created_datetime AS createdDatetime,
+			b.creator_id AS creatorId,
+			b.like_cnt AS likeCnt,
+			CASE 
+				WHEN #{userId} IS NULL THEN false
+				WHEN l.like_idx IS NOT NULL THEN true 
+				ELSE false 
+			END AS isLiked
+		FROM
+			t_board3 b
+		LEFT JOIN t_board_like3 l ON b.board_idx = l.board_idx 
+			AND l.user_id = #{userId}
+		WHERE
+			b.board_idx = #{boardIdx} 
+			AND b.deleted_yn = 'N'	
+		]]>
+	</select>
 	
 	<insert id="insertBoard" parameterType="MHproject.DTO.ExperienceBoardDTO">
 	<![CDATA[
@@ -282,6 +334,31 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
   
   </select>
   
+  <!-- 좋아요 정보 포함한 제목 검색 -->
+	<select id="searchTitleBoardListWithLike" resultType="MHproject.DTO.ExperienceBoardDTO">
+	 <![CDATA[
+		SELECT
+				b.board_idx AS boardIdx,
+				b.title AS title,
+				b.hit_cnt AS hitCnt,
+				b.creator_id AS creatorId,
+				b.created_datetime AS createdDatetime,
+				b.like_cnt AS likeCnt,
+				CASE 
+					WHEN #{userId} IS NULL THEN false
+					WHEN l.like_idx IS NOT NULL THEN true 
+					ELSE false 
+				END AS isLiked
+		FROM
+	            t_board3 b
+	    LEFT JOIN t_board_like3 l ON b.board_idx = l.board_idx 
+			AND l.user_id = #{userId}
+	    WHERE
+	   			b.title LIKE CONCAT('%', #{keyword}, '%') 
+	   			AND b.deleted_yn = 'N'
+	     ]]>
+	</select>
+  
   
   <select id="searchContentsBoardList" resultType="MHproject.DTO.ExperienceBoardDTO" parameterType="String">
 <![CDATA[
@@ -299,6 +376,33 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
   ]]>
 
 </select>
+
+
+
+<!-- 좋아요 정보 포함한 내용 검색 -->
+	<select id="searchContentsBoardListWithLike" resultType="MHproject.DTO.FreeBoardDTO">
+	<![CDATA[
+		SELECT
+				b.board_idx AS boardIdx,
+				b.title AS title,
+				b.hit_cnt AS hitCnt,
+				b.creator_id AS creatorId,
+				b.created_datetime AS createdDatetime,
+				b.like_cnt AS likeCnt,
+				CASE 
+					WHEN #{userId} IS NULL THEN false
+					WHEN l.like_idx IS NOT NULL THEN true 
+					ELSE false 
+				END AS isLiked
+		FROM
+	            t_board3 b
+	    LEFT JOIN t_board_like3 l ON b.board_idx = l.board_idx 
+			AND l.user_id = #{userId}
+	    WHERE
+	    		b.contents  LIKE CONCAT('%', #{keyword}, '%')
+	    		AND b.deleted_yn = 'N'      	
+	  ]]>
+	</select>
 	
 	
 

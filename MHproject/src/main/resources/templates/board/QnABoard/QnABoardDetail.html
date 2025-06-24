@@ -169,8 +169,10 @@
         <a href="#this" id="list" class="btn">목록으로</a>
         
         <!-- 수정하기 버튼: 세션 아이디와 작성자 아이디가 일치할 때만 표시 -->
-        <a href="#this" id="edit" class="btn" 
-           th:if="${session.user != null and session.user.userid != null and session.user.userid == board.creatorId}">수정하기</a>
+        <button type="button" id="edit" class="btn"
+        th:if="${session.user != null and session.user.userid != null and session.user.userid == board.creatorId}">
+    		수정하기
+		</button>
         
         <!-- 삭제하기 버튼: 세션 아이디와 작성자 아이디가 일치하거나 admin 계정일 때 표시 -->
         <a href="#this" id="delete" class="btn" 
@@ -271,19 +273,66 @@
 				location.href = "/board2/openBoardList2";
 			});
 			
-			$("#edit").on("click", function(){
-				var frm = $("#frm")[0];
-				var result = confirm("게시글을 수정하시겠습니까?");
-				
-				if(result){
-					frm.action = "/board1/updateBoard1";
-					frm.submit();
-					alert("글이 수정되었습니다.");
-				}else{
-					alert("수정을 취소했습니다.");
-				}
-				
-			});
+			
+			
+			// 수정하기 버튼 클릭 이벤트 (AJAX 버전)
+$("#edit").on("click", function(e){
+    e.preventDefault();
+    
+    console.log("수정 버튼 클릭됨!");
+    
+    var boardIdx = $("#boardIdx").val();
+    console.log("boardIdx:", boardIdx);
+    
+    if(!boardIdx || boardIdx === '' || boardIdx === '0') {
+        alert("게시글 번호를 찾을 수 없습니다.");
+        return;
+    }
+    
+    // 로딩 상태 표시 (선택사항)
+    $(this).prop("disabled", true).text("처리 중...");
+    
+    // AJAX로 수정 페이지 요청
+    $.ajax({
+        url: "/board2/updatePage2",
+        type: "GET",
+        data: {
+            boardIdx: boardIdx
+        },
+        success: function(response, status, xhr) {
+            console.log("수정 페이지 요청 성공");
+            
+            // 응답이 HTML인 경우 (정상적인 수정 페이지)
+            if(xhr.getResponseHeader('Content-Type').indexOf('text/html') > -1) {
+                // 수정 페이지로 이동
+                window.location.href = "/board2/updatePage2?boardIdx=" + boardIdx;
+            } else {
+                // JSON 응답인 경우 (에러 메시지 등)
+                alert("수정 페이지로 이동할 수 없습니다.");
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("수정 페이지 요청 실패:", xhr.responseText);
+            
+            // 에러 상태 코드별 처리
+            if(xhr.status === 401) {
+                alert("로그인이 필요합니다.");
+                location.href = "/login/login";
+            } else if(xhr.status === 403) {
+                alert("수정 권한이 없습니다.");
+            } else if(xhr.status === 404) {
+                alert("존재하지 않는 게시글입니다.");
+                location.href = "/board1/openBoardList1";
+            } else {
+                alert("오류가 발생했습니다. 다시 시도해주세요.");
+            }
+        },
+        complete: function() {
+            // 버튼 상태 복원
+            $("#edit").prop("disabled", false).text("수정하기");
+        }
+    });
+});
 			
 			$("#delete").on("click", function(){
 				var frm = $("#frm")[0];

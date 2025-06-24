@@ -8,14 +8,14 @@ import MHproject.DTO.BoardLikeDTO2;
 import MHproject.DTO.BoardLikeDTO3;
 
 @Mapper
-public interface BoardLikeMapper2 {
+public interface BoardLikeMapper3 {
     
     /**
      * 좋아요 추가
      * @param boardLike 좋아요 정보
      * @return 삽입된 행 수
      */
-    int insertLike(BoardLikeDTO2 boardLike) throws Exception;
+    int insertLike(BoardLikeDTO3 boardLike) throws Exception;
     
     /**
      * 좋아요 삭제

@@ -19,6 +19,26 @@ public class ExperienceBoardDTO {
 	
 	
 
+	// 좋아요 관련 필드 추가
+	private int likeCnt;        // 게시글의 총 좋아요 개수
+	public int getLikeCnt() {
+		return likeCnt;
+	}
+	public void setLikeCnt(int likeCnt) {
+		this.likeCnt = likeCnt;
+	}
+	public boolean isLiked() {
+		return isLiked;
+	}
+	public void setLiked(boolean isLiked) {
+		this.isLiked = isLiked;
+	}
+	private boolean isLiked;    // 현재 사용자의 좋아요 여부
+	
+	
+	
+	
+
 	public String getType() {
 		return type;
 	}
@@ -84,7 +104,7 @@ public class ExperienceBoardDTO {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("BoardDto [boardIdx=");
+		builder.append("ExperienceBoardDTO [boardIdx=");
 		builder.append(boardIdx);
 		builder.append(", title=");
 		builder.append(title);
@@ -104,9 +124,17 @@ public class ExperienceBoardDTO {
 		builder.append(type);
 		builder.append(", keyword=");
 		builder.append(keyword);
+		builder.append(", likeCnt=");
+		builder.append(likeCnt);
+		builder.append(", isLiked=");
+		builder.append(isLiked);
 		builder.append("]");
 		return builder.toString();
 	}
+
+	
+	
+	
 	
 
 }

@@ -136,17 +136,19 @@ resultMap id속성값과 select태그 안의 resultMap 속성 값을 일치시�
 	
 	
 	
-	<update id="updateBoard" parameterType="MHproject.DTO.QnABoardDTO">
-		<![CDATA[
-			UPDATE t_board2 SET 
-				title = #{title},
-				contents = #{contents},
-				updated_datetime = NOW(),
-				updater_id = 'admin'
-			WHERE
-				board_idx = #{boardIdx}		
-			]]>
-	</update>
+	<!-- 게시글 수정 -->
+    <update id="updateBoard" parameterType="MHproject.DTO.FreeBoardDTO">
+        UPDATE t_board2
+        SET 
+            title = #{title},
+            contents = #{contents},
+            <!-- category = #{category}, -->
+            updater_id = #{creatorId},
+            updated_datetime = NOW()
+        WHERE 
+            board_idx = #{boardIdx}
+            AND deleted_yn = 'N'
+    </update>
 	
 	<update id="deleteBoard" parameterType="int">
 		<![CDATA[
