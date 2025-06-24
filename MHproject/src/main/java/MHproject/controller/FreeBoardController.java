@@ -8,6 +8,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import MHproject.service.CommentService1;
 import MHproject.service.FreeBoardService;
@@ -137,20 +139,80 @@ public class FreeBoardController {
 		return "/board/freeBoard/freeBoardDetail";
 	}
 	
-	@PostMapping("/updateBoard1")
-	public String updateBoard(FreeBoardDTO board) throws Exception{
-		logger.info("게시글 수정 요청 - boardIdx: {}, 제목: {}", board.getBoardIdx(), board.getTitle());
-		
-		try {
-			boardService.updateBoard(board);
-			logger.info("게시글 수정 완료 - boardIdx: {}", board.getBoardIdx());
-		} catch (Exception e) {
-			logger.error("게시글 수정 중 오류 발생 - boardIdx: {}, 오류: {}", board.getBoardIdx(), e.getMessage(), e);
-			throw e;
-		}
-		
-		return "redirect:/board1/openBoardList1";
-	}
+	 /**
+     * 게시글 수정 페이지로 이동
+     * @param boardIdx 게시글 번호
+     * @param model
+     * @param session
+     * @return 수정 페이지 뷰
+     */
+    @GetMapping("/updatePage1")
+    public String updatePage(@RequestParam("boardIdx") int boardIdx, 
+                           Model model, 
+                           HttpSession session) {
+        
+        try {
+            // 세션에서 사용자 정보 확인
+            Object user = session.getAttribute("user");
+            if (user == null) {
+                model.addAttribute("message", "로그인이 필요합니다.");
+                return "redirect:/login/login";
+            }
+            
+            // 게시글 정보 조회
+            FreeBoardDTO board = boardService.selectBoardDetail(boardIdx);
+            
+            if (board == null) {
+                model.addAttribute("message", "존재하지 않는 게시글입니다.");
+                return "redirect:/board1/openBoardList1";
+            }
+            
+            // 작성자 권한 확인 (작성자 본인 또는 admin만 수정 가능)
+            // 세션에서 사용자 ID 추출 (Thymeleaf에서 session.user.userid로 접근하므로 Map 형태로 추정)
+            String sessionUserId = null;
+            if (user instanceof Map) {
+                sessionUserId = (String) ((Map<?, ?>) user).get("userid");
+            }
+          /*  
+            if (sessionUserId == null || (!sessionUserId.equals(board.getCreatorId()) && !sessionUserId.equals("admin"))) {
+                model.addAttribute("message", "수정 권한이 없습니다.");
+                return "redirect:/board1/openBoardDetail1?boardIdx=" + boardIdx;
+            }
+            */
+            
+            // 모델에 게시글 정보 추가
+            model.addAttribute("board", board);
+            
+            return "board/freeBoard/freeBoardUpdate"; // 수정 페이지 뷰 반환
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("message", "게시글 수정 페이지 로드 중 오류가 발생했습니다.");
+            return "redirect:/board1/openBoardList1";
+        }
+    }
+    
+    /**
+     * 게시글 수정 처리
+     * @param boardDto 수정할 게시글 정보
+     * @param session
+     * @param redirectAttributes
+     * @return 수정 완료 후 이동할 페이지
+     * @throws Exception 
+     */
+    @PostMapping("/updateBoard1")
+    @ResponseBody
+    public void updateBoard(@RequestParam("title") String title,
+    		@RequestParam("contents") String contents,
+    		@RequestParam("boardIdx") int boardIdx,
+    		@RequestParam("creatorId") String creatorId){// 일반 폼 데이터의 경우
+            
+            // 게시글 수정 처리
+            boardService.updateBoard(title,contents,boardIdx,creatorId);
+            
+         
+            
+    }
 	
 	@PostMapping("/deleteBoard1")
 	public String deleteBoard(int boardIdx) throws Exception{ 

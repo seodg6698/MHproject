@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <title>자유게시판 - MH 커뮤니티</title>
     <link rel="stylesheet" th:href="@{/css/main.css}"> 
+    <link rel="stylesheet" th:href="@{/board_css/freeBoardList.css}"> 
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
 
-        /* CSS 변수 정의 - 푸른색 테마 */
+<style>
+	/* CSS 변수 정의 - 푸른색 테마 */
         :root {
             --primary-color: #2563eb;
             --primary-hover: #1d4ed8;
@@ -145,6 +146,7 @@
             background: var(--gradient-primary);
             border-top: 1px solid rgba(255, 255, 255, 0.2);
             position: relative;
+            height: 55px;
         }
 
         nav::before {
@@ -847,8 +849,8 @@ h2 {
             }
         }
 
-    
-    </style>
+</style>
+
     
    <script th:inline="javascript">
 // 더 안전한 방식으로 변수 초기화
@@ -861,6 +863,7 @@ console.log('isLoggedIn:', isLoggedIn);
 console.log('userId:', userId);
 console.log('isAdmin:', isAdmin);
 </script>
+
 </head>
 <body>
     <header>

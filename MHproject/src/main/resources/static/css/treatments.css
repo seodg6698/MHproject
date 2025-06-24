@@ -1,250 +1,758 @@
 @charset "UTF-8";
 
-  * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+ /* treatments.css */
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-light: #3b82f6;
+    --secondary-color: #0ea5e9;
+    --secondary-hover: #0284c7;
+    --accent-color: #06b6d4;
+    --accent-light: #22d3ee;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-light: #94a3b8;
+    --background-main: rgba(255, 255, 255, 0.95);
+    --background-soft: rgba(248, 250, 252, 0.8);
+    --background-card: rgba(255, 255, 255, 0.9);
+    --background-glass: rgba(255, 255, 255, 0.7);
+    --border-light: rgba(226, 232, 240, 0.6);
+    --border-medium: rgba(203, 213, 225, 0.7);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-blue: 0 10px 25px -5px rgba(37, 99, 235, 0.3);
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 20px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --gradient-primary: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #0ea5e9 100%);
+    --gradient-secondary: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #22d3ee 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+    --gradient-backdrop: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
+    --gradient-hero: linear-gradient(135deg, rgba(37, 99, 235, 0.2) 0%, rgba(14, 165, 233, 0.15) 50%, rgba(6, 182, 212, 0.1) 100%);
+    --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
 
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        .fixed-home-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #fff;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            z-index: 1000;
-            transition: transform 0.3s ease;
-        }
+body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: var(--gradient-backdrop);
+    min-height: 100vh;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    position: relative;
+}
 
-        .fixed-home-btn:hover {
-            transform: scale(1.1);
-        }
+/* 애니메이션 배경 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(37, 99, 235, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(14, 165, 233, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(6, 182, 212, 0.06) 0%, transparent 50%);
+    animation: float 15s ease-in-out infinite;
+    z-index: -1;
+}
 
-        header {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            padding: 40px 0;
-            text-align: center;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-        }
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-20px) rotate(1deg); }
+    66% { transform: translateY(10px) rotate(-1deg); }
+}
 
-        .main-header h1 {
-            font-size: 2.5rem;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
 
-        .subtitle {
-            font-size: 1.2rem;
-            color: #7f8c8d;
-            font-weight: 300;
-        }
+/* 홈 버튼 스타일 */
+.home-btn {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    color: rgb(94, 174, 255);
+    padding: 12px 24px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+.home-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
 
-        .disorder-section {
-            background: rgba(255,255,255,0.95);
-            margin-bottom: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease;
-        }
+/* 기존 고정 홈 버튼 숨기기 */
+.fixed-home-btn {
+    display: none;
+}
 
-        .disorder-section:hover {
-            transform: translateY(-5px);
-        }
 
-        .disorder-header {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
+/* 고정 홈 버튼 */
+.fixed-home-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    text-decoration: none;
+    box-shadow: var(--shadow-lg), var(--shadow-blue);
+    z-index: 1000;
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+}
 
-        .disorder-header h2 {
-            font-size: 2rem;
-            font-weight: 600;
-        }
+.fixed-home-btn:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-xl), 0 0 40px rgba(37, 99, 235, 0.4);
+}
 
-        .disorder-content {
-            padding: 40px;
-        }
+/* 메인 헤더 */
+.main-header {
+    background: var(--gradient-hero);
+    backdrop-filter: blur(20px);
+    text-align: center;
+    padding: 80px 20px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-light);
+}
 
-        .treatment-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
+.main-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        transparent 100%);
+    animation: headerShine 5s ease-in-out infinite;
+}
 
-        .treatment-card {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            border-left: 5px solid #4CAF50;
-            transition: transform 0.3s ease;
-        }
+@keyframes headerShine {
+    0%, 100% { left: -100%; }
+    50% { left: 100%; }
+}
 
-        .treatment-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
+.main-header h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+    position: relative;
+    z-index: 1;
+}
 
-        .treatment-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            color: #2c3e50;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.3rem;
+    font-weight: 500;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
 
-        .treatment-icon {
-            font-size: 1.5rem;
-        }
+/* 컨테이너 */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px 20px;
+}
 
-        .treatment-card ul {
-            list-style: none;
-        }
+/* 질환 섹션 */
+.disorder-section {
+    background: var(--gradient-glass);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-xl);
+    margin-bottom: 50px;
+    box-shadow: var(--shadow-xl), var(--shadow-blue);
+    overflow: hidden;
+    transition: var(--transition);
+    position: relative;
+}
 
-        .treatment-card li {
-            padding: 8px 0;
-            position: relative;
-            padding-left: 20px;
-        }
+.disorder-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+}
 
-        .treatment-card li::before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #4CAF50;
-            font-weight: bold;
-        }
+.disorder-section:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl), 0 0 60px rgba(37, 99, 235, 0.25);
+}
 
-        .management-tips {
-            margin-bottom: 40px;
-        }
+/* 페이드 인 애니메이션 */
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
 
-        .management-tips h3 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #2c3e50;
-            text-align: center;
-        }
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
 
-        .tips-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
+/* 질환 헤더 */
+.disorder-header {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 30px 40px;
+    position: relative;
+    overflow: hidden;
+}
 
-        .tip-item {
-            background: #e8f5e8;
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 4px solid #4CAF50;
-        }
+.disorder-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        transparent 100%);
+    animation: sectionShine 6s ease-in-out infinite;
+}
 
-        .tip-item strong {
-            display: block;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            font-size: 1.1rem;
-        }
+@keyframes sectionShine {
+    0%, 100% { left: -100%; }
+    50% { left: 100%; }
+}
 
-        .progress-indicators {
-            margin-bottom: 30px;
-        }
+.disorder-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
 
-        .progress-indicators h3 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #2c3e50;
-            text-align: center;
-        }
+/* 질환 내용 */
+.disorder-content {
+    padding: 40px;
+}
 
-        .indicator-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-        }
+/* 치료 그리드 */
+.treatment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
 
-        .indicator-item {
-            background: linear-gradient(135deg, #74b9ff, #0984e3);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
+/* 치료 카드 */
+.treatment-card {
+    background: var(--gradient-glass);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: var(--radius-lg);
+    padding: 25px;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
 
-        .emergency-info {
-            background: #ffe6e6;
-            border: 2px solid #ff6b6b;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-        }
+.treatment-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+        rgba(37, 99, 235, 0.05) 0%, 
+        rgba(14, 165, 233, 0.03) 100%);
+    opacity: 0;
+    transition: var(--transition);
+    z-index: -1;
+}
 
-        .emergency-info h3 {
-            color: #d63031;
-            margin-bottom: 10px;
-            font-size: 1.3rem;
-        }
+.treatment-card:hover::before {
+    opacity: 1;
+}
 
-        .emergency-info p {
-            color: #2d3436;
-            font-weight: 500;
-        }
+.treatment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(37, 99, 235, 0.15);
+    border-color: rgba(37, 99, 235, 0.3);
+}
 
-        .fade-in {
-            animation: fadeIn 0.8s ease-in-out;
-        }
+.treatment-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+.treatment-icon {
+    font-size: 1.5rem;
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-        @media (max-width: 768px) {
-            .main-header h1 {
-                font-size: 2rem;
-            }
-            
-            .treatment-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .tips-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+.treatment-card ul {
+    list-style: none;
+    margin: 0;
+}
+
+.treatment-card ul li {
+    position: relative;
+    padding: 8px 0 8px 20px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    transition: var(--transition);
+}
+
+.treatment-card ul li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.treatment-card ul li:hover {
+    color: var(--text-primary);
+    padding-left: 25px;
+}
+
+/* 관리 팁 */
+.management-tips {
+    margin: 40px 0;
+}
+
+.management-tips h3 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 팁 그리드 */
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.tip-item {
+    background: var(--gradient-glass);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.tip-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gradient-secondary);
+    transition: var(--transition);
+}
+
+.tip-item:hover::before {
+    width: 8px;
+}
+
+.tip-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-md), 0 0 20px rgba(14, 165, 233, 0.15);
+}
+
+.tip-item strong {
+    display: block;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.tip-item {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* 진행 지표 */
+.progress-indicators {
+    margin: 40px 0;
+}
+
+.progress-indicators h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.indicator-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.indicator-item {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: var(--radius-lg);
+    padding: 15px 20px;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.indicator-item::before {
+    content: '✓';
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #10b981;
+    font-weight: bold;
+    font-size: 1.2rem;
+    transition: var(--transition);
+}
+
+.indicator-item:hover::before {
+    left: 10px;
+}
+
+.indicator-item:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.08) 100%);
+    padding-left: 40px;
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+/* 응급 정보 */
+.emergency-info {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--radius-lg);
+    padding: 25px;
+    margin: 40px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.emergency-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gradient-danger);
+}
+
+.emergency-info h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #dc2626;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.emergency-info p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin: 0;
+    padding-left: 15px;
+}
+
+/* 중요한 메모 */
+.important-note {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: var(--radius-lg);
+    padding: 25px;
+    margin: 40px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.important-note::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gradient-success);
+}
+
+.important-note h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #059669;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.important-note p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin: 0;
+    padding-left: 15px;
+}
+
+/* 치료 타임라인 */
+.treatment-timeline {
+    margin: 40px 0;
+    background: var(--gradient-glass);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+}
+
+.treatment-timeline h4 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.timeline-item {
+    position: relative;
+    padding: 20px 0 20px 40px;
+    border-left: 2px solid var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 25px;
+    width: 14px;
+    height: 14px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: var(--shadow-sm);
+}
+
+.timeline-item:last-child {
+    border-left-color: transparent;
+    margin-bottom: 0;
+}
+
+.timeline-item strong {
+    display: block;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.timeline-item p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+    .main-header h1 {
+        font-size: 3rem;
+    }
+    
+    .container {
+        padding: 40px 16px;
+    }
+    
+    .treatment-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .tips-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .fixed-home-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        top: 15px;
+        right: 15px;
+    }
+    
+    .main-header {
+        padding: 60px 15px;
+    }
+    
+    .main-header h1 {
+        font-size: 2.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .container {
+        padding: 30px 15px;
+    }
+    
+    .disorder-section {
+        margin-bottom: 40px;
+    }
+    
+    .disorder-header {
+        padding: 25px 25px;
+    }
+    
+    .disorder-header h2 {
+        font-size: 1.7rem;
+    }
+    
+    .disorder-content {
+        padding: 30px 25px;
+    }
+    
+    .treatment-card {
+        padding: 20px;
+    }
+    
+    .tips-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .indicator-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .treatment-timeline {
+        padding: 25px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header {
+        padding: 40px 10px;
+    }
+    
+    .main-header h1 {
+        font-size: 2rem;
+    }
+    
+    .container {
+        padding: 20px 10px;
+    }
+    
+    .disorder-header {
+        padding: 20px;
+    }
+    
+    .disorder-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .disorder-content {
+        padding: 25px 20px;
+    }
+    
+    .treatment-card {
+        padding: 18px;
+    }
+    
+    .treatment-card h3 {
+        font-size: 1.2rem;
+    }
+    
+    .management-tips h3 {
+        font-size: 1.4rem;
+    }
+    
+    .tip-item {
+        padding: 18px;
+    }
+    
+    .emergency-info,
+    .important-note {
+        padding: 20px;
+    }
+    
+    .treatment-timeline {
+        padding: 20px 15px;
+    }
+}

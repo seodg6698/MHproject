@@ -23,7 +23,7 @@ public interface FreeBoardService {
 	 */
 	FreeBoardDTO selectBoardDetailWithLike(int boardIdx, String userId) throws Exception;
 
-	void updateBoard(FreeBoardDTO board) throws Exception;
+	int updateBoard(FreeBoardDTO board) throws Exception;
 
 	List<Map<String, Object>> selectBoardList(Criteria cri) throws Exception;
 	
@@ -57,4 +57,6 @@ public interface FreeBoardService {
 	public List<FreeBoardDTO> searchContentsBoardListWithLike(String keyword, String userId) throws Exception;
 
 	public void moveBoardsToAnotherBoard(List<Integer> boardIdxList, String targetBoard) throws Exception;
+
+	public void updateBoard(String title, String contents, int boardIdx, String creatorId);
 }

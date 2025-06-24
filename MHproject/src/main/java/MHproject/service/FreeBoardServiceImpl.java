@@ -55,10 +55,6 @@ public class FreeBoardServiceImpl implements FreeBoardService {
 		return board;
 	}
 	
-	@Override
-	public void updateBoard(FreeBoardDTO board) throws Exception{
-		boardMapper.updateBoard(board);
-	}
 	
 	@Override
 	public void deleteBoard(int boardIdx) throws Exception{
@@ -151,4 +147,19 @@ public class FreeBoardServiceImpl implements FreeBoardService {
 		logger.debug("검색 결과 개수: {}", boardList.size());
 		return boardList;
 	}
+
+
+
+	@Override
+	public void updateBoard(String title, String contents, int boardIdx, String creatorId) {
+		 boardMapper.updateBoard(title,contents,boardIdx,creatorId);
+		
+	}
+
+	@Override
+	public int updateBoard(FreeBoardDTO board) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

@@ -3,8 +3,657 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<link rel="stylesheet" th:href="@{/board_css/freeBoardWrite.css}"/>
 </head>
 <body>
+	
+	<form id="boardForm" method="post" action="/board1/insertBoard1">
+            <div class="modal-body">
+                <div class="form-section">
+                    <h3 class="section-title">신규 게시글 등록</h3>
+                    
+                    <div class="form-row">
+                        <label class="form-label">제목 <span class="required">*</span></label>
+                        <input th:value="${board.title}" type="text" class="form-input" id="title" name="title" required>
+                    </div>
+                        <input type="hidden" class="form-input" id="creatorId" name="creatorId" 
+       					th:value="${session.user != null ? session.user.userid : ''}">
+					<input type="hidden" id="boardIdx" name="boardIdx" th:value="${board.boardIdx}">
+                    <div class="form-row">
+                        <label class="form-label">분류</label>
+                        <select class="form-select" id="category" name="category">
+                            <option value="freeTalk">자유게시판</option>
+                            <option value="qna">질문과 답변</option>
+                            <option value="case">경험 나누기</option>
+                            <option value="discussion">토론</option>
+                            <option value="msg">응원의 메시지</option>
+                        </select>
+                    </div>
+                </div>
 
+                <div class="form-section">
+                    <div class="editor-container">
+                        <div class="editor-toolbar">
+                            <div class="toolbar-group">
+                                <select class="toolbar-select" id="formatSelect">
+                                    <option value="div">일반 텍스트</option>
+                                    <option value="h1">제목 1</option>
+                                    <option value="h2">제목 2</option>
+                                    <option value="h3">제목 3</option>
+                                    <option value="p">단락</option>
+                                </select>
+                            </div>
+                            
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn" id="boldBtn" title="굵게">
+                                    <i class="fas fa-bold"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="italicBtn" title="기울임">
+                                    <i class="fas fa-italic"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="underlineBtn" title="밑줄">
+                                    <i class="fas fa-underline"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="strikeBtn" title="취소선">
+                                    <i class="fas fa-strikethrough"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="colorBtn" title="글자색">
+                                    <i class="fas fa-palette"></i>
+                                </button>
+                            </div>
+
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn" id="alignLeftBtn" title="왼쪽 정렬">
+                                    <i class="fas fa-align-left"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="alignCenterBtn" title="가운데 정렬">
+                                    <i class="fas fa-align-center"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="alignRightBtn" title="오른쪽 정렬">
+                                    <i class="fas fa-align-right"></i>
+                                </button>
+                            </div>
+
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn" id="listBtn" title="목록">
+                                    <i class="fas fa-list-ul"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="orderedListBtn" title="번호 목록">
+                                    <i class="fas fa-list-ol"></i>
+                                </button>
+                            </div>
+
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn" id="linkBtn" title="링크">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="imageBtn" title="이미지">
+                                    <i class="fas fa-image"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="tableBtn" title="표 삽입">
+                                    <i class="fas fa-table"></i>
+                                </button>
+                            </div>
+
+                            <div class="toolbar-group">
+                                <button type="button" class="toolbar-btn" id="undoBtn" title="실행 취소">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                                <button type="button" class="toolbar-btn" id="redoBtn" title="다시 실행">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="editor" class="editor-content" contenteditable="true" placeholder="게시글 내용을 입력하세요..."></div>
+                        
+                        <!-- 숨겨진 textarea (폼 제출용) -->
+                        <textarea th:text="${board.contents}" id="contents" name="contents" style="display: none;"></textarea>
+
+                        <div class="editor-footer">
+                            <span>POWERED BY Custom WYSIWYG Editor</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="cancelBtn" type="button" class="btn btn-secondary">취소</button>
+                <button id="updateBtn" type="button" class="btn btn-primary">저장</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 색상 선택기 -->
+    <div id="colorPicker" class="color-picker">
+        <div class="color-grid">
+            <div class="color-option" style="background-color: #000000" data-color="#000000" title="검정"></div>
+            <div class="color-option" style="background-color: #ffffff; border: 2px solid #ccc;" data-color="#ffffff" title="흰색"></div>
+            <div class="color-option" style="background-color: #ff0000" data-color="#ff0000" title="빨강"></div>
+            <div class="color-option" style="background-color: #00ff00" data-color="#00ff00" title="초록"></div>
+            <div class="color-option" style="background-color: #0000ff" data-color="#0000ff" title="파랑"></div>
+            <div class="color-option" style="background-color: #ffff00" data-color="#ffff00" title="노랑"></div>
+            <div class="color-option" style="background-color: #ff00ff" data-color="#ff00ff" title="자홍"></div>
+            <div class="color-option" style="background-color: #00ffff" data-color="#00ffff" title="청록"></div>
+            <div class="color-option" style="background-color: #808080" data-color="#808080" title="회색"></div>
+            <div class="color-option" style="background-color: #800000" data-color="#800000" title="진빨강"></div>
+            <div class="color-option" style="background-color: #008000" data-color="#008000" title="진초록"></div>
+            <div class="color-option" style="background-color: #000080" data-color="#000080" title="진파랑"></div>
+            <div class="color-option" style="background-color: #800080" data-color="#800080" title="자주"></div>
+            <div class="color-option" style="background-color: #808000" data-color="#808000" title="올리브"></div>
+            <div class="color-option" style="background-color: #008080" data-color="#008080" title="틸"></div>
+            <div class="color-option" style="background-color: #c0c0c0" data-color="#c0c0c0" title="은색"></div>
+        </div>
+    </div>
+
+    <!-- 링크 입력 모달 -->
+    <div id="linkModal" class="link-modal">
+        <h4>링크 삽입</h4>
+        <input type="text" id="linkText" placeholder="링크 텍스트">
+        <input type="url" id="linkUrl" placeholder="https://example.com">
+        <div class="btn-group">
+            <button type="button" class="btn btn-secondary" id="linkCancelBtn">취소</button>
+            <button type="button" class="btn btn-primary" id="linkOkBtn">확인</button>
+        </div>
+    </div>
+
+
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+	// 수정 완료 버튼 클릭
+             $(document).ready(function(){
+            // 페이지 로드 시 에디터에 기존 내용 설정
+            var existingContent = $("#contents").val();
+            if(existingContent) {
+                $("#editor").html(existingContent);
+            }
+            
+            // 에디터에서 내용이 변경될 때마다 hidden textarea에 동기화
+            $("#editor").on('input', function(){
+                $("#contents").val($(this).html());
+            });
+            
+            // 수정 완료 버튼 클릭 - AJAX 통신
+$("#updateBtn").on("click", function(){
+    console.log("=== 수정 버튼 클릭 (AJAX) ===");
+    
+    // 에디터 내용을 textarea에 동기화
+    $("#contents").val($("#editor").html());
+    
+    // 폼 데이터 수집
+    var formData = {
+        boardIdx: $("#boardIdx").val(),
+        title: $("#title").val().trim(),
+        contents: $("#contents").val().trim(),
+        //category: $("#category").val(),
+        creatorId: $("#creatorId").val()
+    };
+    
+    console.log("=== 전송할 데이터 ===");
+    console.log("boardIdx:", formData.boardIdx);
+    console.log("title:", formData.title);
+    console.log("contents (앞 100자):", formData.contents.substring(0, 100) + "...");
+    //console.log("category:", formData.category);
+    console.log("creatorId:", formData.creatorId);
+    
+    // 유효성 검사
+    if(!formData.title){
+        alert("제목을 입력해주세요.");
+        $("#title").focus();
+        return;
+    }
+    
+    if(!formData.contents || formData.contents === '<br>' || formData.contents === '<div><br></div>'){
+        alert("내용을 입력해주세요.");
+        $("#editor").focus();
+        return;
+    }
+    
+    if(!formData.boardIdx || formData.boardIdx === '0') {
+        alert("게시글 번호가 없습니다.");
+        console.error("boardIdx가 비어있음:", formData.boardIdx);
+        return;
+    }
+    
+    var result = confirm("게시글을 수정하시겠습니까?");
+    
+    if(result){
+        // 버튼 비활성화 및 로딩 상태 표시
+        $("#updateBtn").prop("disabled", true).text("수정 중...");
+        
+        // AJAX 요청
+        $.ajax({
+            url: "/board1/updateBoard1",
+            type: "POST",
+            data: formData,
+            beforeSend: function() {
+                console.log("AJAX 요청 시작");
+            },
+            success: function(response, status, xhr) {
+                console.log("AJAX 성공 응답:", response);
+                console.log("상태:", status);
+                console.log("응답 헤더:", xhr.getAllResponseHeaders());
+                
+                // 성공 메시지 표시
+                alert("게시글이 성공적으로 수정되었습니다.");
+                
+                // 상세 페이지로 이동
+                window.location.href = "/board1/openBoardDetail1?boardIdx=" + formData.boardIdx;
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX 실패:");
+                console.error("상태:", status);
+                console.error("에러:", error);
+                console.error("응답 텍스트:", xhr.responseText);
+                console.error("응답 상태 코드:", xhr.status);
+                
+                // 에러 메시지 처리
+                var errorMessage = "게시글 수정 중 오류가 발생했습니다.";
+                
+                if(xhr.status === 400) {
+                    errorMessage = "입력 데이터가 올바르지 않습니다.";
+                } else if(xhr.status === 401) {
+                    errorMessage = "로그인이 필요합니다.";
+                    // 로그인 페이지로 이동
+                    setTimeout(function() {
+                        window.location.href = "/login/login";
+                    }, 2000);
+                } else if(xhr.status === 403) {
+                    errorMessage = "수정 권한이 없습니다.";
+                } else if(xhr.status === 404) {
+                    errorMessage = "존재하지 않는 게시글입니다.";
+                } else if(xhr.status === 500) {
+                    errorMessage = "서버 내부 오류가 발생했습니다.";
+                }
+                
+                alert(errorMessage);
+            },
+            complete: function() {
+                // 버튼 상태 복원
+                $("#updateBtn").prop("disabled", false).text("수정 완료");
+                console.log("AJAX 요청 완료");
+            }
+        });
+    }
+});
+            
+            // 취소 버튼 클릭
+            $("#cancelBtn").on("click", function(){
+                var result = confirm("수정을 취소하시겠습니까? 변경사항이 저장되지 않습니다.");
+                if(result){
+                    var boardIdx = $("#boardIdx").val();
+                    location.href = "/board1/openBoardDetail1?boardIdx=" + boardIdx;
+                }
+            });
+            
+            
+            // WYSIWYG 에디터 클래스
+            class WysiwygEditor {
+                constructor(editorId) {
+                    this.editor = document.getElementById(editorId);
+                    this.currentColor = '#000000';
+                    this.savedRange = null;
+                    this.initializeEditor();
+                    this.bindEvents();
+                }
+
+                initializeEditor() {
+                    this.editor.style.minHeight = '400px';
+                    this.editor.setAttribute('contenteditable', 'true');
+                    this.editor.focus();
+                }
+
+                bindEvents() {
+                    // 모든 툴바 버튼에 preventDefault 추가
+                    document.querySelectorAll('.toolbar-btn').forEach(btn => {
+                        btn.addEventListener('mousedown', (e) => {
+                            e.preventDefault();
+                        });
+                    });
+
+                    // 텍스트 포맷팅 버튼들
+                    document.getElementById('boldBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('bold');
+                    });
+                    
+                    document.getElementById('italicBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('italic');
+                    });
+                    
+                    document.getElementById('underlineBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('underline');
+                    });
+                    
+                    document.getElementById('strikeBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('strikeThrough');
+                    });
+
+                    // 정렬 버튼들
+                    document.getElementById('alignLeftBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('justifyLeft');
+                    });
+                    
+                    document.getElementById('alignCenterBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('justifyCenter');
+                    });
+                    
+                    document.getElementById('alignRightBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('justifyRight');
+                    });
+
+                    // 목록 버튼들
+                    document.getElementById('listBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('insertUnorderedList');
+                    });
+                    
+                    document.getElementById('orderedListBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('insertOrderedList');
+                    });
+
+                    // 실행 취소/다시 실행
+                    document.getElementById('undoBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('undo');
+                    });
+                    
+                    document.getElementById('redoBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.executeCommand('redo');
+                    });
+
+                    // 포맷 선택
+                    document.getElementById('formatSelect').addEventListener('change', (e) => {
+                        this.executeCommand('formatBlock', e.target.value);
+                        this.editor.focus();
+                    });
+
+                    // 색상 선택 버튼
+                    document.getElementById('colorBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.showColorPicker(e);
+                    });
+
+                    // 링크 삽입
+                    document.getElementById('linkBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.showLinkModal();
+                    });
+
+                    // 이미지 삽입
+                    document.getElementById('imageBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.insertImage();
+                    });
+
+                    // 표 삽입
+                    document.getElementById('tableBtn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.insertTable();
+                    });
+
+                    // 에디터 상태 업데이트
+                    this.editor.addEventListener('keyup', () => this.updateToolbarState());
+                    this.editor.addEventListener('mouseup', () => this.updateToolbarState());
+                    this.editor.addEventListener('focus', () => this.updateToolbarState());
+
+                    // 색상 선택 옵션 초기화
+                    this.initColorOptions();
+                }
+
+                executeCommand(command, value = null) {
+                    this.editor.focus();
+                    try {
+                        const result = document.execCommand(command, false, value);
+                        console.log(`Command ${command} executed:`, result);
+                        setTimeout(() => this.updateToolbarState(), 10);
+                        return result;
+                    } catch (e) {
+                        console.error('Command execution failed:', e);
+                        return false;
+                    }
+                }
+
+                updateToolbarState() {
+                    const commands = {
+                        'boldBtn': 'bold',
+                        'italicBtn': 'italic', 
+                        'underlineBtn': 'underline',
+                        'strikeBtn': 'strikeThrough'
+                    };
+
+                    Object.entries(commands).forEach(([btnId, command]) => {
+                        const btn = document.getElementById(btnId);
+                        if (btn) {
+                            try {
+                                if (document.queryCommandState(command)) {
+                                    btn.classList.add('active');
+                                } else {
+                                    btn.classList.remove('active');
+                                }
+                            } catch (e) {
+                                console.warn(`Could not query state for ${command}`);
+                            }
+                        }
+                    });
+                }
+
+                showColorPicker(e) {
+                    const colorPicker = document.getElementById('colorPicker');
+                    const colorBtn = document.getElementById('colorBtn');
+                    
+                    if (colorPicker.style.display === 'block') {
+                        colorPicker.style.display = 'none';
+                        return;
+                    }
+                    
+                    this.saveSelection();
+                    
+                    const rect = colorBtn.getBoundingClientRect();
+                    colorPicker.style.display = 'block';
+                    colorPicker.style.left = Math.max(0, rect.left) + 'px';
+                    colorPicker.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+
+                    setTimeout(() => {
+                        const handleClickOutside = (event) => {
+                            if (!colorPicker.contains(event.target) && !colorBtn.contains(event.target)) {
+                                colorPicker.style.display = 'none';
+                                document.removeEventListener('click', handleClickOutside);
+                            }
+                        };
+                        document.addEventListener('click', handleClickOutside);
+                    }, 10);
+                }
+
+                initColorOptions() {
+                    const colorOptions = document.querySelectorAll('.color-option');
+                    colorOptions.forEach(option => {
+                        option.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const color = option.dataset.color;
+                            this.applyColor(color);
+                            document.getElementById('colorPicker').style.display = 'none';
+                        });
+                    });
+                }
+
+                saveSelection() {
+                    const selection = window.getSelection();
+                    if (selection.rangeCount > 0) {
+                        this.savedRange = selection.getRangeAt(0).cloneRange();
+                    }
+                }
+
+                restoreSelection() {
+                    if (this.savedRange) {
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(this.savedRange);
+                    }
+                }
+
+                applyColor(color) {
+                    this.editor.focus();
+                    
+                    if (this.savedRange) {
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(this.savedRange);
+                    }
+                    
+                    const selection = window.getSelection();
+                    
+                    if (selection.rangeCount > 0) {
+                        const range = selection.getRangeAt(0);
+                        
+                        if (!range.collapsed) {
+                            // 텍스트가 선택된 경우
+                            try {
+                                const contents = range.extractContents();
+                                const span = document.createElement('span');
+                                span.style.color = color;
+                                span.appendChild(contents);
+                                range.insertNode(span);
+                                
+                                // 커서를 span 뒤로 이동
+                                range.setStartAfter(span);
+                                range.collapse(true);
+                                selection.removeAllRanges();
+                                selection.addRange(range);
+                                
+                                console.log('색상 적용 완료:', color);
+                            } catch (e) {
+                                console.error('색상 적용 실패:', e);
+                                this.executeCommand('foreColor', color);
+                            }
+                        } else {
+                            // 텍스트가 선택되지 않은 경우
+                            this.executeCommand('foreColor', color);
+                        }
+                    }
+                    
+                    this.savedRange = null;
+                }
+
+                showLinkModal() {
+                    const modal = document.getElementById('linkModal');
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString();
+
+                    document.getElementById('linkText').value = selectedText;
+                    document.getElementById('linkUrl').value = '';
+                    modal.style.display = 'block';
+
+                    // 기존 이벤트 리스너 제거
+                    const okBtn = document.getElementById('linkOkBtn');
+                    const cancelBtn = document.getElementById('linkCancelBtn');
+                    
+                    const newOkBtn = okBtn.cloneNode(true);
+                    const newCancelBtn = cancelBtn.cloneNode(true);
+                    
+                    okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+                    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+                    newOkBtn.addEventListener('click', () => {
+                        const text = document.getElementById('linkText').value;
+                        const url = document.getElementById('linkUrl').value;
+                        
+                        if (url) {
+                            this.editor.focus();
+                            if (selectedText) {
+                                this.executeCommand('createLink', url);
+                            } else {
+                                this.executeCommand('insertHTML', `<a href="${url}" target="_blank">${text || url}</a>`);
+                            }
+                        }
+                        modal.style.display = 'none';
+                    });
+
+                    newCancelBtn.addEventListener('click', () => {
+                        modal.style.display = 'none';
+                    });
+                }
+
+                insertImage() {
+                    const url = prompt('이미지 URL을 입력하세요:');
+                    if (url) {
+                        this.executeCommand('insertHTML', `<img src="${url}" style="max-width: 100%; height: auto;" alt="이미지">`);
+                    }
+                }
+
+                insertTable() {
+                    const rows = prompt('행 수를 입력하세요:', '3');
+                    const cols = prompt('열 수를 입력하세요:', '3');
+                    
+                    if (rows && cols) {
+                        let tableHTML = '<table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">';
+                        
+                        for (let i = 0; i < parseInt(rows); i++) {
+                            tableHTML += '<tr>';
+                            for (let j = 0; j < parseInt(cols); j++) {
+                                tableHTML += '<td style="padding: 8px; border: 1px solid #ddd;">&nbsp;</td>';
+                            }
+                            tableHTML += '</tr>';
+                        }
+                        
+                        tableHTML += '</table>';
+                        this.executeCommand('insertHTML', tableHTML);
+                    }
+                }
+
+                getContent() {
+                    return this.editor.innerHTML;
+                }
+
+                setContent(content) {
+                    this.editor.innerHTML = content;
+                }
+            }
+
+            // 에디터 초기화
+            const editor = new WysiwygEditor('editor');
+
+            // 폼 제출 이벤트
+            document.getElementById('boardForm').addEventListener('submit', function(e) {
+                const title = document.getElementById('title').value.trim();
+                const editorContent = editor.getContent().trim();
+                
+                document.getElementById('contents').value = editorContent;
+                
+                if (!title) {
+                    e.preventDefault();
+                    alert('제목을 입력해주세요.');
+                    document.getElementById('title').focus();
+                    return false;
+                }
+                
+                const textContent = editor.editor.textContent || editor.editor.innerText || '';
+                const cleanContent = textContent.trim();
+                
+                if (!cleanContent || cleanContent.length === 0) {
+                    e.preventDefault();
+                    alert('내용을 입력해주세요.');
+                    editor.editor.focus();
+                    return false;
+                }
+                
+                console.log('제출할 내용:', editorContent);
+                return true;
+            });
+            
+            });
+	
+	
+</script>
 </body>
 </html>

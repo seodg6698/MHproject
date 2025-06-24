@@ -28,7 +28,13 @@ public interface FreeBoardMapper {
 	 */
 	FreeBoardDTO selectBoardDetailWithLike(@Param("boardIdx") int boardIdx, @Param("userId") String userId) throws Exception;
 
-	void updateBoard(FreeBoardDTO board) throws Exception;
+	/**
+     * 게시글 수정
+     * @param boardDto 수정할 게시글 정보
+     * @return 수정된 행의 개수
+     * @throws Exception
+     */
+    int updateBoard(FreeBoardDTO boardDto) throws Exception;
 
 	void deleteBoard(int boardIdx) throws Exception;
 
@@ -61,4 +67,6 @@ public interface FreeBoardMapper {
 	public List<FreeBoardDTO> searchContentsBoardListWithLike(@Param("keyword") String keyword, @Param("userId") String userId);
 	
 	public void insertBoardToTargetBoard(@Param("board") FreeBoardDTO board, @Param("targetBoard") String targetBoard) throws Exception;
+
+	public void updateBoard(@Param("title") String title, @Param("contents") String contents, @Param("boardIdx") int boardIdx,@Param("creatorId") String creatorId);
 }
